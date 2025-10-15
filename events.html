@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="style.css" rel="stylesheet" />
+    <meta name="theme-color" content="#ff9f00">
+    <title>Days For Girls Solon Team</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Solway:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=close" />
+        <link rel="icon" href="assets/images/icon.png" sizes="192x192" />
+</head>
+
+<body>
+    <header>
+        <picture>
+            <!--user's system is set to dark mode-->
+            <source srcset="assets/images/logo-light.png" media="(prefers-color-scheme: light)" id="header-logo" />
+            <!--user's system is set to light mode-->
+            <source srcset="assets/images/logo-dark.png" media="(prefers-color-scheme: dark)" id="header-logo" />
+            <!--no color preference found: use light mode-->
+            <img src="assets/images/logo-light.png" alt="Days for Girls logo" id="header-logo" />
+        </picture>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="mailing-list.html">Mailing List</a>
+            <a href="events.html">Upcoming Events</a>
+            <a href="inventory.html" id="inventory-link">inventory</a>
+            <a href="#" id="donate-button">Donate</a>
+            <a href="#" id="sign-in-button">Sign In</a>
+            <a href="#" id="sign-out-button">Sign Out</a>
+        </nav>
+    </header>
+    <div id="pop-up-container">
+        <section id="sign-in-pop-up">
+            <button class="material-symbols-outlined close-button" id="close">close</button>
+            <h2>Sign In</h2>
+            <div class="form-row">
+                <label for="username">Username:</label>
+                <input type="email" id="username" name="username" />
+            </div>
+            <div class="form-row">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" />
+            </div>
+            <div class="form-row">
+                <button id="form-sign-in-button" class="button-full">Sign In</button>
+            </div>
+        </section>
+    </div>
+    <main>
+        <section class="card">
+            <h2>Upcoming Events</h2>
+            <p>Upcoming events go here</p>
+            <p>Button that will open a form to sign up for the event</p>
+            <p>If logged in, there will be:</p>
+            <ul>
+                <li>An option to view who has signed up for the event. Will probably open a pop up on this page</li>
+                <li>A form to create a new event, will probably go to a new page.</li>
+                <li>Ability to remove past events (should they be removed automatically after the event is over?)</li>
+            </ul>
+        </section>
+    </main>
+    <footer>
+        <a href="https://www.facebook.com/days.for.girls.solon/">Follow us on Facebook</a>
+        <a href="#">Follow us on Instagram</a>
+        <a href="https://www.daysforgirls.org/">Days for Girls International</a>
+    </footer>
+    <script type="text/javascript" src="assets/app.js"></script>
+</body>
+</html>
