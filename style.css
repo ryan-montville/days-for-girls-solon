@@ -68,10 +68,18 @@ nav a:hover {
     text-decoration: underline;
 }
 
-#sign-in-button {
+#inventory-link {
+    display: none;
+}
+
+#sign-in-button, #sign-out-button {
     background-color: var(--primary-accent);
     color: white;
     font-weight: 900;
+}
+
+#sign-out-button {
+    display: none;
 }
 
 #donate-button {

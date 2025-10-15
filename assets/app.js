@@ -3,6 +3,8 @@ function app() {
 
     //page elements
     let navSignInButton = document.getElementById('sign-in-button');
+    let navSignOutButton = document.getElementById('sign-out-button');
+    let inventoryLink = document.getElementById('inventory-link');
     let signInPopUp = document.getElementById('pop-up-container');
     let closeButton = document.getElementById('close');
     let formSignInButton = document.getElementById('form-sign-in-button');
@@ -10,7 +12,6 @@ function app() {
     let passwordInput = document.getElementById('password');
     let nav = document.querySelector('nav');
     let navLinks = nav.querySelectorAll('a');
-    let donateButton = navLinks[3];
 
     //event listener for sign in button to open sign in pop up
     navSignInButton.addEventListener('click', () => {
@@ -24,11 +25,17 @@ function app() {
 
     function signIn() {
         console.log('found username in local storage');
-        let inventoryLink = document.createElement('a');
-        let inventoryLinkText = document.createTextNode("Inventory");
-        inventoryLink.appendChild(inventoryLinkText);
-        inventoryLink.href = "inventory.html";
-        nav.insertBefore(inventoryLink, donateButton);
+        inventoryLink.style.display = 'block';
+        navSignInButton.style.display = 'none';
+        navSignOutButton.style.display = 'block';
+    }
+
+    function signOut() {
+        console.log("Removing username from local storage");
+        localStorage.removeItem("username");
+        inventoryLink.style.display = 'none';
+        navSignOutButton.style.display = 'none';
+        navSignInButton.style.display = 'block';
     }
 
     //TODO: work on sign out function
@@ -42,6 +49,7 @@ function app() {
     //temporary event listener to simulate sign in
     formSignInButton.addEventListener('click', () => {
         if (usernameInput.value.length > 0 && passwordInput.value.length > 0) {
+            signInPopUp.style.display = 'none';
             console.log('sign in successful');
             localStorage.setItem("username", usernameInput.value);
             signIn();
@@ -49,6 +57,9 @@ function app() {
             alert('Please enter username and password.');
         }
     });
+    navSignOutButton.addEventListener('click', () => {
+        signOut();
+    })
 }
 
 app();
