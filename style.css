@@ -79,14 +79,14 @@ nav a:hover {
     color: white;
     font-weight: 900;
 }
-.pop-up-container {
-    background-color: rgba(0, 0, 0, 0.75);
+#pop-up-container {
+    display: none;
+    background-color: rgba(0, 0, 0, 0.80);
     position: absolute;
     left: 0;
     right: 0;
     top: 0;
     bottom: 0;
-    display: flex;
     justify-content: center;
     align-items: center;
 }
@@ -189,6 +189,10 @@ footer a:hover {
 }
 
 /* forms */
+button {
+    cursor: pointer;
+}
+
 .form-row {
     display: flex;
     justify-content: space-between;

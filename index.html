@@ -12,17 +12,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Solway:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=close" />
+        <link rel="icon" href="assets/images/icon.png" sizes="192x192" />
 </head>
 
 <body>
     <header>
         <picture>
             <!--user's system is set to dark mode-->
-            <source srcset="images/logo-light.png" media="(prefers-color-scheme: light)" id="header-logo" />
+            <source srcset="assets/images/logo-light.png" media="(prefers-color-scheme: light)" id="header-logo" />
             <!--user's system is set to light mode-->
-            <source srcset="images/logo-dark.png" media="(prefers-color-scheme: dark)" id="header-logo" />
+            <source srcset="assets/images/logo-dark.png" media="(prefers-color-scheme: dark)" id="header-logo" />
             <!--no color preference found: use light mode-->
-            <img src="images/logo-light.png" alt="Days for Girls logo" id="header-logo" />
+            <img src="assets/images/logo-light.png" alt="Days for Girls logo" id="header-logo" />
         </picture>
         <nav>
             <a href="index.html">Home</a>
@@ -33,9 +34,9 @@
             <a href="#" id="sign-in-button">Sign In</a>
         </nav>
     </header>
-    <div class="pop-up-container">
+    <div id="pop-up-container">
         <section id="sign-in-pop-up">
-            <button class="material-symbols-outlined close-button">close</button>
+            <button class="material-symbols-outlined close-button" id="close">close</button>
             <h2>Sign In</h2>
             <div class="form-row">
                 <label for="username">Username:</label>
@@ -95,6 +96,7 @@
         <a href="#">Follow us on Instagram</a>
         <a href="https://www.daysforgirls.org/">Days for Girls International</a>
     </footer>
+    <script type="text/javascript" src="assets/app.js"></script>
 </body>
 
 </html>
