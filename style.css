@@ -79,6 +79,28 @@ nav a:hover {
     color: white;
     font-weight: 900;
 }
+.pop-up-container {
+    background-color: rgba(0, 0, 0, 0.75);
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#sign-in-pop-up {
+    position: relative;
+    background-color: var(--main-background);
+    color: var(--main-text);
+    padding: 20px;
+}
+.close-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
 
 main {
     max-width: 900px;
@@ -164,4 +186,31 @@ footer a {
 
 footer a:hover {
     text-decoration: underline;
+}
+
+/* forms */
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+input {
+    border: 1px solid var(--main-text);
+    background-color: var(--main-background);
+    color: var(--main-text);
+    padding: 5px;
+    margin: 5px;
+}
+
+.form-row button {
+    background-color: var(--primary-accent);
+    border: 0;
+    padding: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 900;
+}
+
+.button-full {
+    flex-grow: 1;
 }
