@@ -1,34 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="style.css" rel="stylesheet" />
     <meta name="theme-color" content="#ff9f00">
     <title>Days For Girls Solon Team</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Solway:wght@300;400;500;700;800&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <header>
         <picture>
             <!--user's system is set to dark mode-->
-            <source srcset="/images/logo-light.png" media="(prefers-color-scheme: light)" id="header-logo"/>
+            <source srcset="/images/logo-light.png" media="(prefers-color-scheme: light)" id="header-logo" />
             <!--user's system is set to light mode-->
-            <source srcset="/images/logo-dark.png" media="(prefers-color-scheme: dark)" id="header-logo"/>
+            <source srcset="/images/logo-dark.png" media="(prefers-color-scheme: dark)" id="header-logo" />
             <!--no color preference found: use light mode-->
             <img src="/images/logo-light.png" alt="Days for Girls logo" id="header-logo" />
         </picture>
         <nav>
             <a href="index.html">Home</a>
-            <a href="mailing-list.html">Join our mailing list</a>
-            <a href="events.html">Upcoming events</a>
+            <a href="mailing-list.html">Mailing List</a>
+            <a href="events.html">Upcoming Events</a>
             <a href="inventory.html">Inventory</a>
             <a href="#" id="sign-in-button">Sign In</a>
         </nav>
     </header>
-    <main>
-        <section>
-            Testing
+    <main class="homepage-layout">
+        <section class="card" id="about-us">
+            <h2>Welcome to Days for Girls Solon Team</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum imperdiet varius ultricies. Nulla id
+                sem elit. Mauris accumsan mattis dui eu iaculis. Aenean placerat mattis elit, et fringilla leo
+                sollicitudin id. Ut semper ac sem at ultricies. Fusce libero metus, interdum sit amet arcu sit amet,
+                vehicula consequat diam. Mauris sollicitudin pharetra mi, nec lobortis nisi tincidunt et. Aenean id
+                molestie nibh. Donec at lorem commodo, commodo quam id, malesuada sem. Phasellus accumsan maximus
+                rhoncus. Vivamus volutpat consectetur tortor, ac fermentum dolor auctor sit amet. Nullam porta orci sit
+                amet justo scelerisque dictum. Morbi posuere suscipit dui ac condimentum. Aliquam aliquam enim sagittis
+                leo porttitor, ut eleifend elit pellentesque.</p>
+            <p>Vivamus luctus eget lectus vel convallis. Suspendisse fermentum elit tortor, sed faucibus ligula aliquam
+                eget. Sed porta odio velit, et congue nisl tincidunt quis. Phasellus placerat purus in pulvinar
+                lobortis. Cras maximus lectus id tempor faucibus. Praesent condimentum lectus vitae fermentum laoreet.
+                Sed accumsan, erat sed porta volutpat, libero tellus viverra enim, id porta mi elit id dolor.
+                Pellentesque convallis ex a velit pharetra euismod.</p>
+        </section>
+        <section class="card" id="ucoming-events">
+            <h3>Upcoming Events</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum imperdiet varius ultricies. Nulla id
+                sem elit. Mauris accumsan mattis dui eu iaculis. Aenean placerat mattis elit, et fringilla leo
+                sollicitudin id.</p>
+            <a href="events.html" class="action-button">View Upcoming Events</a>
+        </section>
+        <section class="card" id="mailing-list">
+            <h3>Join our Mailing List</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum imperdiet varius ultricies. Nulla id
+                sem elit. Mauris accumsan mattis dui eu iaculis. Aenean placerat mattis elit, et fringilla leo
+                sollicitudin id.</p>
+            <a href="mailing-list.html" class="action-button">Join</a>
+        </section>
+        <section class="card" id="donate">
+            <h3>Donate to Our Team</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum imperdiet varius ultricies. Nulla id
+                sem elit. Mauris accumsan mattis dui eu iaculis. Aenean placerat mattis elit, et fringilla leo
+                sollicitudin id.</p>
+            <a href="#" class="action-button">Donate</a>
         </section>
     </main>
 </body>
+
 </html>

@@ -52,7 +52,7 @@ nav {
 
 nav a {
     padding: 10px;
-    font-weight: 600;
+    font-weight: 200;
     background-color: var(--main-background);
     color: var(--nav-text);
     text-decoration: none;
@@ -71,14 +71,68 @@ nav a:hover {
 }
 
 main {
-    margin-top: 20px;
+    max-width: 900px;
+    margin: 20px auto;
+    color: var(--main-text);
+    font-size: 20px;
+    display: grid;
 }
 
-section {
+/* Homepage grid layout */
+#about-us {
+    grid-area: about;
+}
+
+#upcoming-events {
+    grid-area: events;
+}
+
+#mailing-list {
+    grid-area: mailing;
+}
+
+#donate {
+    grid-area: donate;
+}
+.homepage-layout {
+    grid-template-columns:  1fr 1fr 1fr;
+    grid-template-areas: 
+        "about about about"
+        "events mailing donate";
+}
+
+/* Events page grid layout */
+
+/* form page grid layout */
+
+/* Inventory page grid layout */
+
+h1, h2, h3, h4 {
+    font-family: "Solway", serif;
+}
+
+h2 {
+    font-size: 36px;
+}
+
+.card {
     background-color: var(--main-background);
     border-top: 5px solid var(--primary-accent);
-    margin: 10px auto;
+    margin: 10px;
     padding: 20px;
-    max-width: 900px;
+}
+
+.card p {
+    padding: 10px 0;
+}
+
+.action-button {
+    color: white;
+    background-color: var(--secondary-accent);
+    margin: 5px 0;
+    padding: 10px;
+    text-decoration: none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 900;
     font-size: 15px;
 }
