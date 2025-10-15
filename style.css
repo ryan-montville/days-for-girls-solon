@@ -35,6 +35,13 @@ body {
     background-color: var(--body-background);
 }
 
+.error-message p {
+    background-color: red;
+    color: white;
+    margin: 10px;
+    padding: 10px;
+}
+
 header {
     margin: 20px;
     display: flex;
