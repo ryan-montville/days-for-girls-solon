@@ -7,6 +7,8 @@
     --nav-text: #4f4b4e;
     --main-background: #ffffff;
     --main-text: #000000;
+    --footer-background: #676486;
+    --footer-text: #fff;
   }
 }
 
@@ -19,6 +21,8 @@
     --nav-text: #ccc;
     --main-background: #333;
     --main-text: #ccc;
+    --footer-background: #676486;
+    --footer-text: #fff;
   }
 }
 
@@ -66,6 +70,12 @@ nav a:hover {
 
 #sign-in-button {
     background-color: var(--primary-accent);
+    color: white;
+    font-weight: 900;
+}
+
+#donate-button {
+    background-color: var(--secondary-accent);
     color: white;
     font-weight: 900;
 }
@@ -135,4 +145,23 @@ h2 {
     font-family: Arial, Helvetica, sans-serif;
     font-weight: 900;
     font-size: 15px;
+}
+
+footer {
+    background-color: var(--footer-background);
+    color: var(--footer-text);
+    padding: 20px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+footer a {
+    color: var(--footer-text);
+    text-decoration: none;
+    font-size: 20px;
+}
+
+footer a:hover {
+    text-decoration: underline;
 }
