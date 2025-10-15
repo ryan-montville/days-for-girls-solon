@@ -196,7 +196,7 @@ footer a:hover {
     text-decoration: underline;
 }
 
-/* forms */
+/* forms and rows */
 button {
     cursor: pointer;
 }
@@ -204,6 +204,12 @@ button {
 .form-row {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+}
+
+.button-row {
+    display: flex;
+    justify-content: space-around;
     align-items: center;
 }
 
