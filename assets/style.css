@@ -122,7 +122,6 @@ main {
     margin: 20px auto;
     color: var(--main-text);
     font-size: 20px;
-    display: grid;
 }
 
 /* Homepage grid layout */
@@ -142,10 +141,12 @@ main {
     grid-area: donate;
 }
 .homepage-layout {
+    display: grid;
     grid-template-columns:  1fr 1fr 1fr;
     grid-template-areas: 
         "about about about"
         "events mailing donate";
+    gap: 5px;
 }
 
 /* Events page grid layout */
