@@ -1,18 +1,79 @@
-[
-    {
-        "componentType": "Carry Pouches",
-        "quantity": "131"
-    },
-    {
-        "componentType": "Shields",
-        "quantity": "0"
-    },
-    {
-        "componentType": "Liners",
-        "quantity": "772"
-    },
-    {
-        "componentType": "Tote Bags",
-        "quantity": "78"
-    }
-]
+{
+    "currentInventory":
+    [
+        {
+            "componentType": "Carry Pouches",
+            "quantity": "131"
+        },
+        {
+            "componentType": "Shields",
+            "quantity": "0"
+        },
+        {
+            "componentType": "Liners",
+            "quantity": "772"
+        },
+        {
+            "componentType": "Tote Bags",
+            "quantity": "78"
+        }
+    ],
+    "incomingInventory": [
+        {
+            "date": "2025-06-01",
+            "componentType": "Shields",
+            "quantity": 150,
+            "whoDonated": "Tracie"
+        },
+        {
+            "date": "2025-06-20",
+            "componentType": "Liners",
+            "quantity": 151,
+            "whoDonated": "Sam"
+        },
+        {
+            "date": "2025-07-18",
+            "componentType": "Liners",
+            "quantity": 112,
+            "whoDonated": "Alex"
+        },
+        {
+            "date": "2025-07-18",
+            "componentType": "Tote Bags",
+            "quantity": 32,
+            "whoDonated": "Alex"
+        },
+        {
+            "date": "2025-08-15",
+            "componentType": "Liners",
+            "quantity": 70,
+            "whoDonated": "Tracie"
+        },
+        {
+            "date": "2025-09-05",
+            "componentType": "Liners",
+            "quantity": 32,
+            "whoDonated": "Alice"
+        }
+    ],
+    "outgoingInventory": [
+        {
+            "date": "2025-06-08",
+            "componentType":"Carry Pouches",
+            "quantity": 12,
+            "destination": "PA"
+        },
+        {
+            "date": "2025-06-08",
+            "componentType":"Shields",
+            "quantity": 150,
+            "destination": "PA"
+        },
+        {
+            "date": "2025-06-08",
+            "componentType":"Liners",
+            "quantity": 365,
+            "destination": "PA"
+        }
+    ]
+}

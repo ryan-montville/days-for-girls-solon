@@ -244,7 +244,7 @@ button {
     font-size: 15px;
 }
 
-input {
+input, select {
     border: 1px solid var(--main-text);
     background-color: var(--main-background);
     color: var(--main-text);
@@ -262,4 +262,25 @@ input {
 
 .button-full {
     flex-grow: 1;
+}
+
+/* tables */
+table {
+    border-collapse: collapse;
+    border: 1px solid var(--footer-background);
+    width: 100%;
+    margin: 10px 0;
+}
+
+thead {
+    background-color: var(--footer-background);
+    color: white;
+}
+
+td {
+    padding: 5px;
+}
+
+tr:nth-child(even) {
+    background-color: var(--body-background);
 }
