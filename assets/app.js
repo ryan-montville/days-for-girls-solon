@@ -58,6 +58,40 @@ function app() {
         signOut();
         window.location.reload();
     })
+    async function loadJsonData() {
+        try {
+            let response = await fetch('assets/inventory.json');
+            if (!response.ok) {
+                createErrorMessage(`Error loading the data. Status: ${response.status}`);
+                throw new Error(`Error loading data. Status: ${response.status}`);
+            }
+            let data = await response.json();
+            console.log(`Fetched data`);
+            //Adding current inventory data to local storage
+            let dataCurrentInventory = data.currentInventory;
+            let currentInventoryString = JSON.stringify(dataCurrentInventory);
+            localStorage.setItem("currentInventory", currentInventoryString);
+            //Adding incoming inventory data to local storage
+            let dataIncomingInventory = data.incomingInventory;
+            let incomingInventoryString = JSON.stringify(dataIncomingInventory);
+            localStorage.setItem("incomingInventory", incomingInventoryString);
+            //Adding outgoing inventory data to local storage
+            let dataOutgoingInventory = data.outgoingInventory;
+            let outgoingInventoryString = JSON.stringify(dataOutgoingInventory);
+            localStorage.setItem("outgoingInventory", outgoingInventoryString);
+
+            //Add the current inventory to the table
+            for (let i = 0; i < data.length; i++) {
+                addItemToTable(data[i], "currentInventory");
+            }
+        } catch (error) {
+            createErrorMessage(error);
+            console.error("Failed to load data: ", error);
+        }
+    }
+    loadJsonData();
 }
+
+
 
 app();
