@@ -6,6 +6,7 @@ let currentInventoryData = JSON.parse(currentInventoryLocalStorage);
 const outgoingInventoryLocalStorage = localStorage.getItem("outgoingInventory");
 let outgoingInventoryData = JSON.parse(outgoingInventoryLocalStorage);
 
+const outgoingForm = document.getElementById('outgoing-form');
 const dateInput = document.getElementById('date');
 const componentNameInput = document.getElementById('component-name');
 const quantityInput = document.getElementById('quantity');
@@ -90,5 +91,5 @@ if (localStorage.getItem("username")) {
         clearForm();
     });
 } else {
-    previousEntriesCard.remove();
+    outgoingForm.remove();
 }

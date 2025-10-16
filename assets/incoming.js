@@ -5,8 +5,8 @@ const currentInventoryLocalStorage = localStorage.getItem("currentInventory");
 let currentInventoryData = JSON.parse(currentInventoryLocalStorage);
 const incomingInventoryLocalStorage = localStorage.getItem("incomingInventory");
 let incomingInventoryData = JSON.parse(incomingInventoryLocalStorage);
-console.log(incomingInventoryData.length)
 
+const incomingForm = document.getElementById('incoming-form');
 const dateInput = document.getElementById('date');
 const componentNameInput = document.getElementById('component-name');
 const quantityInput = document.getElementById('quantity');
@@ -91,5 +91,5 @@ if (localStorage.getItem("username")) {
         clearForm();
     });
 } else {
-    previousEntriesCard.remove();
+    incomingForm.remove();
 }
