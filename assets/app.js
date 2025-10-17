@@ -88,6 +88,8 @@ function app() {
             //Adding events data to local storage
             let eventsString = JSON.stringify(data.upcomingEvents);
             localStorage.setItem("events", eventsString);
+            let signUpEntriesString = JSON.stringify(data.SignUpEntries);
+            localStorage.setItem("SignUpEntries", signUpEntriesString);
 
         } catch (error) {
             createErrorMessage(error);

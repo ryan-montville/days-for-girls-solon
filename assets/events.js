@@ -24,10 +24,10 @@ function createEventElement(eventData) {
     let numberAttending = document.createTextNode(`(what to call this): ${eventData.numberAttending}`);
     numberAttendingH4.appendChild(numberAttending);
     newEvent.appendChild(numberAttendingH4);
-    let eventDiscriptionP = document.createElement('p');
-    let eventDiscription = document.createTextNode(eventData.eventDiscription);
-    eventDiscriptionP.appendChild(eventDiscription);
-    newEvent.appendChild(eventDiscriptionP);
+    let eventDescriptionP = document.createElement('p');
+    let eventDescription = document.createTextNode(eventData.eventDescription);
+    eventDescriptionP.appendChild(eventDescription);
+    newEvent.appendChild(eventDescriptionP);
     let button = document.createElement('a');
     button.setAttribute('class', 'action-button');
     if (isUserSignedIn) {

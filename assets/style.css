@@ -278,6 +278,7 @@ table {
     border: 1px solid var(--footer-background);
     width: 100%;
     margin: 10px 0;
+    overflow-y: scroll;
 }
 
 thead {
