@@ -32,12 +32,12 @@ function createEventElement(eventData) {
     button.setAttribute('class', 'action-button');
     if (isUserSignedIn) {
         //Add manage event button
-        button.setAttribute('href', `manage-event.html?${eventData.eventID}`);
+        button.setAttribute('href', `manage-event.html?id=${eventData.eventID}`);
         button.textContent = 'Manage Event';
         
     } else {
         //Add sign up button
-        button.setAttribute('href', `event-sign-up.html?${eventData.eventID}`);
+        button.setAttribute('href', `event-sign-up.html?id=${eventData.eventID}`);
         button.textContent = 'Sign Up';
 
     }
