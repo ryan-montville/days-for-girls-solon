@@ -1,4 +1,5 @@
 const mainElement = document.querySelector('main');
+const eventsHeader = document.getElementById('events-header');
 const eventLocalStorage = localStorage.getItem('events');
 const eventData = JSON.parse(eventLocalStorage);
 let isUserSignedIn = false;
@@ -19,6 +20,10 @@ function createEventElement(eventData) {
     let eventLocation = document.createTextNode(eventData.eventLocation);
     eventLocationH4.appendChild(eventLocation);
     newEvent.appendChild(eventLocationH4);
+    let numberAttendingH4 = document.createElement('h4');
+    let numberAttending = document.createTextNode(`(what to call this): ${eventData.numberAttending}`);
+    numberAttendingH4.appendChild(numberAttending);
+    newEvent.appendChild(numberAttendingH4);
     let eventDiscriptionP = document.createElement('p');
     let eventDiscription = document.createTextNode(eventData.eventDiscription);
     eventDiscriptionP.appendChild(eventDiscription);
@@ -27,7 +32,8 @@ function createEventElement(eventData) {
     button.setAttribute('class', 'action-button');
     if (isUserSignedIn) {
         //Add manage event button
-        button.setAttribute('href', `manage-event.html?${eventData.eventID}`)
+        button.setAttribute('href', `manage-event.html?${eventData.eventID}`);
+        button.textContent = 'Manage Event';
         
     } else {
         //Add sign up button
@@ -46,7 +52,15 @@ function checkIfSignedIn() {
     }
 }
 
-console.log(eventData.length)
+checkIfSignedIn();
+
+if (isUserSignedIn) {
+    let createNewEventButton = document.createElement('a');
+    createNewEventButton.setAttribute('href', 'create-new-event.html');
+    createNewEventButton.setAttribute('class', 'action-button');
+    createNewEventButton.textContent = "Create New Event";
+    eventsHeader.appendChild(createNewEventButton);
+}
 for (let i=0; i<eventData.length; i++) {
     createEventElement(eventData[i]);
 }
