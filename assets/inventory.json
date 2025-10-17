@@ -1,6 +1,5 @@
 {
-    "currentInventory":
-    [
+    "currentInventory": [
         {
             "componentType": "Carry Pouches",
             "quantity": "131"
@@ -20,58 +19,106 @@
     ],
     "incomingInventory": [
         {
-            "date": "2025-06-01",
-            "componentType": "Shields",
-            "quantity": 150,
-            "whoDonated": "Tracie"
-        },
-        {
-            "date": "2025-06-20",
-            "componentType": "Liners",
-            "quantity": 151,
-            "whoDonated": "Sam"
-        },
-        {
-            "date": "2025-07-18",
-            "componentType": "Liners",
-            "quantity": 112,
-            "whoDonated": "Alex"
-        },
-        {
-            "date": "2025-07-18",
-            "componentType": "Tote Bags",
-            "quantity": 32,
-            "whoDonated": "Alex"
-        },
-        {
-            "date": "2025-08-15",
-            "componentType": "Liners",
-            "quantity": 70,
-            "whoDonated": "Tracie"
-        },
-        {
-            "date": "2025-09-05",
-            "componentType": "Liners",
-            "quantity": 32,
-            "whoDonated": "Alice"
-        }
+        "date": "2025-6-1",
+        "componentType": "Shields",
+        "quantity": "150",
+        "whoDonated": "Kerry N"
+    },
+    {
+        "date": "2025-6-2",
+        "componentType": "Carry Pouches",
+        "quantity": "12",
+        "whoDonated": "Kerry N"
+    },
+    {
+        "date": "2025-6-2",
+        "componentType": "Liners",
+        "quantity": "151",
+        "whoDonated": "Kerry N"
+    },
+    {
+        "date": "2025-6-2",
+        "componentType": "Liners",
+        "quantity": "112",
+        "whoDonated": "Tracie M"
+    },
+    {
+        "date": "2025-6-2",
+        "componentType": "Liners",
+        "quantity": "70",
+        "whoDonated": "Laura C"
+    },
+    {
+        "date": "2025-6-7",
+        "componentType": "Liners",
+        "quantity": "32",
+        "whoDonated": "Laura C"
+    },
+    {
+        "date": "2025-6-8",
+        "componentType": "Tote Bags",
+        "quantity": "13",
+        "whoDonated": "Kerry N"
+    },
+    {
+        "date": "2025-6-27",
+        "componentType": "Tote Bags",
+        "quantity": "32",
+        "whoDonated": "Kerry N"
+    },
+    {
+        "date": "2025-7-10",
+        "componentType": "Liners",
+        "quantity": "323",
+        "whoDonated": "Kerry N"
+    },
+    {
+        "date": "2025-7-25",
+        "componentType": "Liners",
+        "quantity": "111",
+        "whoDonated": "Tracie M"
+    },
+    {
+        "date": "2025-8-8",
+        "componentType": "Liners",
+        "quantity": "50",
+        "whoDonated": "Laura C"
+    },
+    {
+        "date": "2025-9-1",
+        "componentType": "Carry Pouches",
+        "quantity": "131",
+        "whoDonated": "Kerry N"
+    },
+    {
+        "date": "2025-9-4",
+        "componentType": "Tote Bags",
+        "quantity": "33",
+        "whoDonated": "Kerry N"
+    },
+    {
+        "date": "2025-10-3",
+        "componentType": "Liners",
+        "quantity": "288",
+        "whoDonated": "Tracie M"
+    }
     ],
     "outgoingInventory": [
         {
             "date": "2025-06-08",
-            "componentType":"Carry Pouches",
+            "componentType": "Carry Pouches",
             "quantity": 12,
             "destination": "PA"
         },
         {
             "date": "2025-06-08",
-            "componentType":"Shields",
+            "componentType": "Shields",
             "quantity": 150,
             "destination": "PA"
         },
         {
             "date": "2025-06-08",
-            "componentType":"Liners",
+            "componentType": "Liners",
             "quantity": 365,
             "destination": "PA"
         }

@@ -185,6 +185,13 @@ h2 {
     font-size: 15px;
 }
 
+/* Events */
+#upcoming-events article {
+    border: 1px solid var(--main-text);
+    margin: 5px;
+    padding: 10px;
+}
+
 footer {
     background-color: var(--footer-background);
     color: var(--footer-text);

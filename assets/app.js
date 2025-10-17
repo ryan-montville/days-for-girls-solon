@@ -60,36 +60,45 @@ function app() {
     })
     async function loadJsonData() {
         try {
+            //Fetch inventory data from inventory.json
             let response = await fetch('assets/inventory.json');
             if (!response.ok) {
                 createErrorMessage(`Error loading the data. Status: ${response.status}`);
                 throw new Error(`Error loading data. Status: ${response.status}`);
             }
             let data = await response.json();
-            console.log(`Fetched data`);
+            console.log(`Fetched inventory data`);
             //Adding current inventory data to local storage
-            let dataCurrentInventory = data.currentInventory;
-            let currentInventoryString = JSON.stringify(dataCurrentInventory);
+            let currentInventoryString = JSON.stringify(data.currentInventory);
             localStorage.setItem("currentInventory", currentInventoryString);
             //Adding incoming inventory data to local storage
-            let dataIncomingInventory = data.incomingInventory;
-            let incomingInventoryString = JSON.stringify(dataIncomingInventory);
+            let incomingInventoryString = JSON.stringify(data.incomingInventory);
             localStorage.setItem("incomingInventory", incomingInventoryString);
             //Adding outgoing inventory data to local storage
-            let dataOutgoingInventory = data.outgoingInventory;
-            let outgoingInventoryString = JSON.stringify(dataOutgoingInventory);
+            let outgoingInventoryString = JSON.stringify(data.outgoingInventory);
             localStorage.setItem("outgoingInventory", outgoingInventoryString);
-
-            //Add the current inventory to the table
-            for (let i = 0; i < data.length; i++) {
-                addItemToTable(data[i], "currentInventory");
+            //fetch events data from events.json
+            response = await fetch('assets/events.json');
+            if (!response.ok) {
+                createErrorMessage(`Error loading the data. Status: ${response.status}`);
+                throw new Error(`Error loading data. Status: ${response.status}`);
             }
+            data = await response.json();
+            console.log(`Fetched events data`);
+            //Adding events data to local storage
+            let eventsString = JSON.stringify(data.upcomingEvents);
+            localStorage.setItem("events", eventsString);
+
         } catch (error) {
             createErrorMessage(error);
             console.error("Failed to load data: ", error);
-        }
+        }        
     }
-    loadJsonData();
+    //check to see if current inventory is in local storage
+    let currentInventoryLocalStorage = localStorage.getItem("currentInventory");
+    if (!currentInventoryLocalStorage) {
+        loadJsonData();
+    }
 }
 
 

@@ -1,0 +1,28 @@
+{
+    "upcomingEvents": [
+        {
+            "eventID": 1,
+            "eventTitle": "Sewing Day",
+            "eventDate": "10/25/2025",
+            "eventLocation": "Community Center 123 Street RD Solon, OH 44139",
+            "eventTime": "12pm - 3pm",
+            "eventDiscription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+        },
+        {
+            "eventID": 2,
+            "eventTitle": "Kit Assembly",
+            "eventDate": "11/01/2025",
+            "eventLocation": "Community Center 123 Street RD Solon, OH 44139",
+            "eventTime": "12pm - 3pm",
+            "eventDiscription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+        },
+        {
+            "eventID": 3,
+            "eventTitle": "Sewing Day",
+            "eventDate": "11/02/2025",
+            "eventLocation": "54321 Random AVE Solon, OH 44139",
+            "eventTime": "1pm - 3pm",
+            "eventDiscription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+        }
+    ]
+}
