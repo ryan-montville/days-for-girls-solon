@@ -45,8 +45,14 @@ function loadCurrentInventory() {
 }
 
 function filterDateRange(startDate, endDate) {
-    let filteredIncoming = incomingInventoryData.filter(item => startDate <= new Date(item.date) <= endDate);
-    let filteredOutgoing = outgoingInventoryData.filter(item => startDate <= new Date(item.date) <= endDate);
+    // TODO: fix it so it actually filters and doesn't just return all rows
+    // TODO: sort rows by date
+    let filteredIncoming = incomingInventoryData.filter(item => {
+        return  new Date(item.date) >= startDate && new Date(item.date) <= endDate;
+    });
+    let filteredOutgoing = outgoingInventoryData.filter(item => {
+        return new Date(item.date) >= startDate && new Date(item.date) <= endDate;
+    });
     //combine incoming and outgoing items, convert quantity to positive number for incoming and negative number for outgoing
     let filteredResults = [];
     for (let i = 0; i < filteredIncoming.length; i++) {
@@ -69,7 +75,10 @@ function filterDateRange(startDate, endDate) {
         };
         filteredResults.push(newItem);
     }
-    return filteredResults;
+    let filteredSorted = filteredResults.sort((a, b) => {
+        return new Date(a.date) - new Date(b.date);
+    });
+    return filteredSorted;
 }
 
 function calculateInventoryTotals(filteredArray) {
