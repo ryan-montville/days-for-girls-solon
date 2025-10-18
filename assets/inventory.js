@@ -74,13 +74,13 @@ function filterDateRange(startDate, endDate) {
 
 function calculateInventoryTotals(filteredArray) {
     let uniqueComponents = [];
-    for (let i=0; i<currentInventoryData.length; i++) {
+    for (let i = 0; i < currentInventoryData.length; i++) {
         let currentComponent = {
             "componentType": currentInventoryData[i].componentType,
             "quantityDonated": 0,
             "quantityDistributed": 0
         }
-        for (let i=0; i<filteredArray.length; i++) {
+        for (let i = 0; i < filteredArray.length; i++) {
             let currentEntry = filteredArray[i];
             if (currentEntry.componentType === currentComponent.componentType) {
                 if (currentEntry.quantity > 0) {
@@ -116,7 +116,7 @@ function createSummaryTable(entriesSummary) {
     const donatedCell = document.createElement('td');
     const distributedCell = document.createElement('td');
     const newLineTag = document.createElement('br');
-    for (let i=0; i<entriesSummary.length; i++) {
+    for (let i = 0; i < entriesSummary.length; i++) {
         let donatedLine = document.createTextNode(`${entriesSummary[i].componentType}: ${entriesSummary[i].quantityDonated}`);
         donatedCell.appendChild(donatedLine);
         donatedCell.appendChild(newLineTag);
@@ -148,10 +148,17 @@ function createEntriesTable(filteredResults) {
     entriesTable.appendChild(entriesThead);
     //table body
     const entiresBody = document.createElement('tbody');
-    for (let i=0; i<filteredResults.length; i++) {
+    for (let i = 0; i < filteredResults.length; i++) {
         const entryRow = document.createElement('tr');
         const dateCell = document.createElement('td');
-        const date = document.createTextNode(filteredResults[i].date);
+        let dateObj = new Date(filteredResults[i].date);
+        let dateTimezoneFixed = new Date(dateObj.getTime() - dateObj.getTimezoneOffset() * -60000);
+        let dateFormatted = dateTimezoneFixed.toLocaleDateString('en-US', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+        });
+        const date = document.createTextNode(dateFormatted);
         dateCell.appendChild(date);
         entryRow.appendChild(dateCell);
         const entryCell = document.createElement('td');
