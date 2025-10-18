@@ -73,9 +73,9 @@ function addToPersonTable(person) {
 }
 
 function deleteEvent() {
-    let signUpEntriesWithoutEvent = SignUpEntriesData.filter(item => item.eventID !== paramEventID);
+    let signUpEntriesWithoutEvent = SignUpEntriesData.filter(item => parseInt(item.eventID) !== parseInt(paramEventID));
     updateLocalStorage("SignUpEntries", signUpEntriesWithoutEvent);
-    let arrayWithoutEvent = eventsData.filter(item => item.eventID !== paramEventID);
+    let arrayWithoutEvent = eventsData.filter(item => parseInt(item.eventID) !== parseInt(paramEventID));
     updateLocalStorage("events", arrayWithoutEvent);
     window.location.href = 'events.html';
 }
