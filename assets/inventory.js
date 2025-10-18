@@ -54,7 +54,8 @@ function filterDateRange(startDate, endDate) {
         let newItem = {
             "date": currentItem.date,
             "componentType": currentItem.componentType,
-            "quantity": currentItem.quantity
+            "quantity": currentItem.quantity,
+            "context": currentItem.whoDonated
         };
         filteredResults.push(newItem);
     }
@@ -63,7 +64,8 @@ function filterDateRange(startDate, endDate) {
         let newItem = {
             "date": currentItem.date,
             "componentType": currentItem.componentType,
-            "quantity": currentItem.quantity * -1
+            "quantity": currentItem.quantity * -1,
+            "context": currentItem.destination
         };
         filteredResults.push(newItem);
     }
@@ -99,10 +101,12 @@ function createSummaryTable(entriesSummary) {
     const summaryThead = document.createElement('thead');
     const summaryHeaderRow = document.createElement('tr');
     const donatedHeader = document.createElement('th');
-    donatedHeader.textContent = "Total Donated";
+    const donatedHeaderText = document.createTextNode("Total Donated");
+    donatedHeader.appendChild(donatedHeaderText);
     summaryHeaderRow.appendChild(donatedHeader);
     const distributedHeader = document.createElement('th');
-    distributedHeader.textContent = "Total Distributed";
+    const distributedHeaderText = document.createTextNode("Total Distributed")
+    distributedHeader.appendChild(distributedHeaderText);
     summaryHeaderRow.appendChild(distributedHeader);
     summaryThead.appendChild(summaryHeaderRow)
     summaryTable.appendChild(summaryThead);
@@ -125,6 +129,45 @@ function createSummaryTable(entriesSummary) {
     summaryBody.appendChild(summaryBodyRow);
     summaryTable.appendChild(summaryBody);
     return summaryTable;
+}
+
+function createEntriesTable(filteredResults) {
+    const entriesTable = document.createElement('table');
+    //table header
+    const entriesThead = document.createElement('thead');
+    const entiresHeaderRow = document.createElement('tr');
+    const dateHeader = document.createElement('th');
+    const dateHeaderText = document.createTextNode("Date");
+    dateHeader.appendChild(dateHeaderText);
+    entiresHeaderRow.appendChild(dateHeader);
+    const entryHeader = document.createElement('th');
+    const entryHeaderText = document.createTextNode("Entry");
+    entryHeader.appendChild(entryHeaderText);
+    entiresHeaderRow.appendChild(entryHeader);
+    entriesThead.appendChild(entiresHeaderRow);
+    entriesTable.appendChild(entriesThead);
+    //table body
+    const entiresBody = document.createElement('tbody');
+    for (let i=0; i<filteredResults.length; i++) {
+        const entryRow = document.createElement('tr');
+        const dateCell = document.createElement('td');
+        const date = document.createTextNode(filteredResults[i].date);
+        dateCell.appendChild(date);
+        entryRow.appendChild(dateCell);
+        const entryCell = document.createElement('td');
+        if (filteredResults[i].quantity > 0) {
+            const entry = document.createTextNode(`${filteredResults[i].quantity} ${filteredResults[i].componentType} donated by ${filteredResults[i].context}`);
+            entryCell.appendChild(entry);
+        } else {
+            const entry = document.createTextNode(`${filteredResults[i].quantity * -1} ${filteredResults[i].componentType} distributed to ${filteredResults[i].context}`);
+            entryCell.appendChild(entry);
+        }
+        entryRow.appendChild(entryCell);
+        entiresBody.appendChild(entryRow);
+    }
+    entriesTable.appendChild(entiresBody);
+    return entriesTable;
+
 }
 
 function generateReport() {
@@ -159,7 +202,8 @@ function generateReport() {
     const summaryTable = createSummaryTable(entriesSummary);
     reportContainer.appendChild(summaryTable);
     //Generate table for all entries in date range
-
+    const entriesTable = createEntriesTable(filteredResults);
+    reportContainer.appendChild(entriesTable);
     //Create button to generate new inventory report
     const formRow = document.createElement('div');
     formRow.setAttribute('class', 'form-row');
