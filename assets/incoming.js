@@ -61,13 +61,6 @@ function updateCurrentInventory(componentName, quantity, mathOperator) {
     window.location.reload();
 }
 
-function clearForm() {
-    dateInput.value = '';
-    componentNameInput.value = '';
-    quantityInput.value = '';
-    whoDonatedInput.value = '';
-}
-
 function updateLocalStorage(itemName, data, ) {
     let dataString = JSON.stringify(data);
     localStorage.setItem(itemName, dataString);
@@ -81,14 +74,16 @@ for (let i=incomingInventoryData.length-1; i>=0; i--) {
 //check to see if user is signed in
 if (localStorage.getItem("username")) {
     //event listener to submit data to outgoing inventory log
-    submitButton.addEventListener('click', () => {
+    submitButton.addEventListener('click', function(event) {
+        event.preventDefault();
         submitData();
-        clearForm();
+        incomingForm.reset();
     });
 
     //event listener to clear the form
-    clearButton.addEventListener('click', () => {
-        clearForm();
+    clearButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        incomingForm.reset();
     });
 } else {
     incomingForm.remove();

@@ -57,13 +57,13 @@
 
             <a href="inventory.html" class="action-button">← Back to inventory</a>
         </section>
-        <section class="card" id="incoming-form">
+        <form class="card" id="incoming-form">
             <h2>Donating to Inventory</h2>
-            <div class="form-row">
+            <section class="form-row">
                 <label for="date">Date entered:</label>
                 <input type="date" id="date" name="date" />
-            </div>
-            <div class="form-row">
+            </section>
+            <section class="form-row">
                 <label for="component-name">What component:</label>
                 <select id="component-name" name="component-name">
                     <option>Select...</option>
@@ -72,20 +72,20 @@
                     <option value="Liners">Liners</option>
                     <option value="Tote Bags">Tote Bags</option>
                 </select>
-            </div>
-            <div class="form-row">
+            </section>
+            <section class="form-row">
                 <label for="quantity">How many of the component:</label>
                 <input type="number" id="quantity" name="quantity" />
-            </div>
-            <div class="form-row">
+            </section>
+            <section class="form-row">
                 <label for="who-donated">Who donated the component(s):</label>
                 <input type="text" id="who-donated" name="who-donated" />
-            </div>
-            <div class="button-row">
+            </section>
+            <section class="button-row">
                 <button class="action-button" id="clear">Clear Form</button>
                 <button class="submit-button" id="submit">Submit</button>
-            </div>
-        </section>
+            </section>
+        </form>
         <section class="card" id="previous-entries">
             <h3>Previous Entries</h3>
             <table>

@@ -23,7 +23,7 @@ let entriesTableBody = document.getElementById('entries-table-body');
 
 function resetInfo() {
     eventTitleInput.value = eventObject.eventTitle;
-    // TODO: fix date value
+    //TODO: fix date value
     eventDateInput.value = eventObject.eventDate;
     eventLocationInput.value = eventObject.eventLocation;
     eventTimeInput.value = eventObject.eventTime;
