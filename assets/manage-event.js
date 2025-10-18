@@ -10,6 +10,8 @@ const paramEventID = urlParam.get('id');
 //Get event matching eventID
 const eventObject = eventsData.find(eventObject => parseInt(eventObject.eventID) === parseInt(paramEventID));
 
+let isUserSignedIn = false;
+
 //page elements
 let editForm = document.getElementById('edit-form');
 let eventTitleInput = document.getElementById('event-title');
@@ -34,7 +36,7 @@ function resetInfo() {
     eventDescriptionInput.value = eventObject.eventDescription;
 }
 
-function updateLocalStorage(itemName, data, ) {
+function updateLocalStorage(itemName, data,) {
     let dataString = JSON.stringify(data);
     localStorage.setItem(itemName, dataString);
 }
@@ -78,26 +80,41 @@ function deleteEvent() {
     window.location.href = 'events.html';
 }
 
+function checkIfSignedIn() {
+    let username = localStorage.getItem('username');
+    if (username) {
+        isUserSignedIn = true;
+    }
+}
+
 resetInfo();
 
 let eventSignUpEntries = SignUpEntriesData.filter(person => parseInt(person.eventID) === parseInt(paramEventID));
-for (let i=0; i< eventSignUpEntries.length; i++) {
+for (let i = 0; i < eventSignUpEntries.length; i++) {
     addToPersonTable(eventSignUpEntries[i]);
 }
 
-let deleteTitle = document.createTextNode(`Delete "${eventObject.eventTitle}"`);
-deleteTitleH2.appendChild(deleteTitle);
+checkIfSignedIn();
+if (isUserSignedIn) {
+    let deleteTitle = document.createTextNode(`Delete "${eventObject.eventTitle}"`);
+    deleteTitleH2.appendChild(deleteTitle);
 
-resetButton.addEventListener('click', function(event) {
-    event.preventDefault();
-    resetInfo();
-});
+    resetButton.addEventListener('click', function (event) {
+        event.preventDefault();
+        resetInfo();
+    });
 
-updateButton.addEventListener('click', function(event) {
-    event.preventDefault();
-    updateEvent();
-});
+    updateButton.addEventListener('click', function (event) {
+        event.preventDefault();
+        updateEvent();
+    });
 
-deleteButton.addEventListener('click', () => {
-    deleteEvent();
-})
+    deleteButton.addEventListener('click', () => {
+        deleteEvent();
+    });
+} else {
+    editForm.remove();
+    deleteCard.remove();
+    window.location.href = 'events.html';
+}
+

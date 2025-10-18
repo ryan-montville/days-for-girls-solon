@@ -49,17 +49,13 @@ function submitData() {
     SignUpEntriesData.push(newSignUp);
     updateSignUpCount();
     updateLocalStorage("SignUpEntries", SignUpEntriesData);
-    window.location.href = 'events.html';
 }
 
 function updateSignUpCount() {
     let eventIndex = eventsData.findIndex(item => {
         return parseInt(item.eventID) === parseInt(paramEventID);
     });
-    console.log(`count before: ${eventsData[eventIndex].numberAttending}`);
     eventsData[eventIndex].numberAttending = parseInt(eventObject.numberAttending) + 1;
-    console.log(`count after: ${eventsData[eventIndex].numberAttending}`);
-    console.log(JSON.stringify(eventsData));
     updateLocalStorage("events", eventsData);
 }
 
