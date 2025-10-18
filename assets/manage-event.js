@@ -20,18 +20,41 @@ let eventDescriptionInput = document.getElementById('event-description');
 const resetButton = document.getElementById('reset');
 const updateButton = document.getElementById('update');
 let entriesTableBody = document.getElementById('entries-table-body');
+let deleteCard = document.getElementById('deleteEventCard');
+let deleteTitleH2 = document.getElementById('delete-title');
+let deleteButton = document.getElementById('delete-button');
 
 function resetInfo() {
     eventTitleInput.value = eventObject.eventTitle;
-    //TODO: fix date value
-    eventDateInput.value = eventObject.eventDate;
+    let dateObj = new Date(eventObject.eventDate);
+    let dateFormatted = dateObj.toISOString().split('T')[0]
+    eventDateInput.value = dateFormatted;
     eventLocationInput.value = eventObject.eventLocation;
     eventTimeInput.value = eventObject.eventTime;
     eventDescriptionInput.value = eventObject.eventDescription;
 }
 
-function updateEvent() {
+function updateLocalStorage(itemName, data, ) {
+    let dataString = JSON.stringify(data);
+    localStorage.setItem(itemName, dataString);
+}
 
+function updateEvent() {
+    let eventIndex = eventsData.findIndex(item => {
+        return parseInt(item.eventID) === parseInt(paramEventID);
+    });
+    let updatedEvent = {
+        "eventID": paramEventID,
+        "eventTitle": eventTitleInput.value,
+        "eventDate": eventDateInput.value,
+        "eventLocation": eventLocationInput.value,
+        "eventTime": eventTimeInput.value,
+        "eventDescription": eventDescriptionInput.value,
+        "numberAttending": eventObject.numberAttending
+    }
+    eventsData[eventIndex] = updatedEvent;
+    updateLocalStorage("events", eventsData);
+    window.location.reload();
 }
 
 function addToPersonTable(person) {
@@ -47,12 +70,23 @@ function addToPersonTable(person) {
     commentsCell.appendChild(comments);
 }
 
+function deleteEvent() {
+    let signUpEntriesWithoutEvent = SignUpEntriesData.filter(item => item.eventID !== paramEventID);
+    updateLocalStorage("SignUpEntries", signUpEntriesWithoutEvent);
+    let arrayWithoutEvent = eventsData.filter(item => item.eventID !== paramEventID);
+    updateLocalStorage("events", arrayWithoutEvent);
+    window.location.href = 'events.html';
+}
+
 resetInfo();
 
 let eventSignUpEntries = SignUpEntriesData.filter(person => parseInt(person.eventID) === parseInt(paramEventID));
 for (let i=0; i< eventSignUpEntries.length; i++) {
     addToPersonTable(eventSignUpEntries[i]);
 }
+
+let deleteTitle = document.createTextNode(`Delete "${eventObject.eventTitle}"`);
+deleteTitleH2.appendChild(deleteTitle);
 
 resetButton.addEventListener('click', function(event) {
     event.preventDefault();
@@ -61,4 +95,9 @@ resetButton.addEventListener('click', function(event) {
 
 updateButton.addEventListener('click', function(event) {
     event.preventDefault();
+    updateEvent();
 });
+
+deleteButton.addEventListener('click', () => {
+    deleteEvent();
+})

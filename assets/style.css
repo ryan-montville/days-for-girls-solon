@@ -3,6 +3,8 @@
     --body-background: #e7e9f1;
     --primary-accent: #ff9f00;
     --secondary-accent: #00bcd9;
+    --danger-background: red;
+    --danger-text: #fff;
     --logo: url('/images/logo-light.png');
     --nav-text: #4f4b4e;
     --main-background: #ffffff;
@@ -17,6 +19,8 @@
     --body-background: #000000;
     --primary-accent: #ff9f00;
     --secondary-accent: #00bcd9;
+    --danger-background: red;
+    --danger-text: #fff;
     --logo: url('/images/logo-dark.png');
     --nav-text: #ccc;
     --main-background: #333;
@@ -36,8 +40,8 @@ body {
 }
 
 .error-message p {
-    background-color: red;
-    color: white;
+    background-color: var(--danger-background);
+    color: var(--danger-text)
     margin: 10px;
     padding: 10px;
 }
@@ -270,6 +274,15 @@ input, select {
 
 .button-full {
     flex-grow: 1;
+}
+
+.delete-button {
+    background-color: var(--danger-background);
+    color: var(--danger-text);
+    border: 0;
+    padding: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 900;
 }
 
 /* tables */

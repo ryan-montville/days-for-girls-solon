@@ -13,7 +13,12 @@ function createEventElement(eventData) {
     eventH3.appendChild(eventTitle);
     newEvent.appendChild(eventH3);
     let eventDateAndTimeH4 = document.createElement('h4');
-    let eventDateAndTime = document.createTextNode(`${eventData.eventDate} ${eventData.eventTime}`);
+    /* I learned how to fix the date being off by one from this
+    stackOverflow thread: https://stackoverflow.com/questions/7556591/is-the-javascript-date-object-always-one-day-off */
+    let dateObj = new Date(eventData.eventDate);
+    let dateTimezoneFixed = new Date(dateObj.getTime() - dateObj.getTimezoneOffset() * -60000);
+    let dateFormatted = dateTimezoneFixed.toDateString(); 
+    let eventDateAndTime = document.createTextNode(`${dateFormatted} ${eventData.eventTime}`);
     eventDateAndTimeH4.appendChild(eventDateAndTime);
     newEvent.appendChild(eventDateAndTimeH4);
     let eventLocationH4 = document.createElement('h4');
