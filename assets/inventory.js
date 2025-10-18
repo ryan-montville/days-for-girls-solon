@@ -70,21 +70,60 @@ function filterDateRange(startDate, endDate) {
     return filteredResults;
 }
 
-function createSummaryTable(filteredArray) {
+function calculateInventoryTotals(filteredArray) {
+    let uniqueComponents = [];
+    for (let i=0; i<currentInventoryData.length; i++) {
+        let currentComponent = {
+            "componentType": currentInventoryData[i].componentType,
+            "quantityDonated": 0,
+            "quantityDistributed": 0
+        }
+        for (let i=0; i<filteredArray.length; i++) {
+            let currentEntry = filteredArray[i];
+            if (currentEntry.componentType === currentComponent.componentType) {
+                if (currentEntry.quantity > 0) {
+                    currentComponent.quantityDonated += currentEntry.quantity;
+                } else {
+                    currentComponent.quantityDistributed += (currentEntry.quantity * -1);
+                }
+            }
+        }
+        uniqueComponents.push(currentComponent);
+    }
+    return uniqueComponents;
+}
+
+function createSummaryTable(entriesSummary) {
     const summaryTable = document.createElement('table');
     //table header
     const summaryThead = document.createElement('thead');
     const summaryHeaderRow = document.createElement('tr');
     const donatedHeader = document.createElement('th');
-    donatedHeader.textContent = "Donated";
+    donatedHeader.textContent = "Total Donated";
     summaryHeaderRow.appendChild(donatedHeader);
     const distributedHeader = document.createElement('th');
-    distributedHeader.textContent = "Distributed";
+    distributedHeader.textContent = "Total Distributed";
     summaryHeaderRow.appendChild(distributedHeader);
     summaryThead.appendChild(summaryHeaderRow)
     summaryTable.appendChild(summaryThead);
     //table body
-
+    const summaryBody = document.createElement('tbody');
+    const summaryBodyRow = document.createElement('tr');
+    const donatedCell = document.createElement('td');
+    const distributedCell = document.createElement('td');
+    const newLineTag = document.createElement('br');
+    for (let i=0; i<entriesSummary.length; i++) {
+        let donatedLine = document.createTextNode(`${entriesSummary[i].componentType}: ${entriesSummary[i].quantityDonated}`);
+        donatedCell.appendChild(donatedLine);
+        donatedCell.appendChild(newLineTag);
+        let distributedLine = document.createTextNode(`${entriesSummary[i].componentType}: ${entriesSummary[i].quantityDistributed}`);
+        distributedCell.appendChild(distributedLine);
+        distributedCell.appendChild(newLineTag);
+    }
+    summaryBodyRow.appendChild(donatedCell);
+    summaryBodyRow.appendChild(distributedCell);
+    summaryBody.appendChild(summaryBodyRow);
+    summaryTable.appendChild(summaryBody);
     return summaryTable;
 }
 
@@ -114,8 +153,10 @@ function generateReport() {
     reportContainer.appendChild(reportTitleH3);
     //Create list of entries within date range
     let filteredResults = filterDateRange(startDate, endDate);
+    //Generate donated and distributed totals within date range
+    let entriesSummary = calculateInventoryTotals(filteredResults);
     //create table to summarize all entries
-    const summaryTable = createSummaryTable(filteredResults);
+    const summaryTable = createSummaryTable(entriesSummary);
     reportContainer.appendChild(summaryTable);
     //Generate table for all entries in date range
 

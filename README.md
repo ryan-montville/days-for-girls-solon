@@ -13,3 +13,4 @@ TODO:
 * User authentication
 * Responsive design/mobile view
 * Form validation 
+* Add ability to add new component types to inventory, make component types less hardcoded
