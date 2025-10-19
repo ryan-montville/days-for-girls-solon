@@ -121,21 +121,18 @@ function createSummaryTable(entriesSummary) {
     summaryTable.appendChild(summaryThead);
     //table body
     const summaryBody = document.createElement('tbody');
-    const summaryBodyRow = document.createElement('tr');
-    const donatedCell = document.createElement('td');
-    const distributedCell = document.createElement('td');
-    const newLineTag = document.createElement('br');
     for (let i = 0; i < entriesSummary.length; i++) {
-        let donatedLine = document.createTextNode(`${entriesSummary[i].componentType}: ${entriesSummary[i].quantityDonated}`);
-        donatedCell.appendChild(donatedLine);
-        donatedCell.appendChild(newLineTag);
-        let distributedLine = document.createTextNode(`${entriesSummary[i].componentType}: ${entriesSummary[i].quantityDistributed}`);
-        distributedCell.appendChild(distributedLine);
-        distributedCell.appendChild(newLineTag);
+        let newRow = document.createElement('tr');
+        let donatedCell = document.createElement('td');
+        let donated = document.createTextNode(`${entriesSummary[i].componentType}: ${entriesSummary[i].quantityDonated}`);
+        donatedCell.appendChild(donated);
+        newRow.appendChild(donatedCell);
+        let distributedCell = document.createElement('td');
+        let distributed = document.createTextNode(`${entriesSummary[i].componentType}: ${entriesSummary[i].quantityDistributed}`);
+        distributedCell.appendChild(distributed);
+        newRow.appendChild(distributedCell);
+        summaryBody.appendChild(newRow);
     }
-    summaryBodyRow.appendChild(donatedCell);
-    summaryBodyRow.appendChild(distributedCell);
-    summaryBody.appendChild(summaryBodyRow);
     summaryTable.appendChild(summaryBody);
     return summaryTable;
 }
