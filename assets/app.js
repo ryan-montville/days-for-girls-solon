@@ -1,15 +1,18 @@
 function app() {
     "use strict";
+    let currentInventoryLocalStorage = localStorage.getItem("currentInventory");
+    let username = localStorage.getItem('username');
+    let isUserSignedIn = false;
 
     //page elements
+    const inventoryLink = document.getElementById('inventory-link');
     const navSignInButton = document.getElementById('sign-in-button');
     const navSignOutButton = document.getElementById('sign-out-button');
-    const inventoryLink = document.getElementById('inventory-link');
     const signInPopUp = document.getElementById('pop-up-container');
+    const signInForm = document.getElementById('sign-in-pop-up');
     const closeButton = document.getElementById('close');
-    const formSignInButton = document.getElementById('form-sign-in-button');
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
+    const signInError = document.getElementById('sign-in-error');
+    const mainError = document.getElementById('main-error');
 
     //event listener for sign in button to open sign in pop up
     navSignInButton.addEventListener('click', () => {
@@ -22,10 +25,11 @@ function app() {
     });
 
     function signIn() {
-        console.log('found username in local storage');
+        console.log('');
         inventoryLink.style.display = 'block';
         navSignInButton.style.display = 'none';
         navSignOutButton.style.display = 'block';
+        console.log('Found username in local storage. Sign in successful');
     }
 
     function signOut() {
@@ -37,33 +41,48 @@ function app() {
     }
 
     //check if signed in
-    let storedUsername = localStorage.getItem("username");
-    if (storedUsername) {
-        signIn();
+    function checkIfSignedIn() {
+        if (username) {
+            signIn();
+            isUserSignedIn = true;
+        }
     }
 
-    //temporary event listeners to simulate sign in and sign out
-    formSignInButton.addEventListener('click', () => {
-        if (usernameInput.value.length > 0 && passwordInput.value.length > 0) {
-            signInPopUp.style.display = 'none';
-            console.log('sign in successful');
-            localStorage.setItem("username", usernameInput.value);
-            signIn();
-            window.location.reload();
-        } else {
-            alert('Please enter username and password.');
-        }
+    //event listener to sign in
+    signInForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const signInData = new FormData(signInForm);
+        const username = signInData.get('username');
+        const password = signInData.get('password');
+        console.log(`It's not being used yet, but the passworded entered is ${password}`);
+        localStorage.setItem('username', username);
+        signInPopUp.style.display = 'none';
+        signIn();
     });
+
+    //event listener to sign out
     navSignOutButton.addEventListener('click', () => {
         signOut();
         window.location.reload();
-    })
+    });
+
+    function createErrorMessage(message, location) {
+        let errorMessageP = document.createElement('p');
+        let errorMessage = document.createTextNode(message);
+        errorMessageP.appendChild(errorMessage);
+        if (location === 'sign-in') {
+            signInError.appendChild(errorMessageP);
+        } else {
+            mainError.appendChild(errorMessageP);
+        }
+    }
+
     async function loadJsonData() {
         try {
             //Fetch inventory data from inventory.json
             let response = await fetch('assets/inventory.json');
             if (!response.ok) {
-                createErrorMessage(`Error loading the data. Status: ${response.status}`);
+                createErrorMessage(`Error loading the data. Status: ${response.status}`, 'main');
                 throw new Error(`Error loading data. Status: ${response.status}`);
             }
             let data = await response.json();
@@ -80,7 +99,7 @@ function app() {
             //fetch events data from events.json
             response = await fetch('assets/events.json');
             if (!response.ok) {
-                createErrorMessage(`Error loading the data. Status: ${response.status}`);
+                createErrorMessage(`Error loading the data. Status: ${response.status}`, 'main');
                 throw new Error(`Error loading data. Status: ${response.status}`);
             }
             data = await response.json();
@@ -92,17 +111,17 @@ function app() {
             localStorage.setItem("SignUpEntries", signUpEntriesString);
 
         } catch (error) {
-            createErrorMessage(error);
+            createErrorMessage(error, 'main');
             console.error("Failed to load data: ", error);
-        }        
+        }
     }
     //check to see if current inventory is in local storage
-    let currentInventoryLocalStorage = localStorage.getItem("currentInventory");
     if (!currentInventoryLocalStorage) {
         loadJsonData();
     }
-}
 
+    checkIfSignedIn();
+}
 
 
 app();

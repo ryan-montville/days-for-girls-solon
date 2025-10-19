@@ -90,19 +90,22 @@ for (let i = incomingInventoryData.length - 1; i >= 0; i--) {
 
 function checkIfSignedIn() {
     if (username) {
-    //event listener to submit data to outgoing inventory log
-    submitButton.addEventListener('click', function (event) {
-        event.preventDefault();
-        submitData();
-        incomingForm.reset();
-    });
+        isUserSignedIn = true;
+        //event listener to submit new inventory distribution
+        submitButton.addEventListener('click', function (event) {
+            event.preventDefault();
+            submitData();
+            incomingForm.reset();
+        });
 
-    //event listener to clear the form
-    clearButton.addEventListener('click', function (event) {
-        event.preventDefault();
-        incomingForm.reset();
-    });
-} else {
-    incomingForm.remove();
+        //event listener to clear the form
+        clearButton.addEventListener('click', function (event) {
+            event.preventDefault();
+            incomingForm.reset();
+        });
+    } else {
+        incomingForm.remove();
+    }
 }
-}
+
+checkIfSignedIn();
