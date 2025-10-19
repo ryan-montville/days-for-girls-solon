@@ -54,33 +54,36 @@
     </div>
     <main>
         <!--This page might just have an embeded Google Form-->
-        <!-- <section class="card">
+        <form class="card" id="mailing-list">
             <h2>Join our Mailing List</h2>
-            <div class="form-row">
+            <section class="form-row">
                 <label for="full-name">Full name:</label>
                 <input type="text" id="full-name" name="full-name" />
-            </div>
-            <div class="form-row">
+            </section>
+            <section class="form-row">
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" />
-            </div>
-            <div class="form-row">
+            </section>
+            <section class="form-row">
                 <label for="phone-number">Phone number (optional):</label>
                 <input type="tel" id="phone-number" name="phone-number" />
-            </div>
-            <div class="form-row">
-                <!--TODO: Make these into checkboxes, will probably need to create a new css form rule for checkbox groups
-                <label for="volunteer-type">What would you like to do:</label>
-                <span>General Volunteer</span>
-                <span>Sewing</span>
-                <span>I just want to receive emails and newsletters</span>
-            </div>
-            <div class="button-row">
+            </section>
+            <p>What would you like to do:</p>
+                <input type="checkbox" id="general-volunteer" name="general-volunteer" value="general-volunteer"/>
+                <label for="general-volunteer">General Volunteer</label>
+                <br />
+                <input type="checkbox" id="sewing" name="sewing" value="sewing"/>
+                <label for="sewing">Sewing</label>
+                <br />
+                <input type="checkbox" id="just-emails" name="just-emails" value="just-emails"/>
+                <label for="just-emails">I just want to receive emails and newsletters</label>
+            <section class="button-row">
                 <button class="action-button" id="clear">Clear Form</button>
                 <button class="submit-button" id="submit">Submit</button>
-            </div>
-        </section> -->
-        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScUgRwg1GxdTf4IaEfRwc2VwEIT3XSeOAezyInNmu1wyprS3Q/viewform?embedded=true" width="640" height="954" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+            </section>
+        </form>
+        <!-- iframe to embed the Google form if making my own form doesn't work -->
+        <!-- <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScUgRwg1GxdTf4IaEfRwc2VwEIT3XSeOAezyInNmu1wyprS3Q/viewform?embedded=true" width="640" height="1070" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe> -->
     </main>
     <footer>
         <a href="https://www.facebook.com/days.for.girls.solon/">Follow us on Facebook</a>
