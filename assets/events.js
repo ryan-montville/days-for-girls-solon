@@ -2,6 +2,7 @@ const mainElement = document.querySelector('main');
 const eventsHeader = document.getElementById('events-header');
 const eventLocalStorage = localStorage.getItem('events');
 const eventData = JSON.parse(eventLocalStorage);
+let username = localStorage.getItem('username');
 let isUserSignedIn = false;
 
 function createEventElement(eventData) {
@@ -17,7 +18,7 @@ function createEventElement(eventData) {
     stackOverflow thread: https://stackoverflow.com/questions/7556591/is-the-javascript-date-object-always-one-day-off */
     let dateObj = new Date(eventData.eventDate);
     let dateTimezoneFixed = new Date(dateObj.getTime() - dateObj.getTimezoneOffset() * -60000);
-    let dateFormatted = dateTimezoneFixed.toDateString(); 
+    let dateFormatted = dateTimezoneFixed.toDateString();
     let eventDateAndTime = document.createTextNode(`${dateFormatted} ${eventData.eventTime}`);
     eventDateAndTimeH4.appendChild(eventDateAndTime);
     newEvent.appendChild(eventDateAndTimeH4);
@@ -26,7 +27,7 @@ function createEventElement(eventData) {
     eventLocationH4.appendChild(eventLocation);
     newEvent.appendChild(eventLocationH4);
     let numberAttendingH4 = document.createElement('h4');
-    let numberAttending = document.createTextNode(`(what to call this): ${eventData.numberAttending}`);
+    let numberAttending = document.createTextNode(`Number Attending: ${eventData.numberAttending}`);
     numberAttendingH4.appendChild(numberAttending);
     newEvent.appendChild(numberAttendingH4);
     let eventDescriptionP = document.createElement('p');
@@ -39,7 +40,7 @@ function createEventElement(eventData) {
         //Add manage event button
         button.setAttribute('href', `manage-event.html?id=${eventData.eventID}`);
         button.textContent = 'Manage Event';
-        
+
     } else {
         //Add sign up button
         button.setAttribute('href', `event-sign-up.html?id=${eventData.eventID}`);
@@ -51,21 +52,20 @@ function createEventElement(eventData) {
 }
 
 function checkIfSignedIn() {
-    let username = localStorage.getItem('username');
-    if(username) {
+    
+    if (username) {
         isUserSignedIn = true;
+        let createNewEventButton = document.createElement('a');
+        createNewEventButton.setAttribute('href', 'create-new-event.html');
+        createNewEventButton.setAttribute('class', 'action-button');
+        createNewEventButton.textContent = "Create New Event";
+        eventsHeader.appendChild(createNewEventButton);
     }
 }
 
 checkIfSignedIn();
 
-if (isUserSignedIn) {
-    let createNewEventButton = document.createElement('a');
-    createNewEventButton.setAttribute('href', 'create-new-event.html');
-    createNewEventButton.setAttribute('class', 'action-button');
-    createNewEventButton.textContent = "Create New Event";
-    eventsHeader.appendChild(createNewEventButton);
-}
-for (let i=0; i<eventData.length; i++) {
+
+for (let i = 0; i < eventData.length; i++) {
     createEventElement(eventData[i]);
 }

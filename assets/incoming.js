@@ -1,11 +1,16 @@
-//page elements
-const previousEntriesTableBody = document.getElementById('previous-entries-body');
-const previousEntriesCard = document.getElementById('outgoing-form');
+//Get data from local storage
 const currentInventoryLocalStorage = localStorage.getItem("currentInventory");
 let currentInventoryData = JSON.parse(currentInventoryLocalStorage);
 const incomingInventoryLocalStorage = localStorage.getItem("incomingInventory");
 let incomingInventoryData = JSON.parse(incomingInventoryLocalStorage);
+let username = localStorage.getItem('username');
+let isUserSignedIn = false;
 
+//page elements
+const previousEntriesTable = document.getElementById('previous-entries-table');
+const previousEntriesTableBody = document.createElement('tbody');
+previousEntriesTable.appendChild(previousEntriesTableBody);
+const previousEntriesCard = document.getElementById('outgoing-form');
 const incomingForm = document.getElementById('incoming-form');
 const dateInput = document.getElementById('date');
 const componentNameInput = document.getElementById('component-name');
@@ -16,19 +21,31 @@ const submitButton = document.getElementById('submit');
 
 function addItemToTable(component, tableName) {
     if (tableName === "incomingInventory") {
-        let newRow = previousEntriesTableBody.insertRow();
-        let dateCell = newRow.insertCell();
-        let date = document.createTextNode(component.date);
+        let newRow = document.createElement('tr');
+        let dateCell = document.createElement('td');
+        let dateOBJ = new Date(component.date);
+        let startDateTimezoneFixed = new Date(dateOBJ.getTime() - dateOBJ.getTimezoneOffset() * -60000);
+        let dateFormatted = startDateTimezoneFixed.toLocaleDateString('en-US', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+        });
+        let date = document.createTextNode(dateFormatted);
         dateCell.appendChild(date);
-        let componentNameCell = newRow.insertCell();
+        newRow.appendChild(dateCell);
+        let componentNameCell = document.createElement('td');
         let componentName = document.createTextNode(component.componentType);
         componentNameCell.appendChild(componentName);
-        let componentQuantityCell = newRow.insertCell();
+        newRow.appendChild(componentNameCell);
+        let componentQuantityCell = document.createElement('td');
         let componentQuantity = document.createTextNode(component.quantity);
+        newRow.appendChild(componentQuantityCell);
         componentQuantityCell.appendChild(componentQuantity);
-        let whoDonatedCell = newRow.insertCell()
+        let whoDonatedCell = document.createElement('td');
         let whoDonated = document.createTextNode(component.whoDonated);
         whoDonatedCell.appendChild(whoDonated);
+        newRow.appendChild(whoDonatedCell);
+        previousEntriesTableBody.appendChild(newRow);
     } else {
         console.log(`tableName param not right: ${tableName}`);
     }
@@ -37,9 +54,9 @@ function addItemToTable(component, tableName) {
 function submitData() {
     let newComponent = {
         "date": dateInput.value,
-            "componentType": componentNameInput.value,
-            "quantity": quantityInput.value,
-            "whoDonated": whoDonatedInput.value
+        "componentType": componentNameInput.value,
+        "quantity": quantityInput.value,
+        "whoDonated": whoDonatedInput.value
     };
     incomingInventoryData.push(newComponent);
     updateCurrentInventory(componentNameInput.value, quantityInput.value, "+");
@@ -61,30 +78,31 @@ function updateCurrentInventory(componentName, quantity, mathOperator) {
     window.location.reload();
 }
 
-function updateLocalStorage(itemName, data, ) {
+function updateLocalStorage(itemName, data,) {
     let dataString = JSON.stringify(data);
     localStorage.setItem(itemName, dataString);
 }
 
 //Load data in previous entries table
-for (let i=incomingInventoryData.length-1; i>=0; i--) {
+for (let i = incomingInventoryData.length - 1; i >= 0; i--) {
     addItemToTable(incomingInventoryData[i], "incomingInventory");
 }
 
-//check to see if user is signed in
-if (localStorage.getItem("username")) {
+function checkIfSignedIn() {
+    if (localStorage.getItem("username")) {
     //event listener to submit data to outgoing inventory log
-    submitButton.addEventListener('click', function(event) {
+    submitButton.addEventListener('click', function (event) {
         event.preventDefault();
         submitData();
         incomingForm.reset();
     });
 
     //event listener to clear the form
-    clearButton.addEventListener('click', function(event) {
+    clearButton.addEventListener('click', function (event) {
         event.preventDefault();
         incomingForm.reset();
     });
 } else {
     incomingForm.remove();
+}
 }

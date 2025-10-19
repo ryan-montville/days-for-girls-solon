@@ -1,19 +1,18 @@
-const eventsLocalStorage = localStorage.getItem('events');
-let eventsData = JSON.parse(eventsLocalStorage);
-const SignUpEntriesLocalStorge = localStorage.getItem('SignUpEntries');
-let SignUpEntriesData = JSON.parse(SignUpEntriesLocalStorge);
-
 //Get event id from url
 const queryString = window.location.search;
 const urlParam = new URLSearchParams(queryString);
 const paramEventID = urlParam.get('id');
-//Get event matching eventID
-const eventObject = eventsData.find(eventObject => parseInt(eventObject.eventID) === parseInt(paramEventID));
-
+//Get data from local storage
 let isUserSignedIn = false;
-
+const eventsLocalStorage = localStorage.getItem('events');
+let eventsData = JSON.parse(eventsLocalStorage);
+const SignUpEntriesLocalStorge = localStorage.getItem('SignUpEntries');
+let SignUpEntriesData = JSON.parse(SignUpEntriesLocalStorge);
+//Get event and sign up entries matching eventID
+const eventObject = eventsData.find(eventObject => parseInt(eventObject.eventID) === parseInt(paramEventID));
+let eventSignUpEntries = SignUpEntriesData.filter(person => parseInt(person.eventID) === parseInt(paramEventID));
 //page elements
-let editForm = document.getElementById('edit-form');
+const editForm = document.getElementById('edit-form');
 let eventTitleInput = document.getElementById('event-title');
 let eventDateInput = document.getElementById('event-date');
 let eventLocationInput = document.getElementById('event-location');
@@ -21,10 +20,38 @@ let eventTimeInput = document.getElementById('event-time');
 let eventDescriptionInput = document.getElementById('event-description');
 const resetButton = document.getElementById('reset');
 const updateButton = document.getElementById('update');
-let entriesTableBody = document.getElementById('entries-table-body');
-let deleteCard = document.getElementById('deleteEventCard');
-let deleteTitleH2 = document.getElementById('delete-title');
-let deleteButton = document.getElementById('delete-button');
+const entriesTable = document.getElementById('entries-table');
+const entriesTableBody = document.createElement('tbody');
+entriesTable.appendChild(entriesTableBody);
+const deleteCard = document.getElementById('deleteEventCard');
+const deleteTitleH2 = document.getElementById('delete-title');
+const deleteButton = document.getElementById('delete-button');
+
+function checkIfSignedIn() {
+    let username = localStorage.getItem('username');
+    if (username) {
+        let deleteTitle = document.createTextNode(`Delete "${eventObject.eventTitle}"`);
+        deleteTitleH2.appendChild(deleteTitle);
+
+        resetButton.addEventListener('click', function (event) {
+            event.preventDefault();
+            resetInfo();
+        });
+
+        updateButton.addEventListener('click', function (event) {
+            event.preventDefault();
+            updateEvent();
+        });
+
+        deleteButton.addEventListener('click', () => {
+            deleteEvent();
+        });
+    } else {
+        editForm.remove();
+        deleteCard.remove();
+        window.location.href = 'events.html';
+    }
+}
 
 function resetInfo() {
     eventTitleInput.value = eventObject.eventTitle;
@@ -59,17 +86,30 @@ function updateEvent() {
     window.location.reload();
 }
 
-function addToPersonTable(person) {
-    let newRow = entriesTableBody.insertRow();
-    let nameCell = newRow.insertCell();
-    let name = document.createTextNode(person.fullName);
-    nameCell.appendChild(name);
-    let emailCell = newRow.insertCell();
-    let email = document.createTextNode(person.email);
-    emailCell.appendChild(email);
-    let commentsCell = newRow.insertCell();
-    let comments = document.createTextNode(person.comments);
-    commentsCell.appendChild(comments);
+function addToPersonTable(person, empty) {
+    let newRow = document.createElement('tr');
+    if (!empty) {
+        let nameCell = document.createElement('td');
+        let name = document.createTextNode(person.fullName);
+        nameCell.appendChild(name);
+        newRow.appendChild(nameCell);
+        let emailCell = document.createElement('td');
+        let email = document.createTextNode(person.email);
+        emailCell.appendChild(email);
+        newRow.appendChild(emailCell);
+        let commentsCell = document.createElement('td');
+        let comments = document.createTextNode(person.comments);
+        commentsCell.appendChild(comments);
+        newRow.appendChild(commentsCell);
+    } else {
+        let noneCell = document.createElement('td');
+        noneCell.setAttribute('colspan', '3');
+        let noneText = document.createTextNode("No sign up entires for this event");
+        noneCell.appendChild(noneText);
+        newRow.appendChild(noneCell);
+    }
+    
+    entriesTableBody.appendChild(newRow);
 }
 
 function deleteEvent() {
@@ -80,41 +120,16 @@ function deleteEvent() {
     window.location.href = 'events.html';
 }
 
-function checkIfSignedIn() {
-    let username = localStorage.getItem('username');
-    if (username) {
-        isUserSignedIn = true;
+function populateEntiresTable() {
+    if (eventSignUpEntries.length === 0) {
+        addToPersonTable('', true);
+    } else {
+        for (let i = 0; i < eventSignUpEntries.length; i++) {
+            addToPersonTable(eventSignUpEntries[i], false);
+        }
     }
 }
 
-resetInfo();
-
-let eventSignUpEntries = SignUpEntriesData.filter(person => parseInt(person.eventID) === parseInt(paramEventID));
-for (let i = 0; i < eventSignUpEntries.length; i++) {
-    addToPersonTable(eventSignUpEntries[i]);
-}
-
 checkIfSignedIn();
-if (isUserSignedIn) {
-    let deleteTitle = document.createTextNode(`Delete "${eventObject.eventTitle}"`);
-    deleteTitleH2.appendChild(deleteTitle);
-
-    resetButton.addEventListener('click', function (event) {
-        event.preventDefault();
-        resetInfo();
-    });
-
-    updateButton.addEventListener('click', function (event) {
-        event.preventDefault();
-        updateEvent();
-    });
-
-    deleteButton.addEventListener('click', () => {
-        deleteEvent();
-    });
-} else {
-    editForm.remove();
-    deleteCard.remove();
-    window.location.href = 'events.html';
-}
-
+resetInfo();
+populateEntiresTable();

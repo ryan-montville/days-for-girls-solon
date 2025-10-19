@@ -4,6 +4,8 @@ const incomingInventoryLocalStorage = localStorage.getItem("incomingInventory");
 let incomingInventoryData = JSON.parse(incomingInventoryLocalStorage);
 const outgoingInventoryLocalStorage = localStorage.getItem("outgoingInventory");
 let outgoingInventoryData = JSON.parse(outgoingInventoryLocalStorage);
+let username = localStorage.getItem('username');
+let isUserSignedIn = false;
 
 //page elements
 const errorMessage = document.getElementById('error');
@@ -45,8 +47,6 @@ function loadCurrentInventory() {
 }
 
 function filterDateRange(startDate, endDate) {
-    // TODO: fix it so it actually filters and doesn't just return all rows
-    // TODO: sort rows by date
     let filteredIncoming = incomingInventoryData.filter(item => {
         return  new Date(item.date) >= startDate && new Date(item.date) <= endDate;
     });

@@ -63,6 +63,7 @@ function updateSignUpCount() {
 submitButton.addEventListener('click', function(event) {
     event.preventDefault();
     submitData();
+    window.location.href='events.html';
 })
 
 //event listener for the clear button
