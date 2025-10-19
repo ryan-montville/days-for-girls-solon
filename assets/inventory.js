@@ -48,7 +48,7 @@ function loadCurrentInventory() {
 
 function filterDateRange(startDate, endDate) {
     let filteredIncoming = incomingInventoryData.filter(item => {
-        return  new Date(item.date) >= startDate && new Date(item.date) <= endDate;
+        return new Date(item.date) >= startDate && new Date(item.date) <= endDate;
     });
     let filteredOutgoing = outgoingInventoryData.filter(item => {
         return new Date(item.date) >= startDate && new Date(item.date) <= endDate;
@@ -235,14 +235,12 @@ function generateReport() {
     inventoryReportCard.appendChild(reportContainer);
 }
 
-//check to see if the user is signed in, if not remove links to manage inventory and generate reports
-let localStorageUser = localStorage.getItem("username");
-if (!localStorageUser) {
-    manageInventoryButtons.remove();
-    inventoryReportCard.remove();
+function checkIfSignedIn() {
+    if (!username) {
+        manageInventoryButtons.remove();
+        inventoryReportCard.remove();
+    }
 }
-
-loadCurrentInventory();
 
 generateButton.addEventListener('click', function (event) {
     event.preventDefault();
@@ -250,3 +248,6 @@ generateButton.addEventListener('click', function (event) {
     generateForm.reset();
     generateForm.style.display = 'none';
 });
+
+checkIfSignedIn();
+loadCurrentInventory();

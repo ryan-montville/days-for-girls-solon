@@ -88,22 +88,21 @@ for (let i = outgoingInventoryData.length - 1; i >= 0; i--) {
     addItemToTable(outgoingInventoryData[i], "outgoingInventory");
 }
 
-//event listener to submit new inventory distribution
-submitButton.addEventListener('click', function (event) {
-    event.preventDefault();
-    submitData();
-    outgoingForm.reset();
-});
-
-//event listener to clear the form
-clearButton.addEventListener('click', function (event) {
-    event.preventDefault();
-    outgoingForm.reset();
-});
-
 function checkIfSignedIn() {
     if (username) {
         isUserSignedIn = true;
+        //event listener to submit new inventory distribution
+        submitButton.addEventListener('click', function (event) {
+            event.preventDefault();
+            submitData();
+            outgoingForm.reset();
+        });
+
+        //event listener to clear the form
+        clearButton.addEventListener('click', function (event) {
+            event.preventDefault();
+            outgoingForm.reset();
+        });
     } else {
         outgoingForm.remove();
     }

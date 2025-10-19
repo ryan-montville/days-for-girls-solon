@@ -89,7 +89,7 @@ for (let i = incomingInventoryData.length - 1; i >= 0; i--) {
 }
 
 function checkIfSignedIn() {
-    if (localStorage.getItem("username")) {
+    if (username) {
     //event listener to submit data to outgoing inventory log
     submitButton.addEventListener('click', function (event) {
         event.preventDefault();

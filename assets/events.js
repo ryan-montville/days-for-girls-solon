@@ -52,7 +52,6 @@ function createEventElement(eventData) {
 }
 
 function checkIfSignedIn() {
-    
     if (username) {
         isUserSignedIn = true;
         let createNewEventButton = document.createElement('a');
@@ -64,7 +63,6 @@ function checkIfSignedIn() {
 }
 
 checkIfSignedIn();
-
 
 for (let i = 0; i < eventData.length; i++) {
     createEventElement(eventData[i]);

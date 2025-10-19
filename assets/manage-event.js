@@ -3,6 +3,7 @@ const queryString = window.location.search;
 const urlParam = new URLSearchParams(queryString);
 const paramEventID = urlParam.get('id');
 //Get data from local storage
+let username = localStorage.getItem('username');
 let isUserSignedIn = false;
 const eventsLocalStorage = localStorage.getItem('events');
 let eventsData = JSON.parse(eventsLocalStorage);
@@ -28,7 +29,6 @@ const deleteTitleH2 = document.getElementById('delete-title');
 const deleteButton = document.getElementById('delete-button');
 
 function checkIfSignedIn() {
-    let username = localStorage.getItem('username');
     if (username) {
         let deleteTitle = document.createTextNode(`Delete "${eventObject.eventTitle}"`);
         deleteTitleH2.appendChild(deleteTitle);
