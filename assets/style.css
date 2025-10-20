@@ -38,12 +38,29 @@
 body {
     background-color: var(--body-background);
 }
-
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24
+}
+.error-message {
+    display: flex;
+    justify-content: center;
+}
 .error-message p {
     background-color: var(--danger-background);
     color: var(--danger-text);
     margin: 10px;
     padding: 10px;
+    display: flex;
+    align-items: center;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+.error-message i {
+    margin-right: 5px;
 }
 
 header {

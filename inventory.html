@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Solway:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=close" />
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="icon" href="assets/images/icon.png" sizes="192x192" />
 </head>
 
@@ -53,9 +53,7 @@
             </div>
         </form>
     </div>
-    <section id="main-error"></section>
     <main>
-        <section class="error-message" id="error"></section>
         <section class="button-row" id="manage-inventory">
             <a href="donated-inventory.html" class="action-button">Donated Inventory</a>
             <a href="distributed-inventory.html" class="action-button">Distributed inventory</a>
@@ -72,18 +70,19 @@
                 </tbody>
             </table>
         </section>
+        <section class="error-message" id="mainError"></section>
         <section class="card" id="inventory-report-card">
             <form id="generate-form">
                 <div class="form-row">
                 <span>
-                    <label for="start-date">Start Date:</label>
-                    <input type="date" id="start-date" name="start-date" />
+                    <label for="startDate">Start Date:</label>
+                    <input type="date" id="startDate" name="startDate" />
                 </span>
                 <span>
-                    <label for="end-date">End Date:</label>
-                    <input type="date" id="end-date" name="end-date" />
+                    <label for="endDate">End Date:</label>
+                    <input type="date" id="endDate" name="endDate" />
                 </span>
-                <button id="generate-button">Generate Report</button>
+                <button type="submit" id="generate-button">Generate Report</button>
             </div>
             </form>
         </section>

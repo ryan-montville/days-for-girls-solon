@@ -8,22 +8,26 @@ let username = localStorage.getItem('username');
 let isUserSignedIn = false;
 
 //page elements
-const errorMessage = document.getElementById('error');
+const errorMessageMain = document.getElementById('mainError');
 const currentInventoryTableBody = document.getElementById('current-inventory-body');
 const manageInventoryButtons = document.getElementById('manage-inventory');
 const inventoryReportCard = document.getElementById('inventory-report-card');
 const generateForm = document.getElementById('generate-form');
-const startDateInput = document.getElementById('start-date');
-const endDateInput = document.getElementById('end-date');
-const generateButton = document.getElementById('generate-button');
 
+function createErrorMessage(error, location) {
+    if (location === "main") {
+        let p = document.createElement('p');
+        let errorIcon = document.createElement('i');
+        errorIcon.setAttribute('class', 'material-symbols-outlined')
+        let iconName = document.createTextNode('error');
+        errorIcon.appendChild(iconName);
+        p.appendChild(errorIcon);
+        p.setAttribute('id', 'errorMessageMainP')
+        let errorMessageText = document.createTextNode(error);
+        p.appendChild(errorMessageText);
+        errorMessageMain.appendChild(p);
+    }
 
-
-function createErrorMessage(error) {
-    let p = document.createElement('p');
-    let errorMessageText = document.createTextNode(error);
-    p.appendChild(errorMessageText);
-    errorMessage.appendChild(p);
 }
 
 function addItemToTable(component, tableName) {
@@ -183,20 +187,24 @@ function createEntriesTable(filteredResults) {
 
 }
 
-function generateReport() {
+function generateReport(startDate, endDate) {
+    //Remove the error message if it exosts
+    if (document.getElementById('errorMessageMainP')) {
+        let errorMessageP = document.getElementById('errorMessageMainP');
+        errorMessageP.remove();
+    }
+     
     let reportContainer = document.createElement('div');
     //Create inventory report h3 with date range
     /* I learned how to fix the date being off by one from these
     stackOverflow threads: https://stackoverflow.com/questions/7556591/is-the-javascript-date-object-always-one-day-off
     and https://stackoverflow.com/questions/2035699/how-to-convert-a-full-date-to-a-short-date-in-javascript */
-    let startDate = new Date(startDateInput.value);
     let startDateTimezoneFixed = new Date(startDate.getTime() - startDate.getTimezoneOffset() * -60000);
     let startDateFormatted = startDateTimezoneFixed.toLocaleDateString('en-US', {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
     });
-    let endDate = new Date(endDateInput.value);
     let endDateTimezoneFixed = new Date(endDate.getTime() - endDate.getTimezoneOffset() * -60000);
     let endDateFormatted = endDateTimezoneFixed.toLocaleDateString('en-US', {
         day: '2-digit',
@@ -232,19 +240,35 @@ function generateReport() {
     inventoryReportCard.appendChild(reportContainer);
 }
 
+
+
 function checkIfSignedIn() {
     if (!username) {
         manageInventoryButtons.remove();
         inventoryReportCard.remove();
+    } else {
+        //Generate form submit event listener
+        generateForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            let isValidInputs = true;
+            const generateFormData = new FormData(generateForm);
+            let startDate = new Date(generateFormData.get('startDate'));
+            let endDate = new Date(generateFormData.get('endDate'));
+            console.log(`Start: ${startDate} - End: ${endDate}`);
+            if (startDate > endDate) {
+                isValidInputs = false;
+            }
+            if (isValidInputs) {
+                generateReport(startDate, endDate);
+                generateForm.reset();
+                generateForm.style.display = 'none';
+            } else {
+                createErrorMessage("Please enter a valid date range", "main");
+            }
+
+        });
     }
 }
-
-generateButton.addEventListener('click', function (event) {
-    event.preventDefault();
-    generateReport();
-    generateForm.reset();
-    generateForm.style.display = 'none';
-});
 
 checkIfSignedIn();
 loadCurrentInventory();

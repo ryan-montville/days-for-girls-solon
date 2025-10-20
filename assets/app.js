@@ -25,7 +25,6 @@ function app() {
     });
 
     function signIn() {
-        console.log('');
         inventoryLink.style.display = 'block';
         navSignInButton.style.display = 'none';
         navSignOutButton.style.display = 'block';
