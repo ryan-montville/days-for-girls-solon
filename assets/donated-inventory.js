@@ -7,17 +7,12 @@ let username = localStorage.getItem('username');
 let isUserSignedIn = false;
 
 //page elements
+const mainError = document.getElementById('main-error');
+const DonatedForm = document.getElementById('donatedForm');
 const previousEntriesTable = document.getElementById('previous-entries-table');
 const previousEntriesTableBody = document.createElement('tbody');
 previousEntriesTable.appendChild(previousEntriesTableBody);
 const previousEntriesCard = document.getElementById('outgoing-form');
-const incomingForm = document.getElementById('incoming-form');
-const dateInput = document.getElementById('date');
-const componentNameInput = document.getElementById('component-name');
-const quantityInput = document.getElementById('quantity');
-const whoDonatedInput = document.getElementById('who-donated');
-const clearButton = document.getElementById('clear');
-const submitButton = document.getElementById('submit');
 
 function addItemToTable(component, tableName) {
     if (tableName === "incomingInventory") {

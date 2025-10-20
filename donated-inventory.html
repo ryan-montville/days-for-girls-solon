@@ -59,16 +59,16 @@
 
             <a href="inventory.html" class="action-button">← Back to inventory</a>
         </section>
-        <form class="card" id="incoming-form">
+        <form class="card" id="donatedForm">
             <h2>Donating to Inventory</h2>
             <section class="form-row">
                 <label for="date">Date entered:</label>
-                <input type="date" id="date" name="date"/>
+                <input type="date" id="date" name="date" required/>
             </section>
             <section class="form-row">
                 <label for="component-name">What component:</label>
-                <select id="component-name" name="component-name">
-                    <option>Select...</option>
+                <select id="component-name" name="component-name" required>
+                    <option value="">Select...</option>
                     <option value="Carry Pouches">Carry Pouches</option>
                     <option value="Shields">Shields</option>
                     <option value="Liners">Liners</option>

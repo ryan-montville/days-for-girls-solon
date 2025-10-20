@@ -7,21 +7,17 @@ let username = localStorage.getItem('username');
 let isUserSignedIn = false;
 
 //page elements
+const mainError = document.getElementById('main-error');
+const distributedForm = document.getElementById('distributedForm');
 const previousEntriesTable = document.getElementById('previous-entries-table');
 const previousEntriesTableBody = document.createElement('tbody');
 previousEntriesTable.appendChild(previousEntriesTableBody);
 const previousEntriesCard = document.getElementById('outgoing-form');
-const outgoingForm = document.getElementById('outgoing-form');
-const dateInput = document.getElementById('date');
-const componentNameInput = document.getElementById('component-name');
-const quantityInput = document.getElementById('quantity');
-const destinationInput = document.getElementById('destination');
-const clearButton = document.getElementById('clear');
-const submitButton = document.getElementById('submit');
 
-function addItemToTable(component, tableName) {
-    if (tableName === "outgoingInventory") {
-        let newRow = document.createElement('tr');
+function addItemToTable(component, empty) {
+    let newRow = document.createElement('tr');
+    if (!empty) {
+        
         let dateCell = document.createElement('td');
         let dateOBJ = new Date(component.date);
         let startDateTimezoneFixed = new Date(dateOBJ.getTime() - dateOBJ.getTimezoneOffset() * -60000);
@@ -45,22 +41,44 @@ function addItemToTable(component, tableName) {
         let destination = document.createTextNode(component.destination);
         destinationCell.appendChild(destination);
         newRow.appendChild(destinationCell);
-        previousEntriesTableBody.appendChild(newRow);
+        
     } else {
-        console.log(`tableName param not right: ${tableName}`);
+        let noneCell = document.createElement('td');
+        noneCell.setAttribute('colspan', '3');
+        let noneText = document.createTextNode("No sign up entires for this event");
+        noneCell.appendChild(noneText);
+        newRow.appendChild(noneCell);
+    }
+    previousEntriesTableBody.appendChild(newRow);
+}
+
+function createErrorMessage(message, location) {
+    let errorMessageP = document.createElement('p');
+    let errorMessage = document.createTextNode(message);
+    errorMessageP.appendChild(errorMessage);
+    if (location === 'sign-in') {
+        signInError.appendChild(errorMessageP);
+    } else {
+        mainError.appendChild(errorMessageP);
     }
 }
 
 function submitData() {
-    let newComponent = {
-        "date": dateInput.value,
-        "componentType": componentNameInput.value,
-        "quantity": quantityInput.value,
-        "destination": destinationInput.value
-    };
-    outgoingInventoryData.push(newComponent);
-    updateCurrentInventory(componentNameInput.value, quantityInput.value, "-");
-    updateLocalStorage("outgoingInventory", outgoingInventoryData);
+    const distributedFormData = new FormData(distributedForm);
+    if (distributedFormData.get('quantity') < 1) {
+        createErrorMessage("Please enter a quantity greater than 0", "main");
+    } else {
+        let newComponent = {
+            "date": distributedFormData.get('date'),
+            "componentType": distributedFormData.get('componentType'),
+            "quantity": distributedFormData.get('quantity'),
+            "destination": distributedFormData.get('destination')
+        };
+        outgoingInventoryData.push(newComponent);
+        updateCurrentInventory(distributedFormData.get('componentType'), distributedFormData.get('quantity'), "-");
+        updateLocalStorage("outgoingInventory", outgoingInventoryData);
+        distributedForm.reset();
+    }
 }
 
 function updateCurrentInventory(componentName, quantity, mathOperator) {
@@ -84,28 +102,29 @@ function updateLocalStorage(itemName, data,) {
 }
 
 //Load data in previous entries table
-for (let i = outgoingInventoryData.length - 1; i >= 0; i--) {
-    addItemToTable(outgoingInventoryData[i], "outgoingInventory");
+function loadPreviousEntries() {
+    if (outgoingInventoryData.length < 1) {
+        addItemToTable('', true);
+    } else {
+        for (let i = outgoingInventoryData.length - 1; i >= 0; i--) {
+            addItemToTable(outgoingInventoryData[i], false);
+        }
+    }
 }
 
 function checkIfSignedIn() {
     if (username) {
         isUserSignedIn = true;
-        //event listener to submit new inventory distribution
-        submitButton.addEventListener('click', function (event) {
+        //Distributed form submit event listener
+        distributedForm.addEventListener('submit', (event) => {
             event.preventDefault();
             submitData();
-            outgoingForm.reset();
         });
 
-        //event listener to clear the form
-        clearButton.addEventListener('click', function (event) {
-            event.preventDefault();
-            outgoingForm.reset();
-        });
     } else {
         outgoingForm.remove();
     }
 }
 
 checkIfSignedIn();
+loadPreviousEntries();
