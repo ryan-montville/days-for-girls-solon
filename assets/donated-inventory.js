@@ -8,15 +8,15 @@ let isUserSignedIn = false;
 
 //page elements
 const mainError = document.getElementById('main-error');
-const DonatedForm = document.getElementById('donatedForm');
+const donatedForm = document.getElementById('donatedForm');
 const previousEntriesTable = document.getElementById('previous-entries-table');
 const previousEntriesTableBody = document.createElement('tbody');
 previousEntriesTable.appendChild(previousEntriesTableBody);
 const previousEntriesCard = document.getElementById('outgoing-form');
 
-function addItemToTable(component, tableName) {
-    if (tableName === "incomingInventory") {
-        let newRow = document.createElement('tr');
+function addItemToTable(component, empty) {
+    let newRow = document.createElement('tr');
+    if (!empty) {
         let dateCell = document.createElement('td');
         let dateOBJ = new Date(component.date);
         let startDateTimezoneFixed = new Date(dateOBJ.getTime() - dateOBJ.getTimezoneOffset() * -60000);
@@ -40,22 +40,32 @@ function addItemToTable(component, tableName) {
         let whoDonated = document.createTextNode(component.whoDonated);
         whoDonatedCell.appendChild(whoDonated);
         newRow.appendChild(whoDonatedCell);
-        previousEntriesTableBody.appendChild(newRow);
     } else {
-        console.log(`tableName param not right: ${tableName}`);
+        let noneCell = document.createElement('td');
+        noneCell.setAttribute('colspan', '3');
+        let noneText = document.createTextNode("No sign up entires for this event");
+        noneCell.appendChild(noneText);
+        newRow.appendChild(noneCell);
     }
+    previousEntriesTableBody.appendChild(newRow);
 }
 
 function submitData() {
-    let newComponent = {
-        "date": dateInput.value,
-        "componentType": componentNameInput.value,
-        "quantity": quantityInput.value,
-        "whoDonated": whoDonatedInput.value
-    };
-    incomingInventoryData.push(newComponent);
-    updateCurrentInventory(componentNameInput.value, quantityInput.value, "+");
-    updateLocalStorage("incomingInventory", incomingInventoryData);
+    const donatedFormData = new FormData(donatedForm);
+    if (donatedFormData.get('quantity') < 1) {
+        createErrorMessage("Please enter a quantity greater than 0", "main");
+    } else {
+        let newComponent = {
+            "date": donatedFormData.get('date'),
+            "componentType": donatedFormData.get('componentType'),
+            "quantity": donatedFormData.get('quantity'),
+            "whoDonated": donatedFormData.get('whoDonated')
+        };
+        incomingInventoryData.push(newComponent);
+        updateCurrentInventory(donatedFormData.get('componentType'), donatedFormData.get('quantity'), "+");
+        updateLocalStorage("incomingInventory", incomingInventoryData);
+    }
+
 }
 
 function updateCurrentInventory(componentName, quantity, mathOperator) {
@@ -78,24 +88,23 @@ function updateLocalStorage(itemName, data,) {
     localStorage.setItem(itemName, dataString);
 }
 
-//Load data in previous entries table
-for (let i = incomingInventoryData.length - 1; i >= 0; i--) {
-    addItemToTable(incomingInventoryData[i], "incomingInventory");
+function loadPreviousEntries() {
+    if (incomingInventoryData.length < 1) {
+        addItemToTable('', true);
+    } else {
+        for (let i = incomingInventoryData.length - 1; i >= 0; i--) {
+            addItemToTable(incomingInventoryData[i], false);
+        }
+    }
 }
 
 function checkIfSignedIn() {
     if (username) {
         isUserSignedIn = true;
-        //event listener to submit new inventory distribution
-        submitButton.addEventListener('click', function (event) {
+        //donated form submit event listener
+        donatedForm.addEventListener('submit', (event) => {
             event.preventDefault();
             submitData();
-            incomingForm.reset();
-        });
-
-        //event listener to clear the form
-        clearButton.addEventListener('click', function (event) {
-            event.preventDefault();
             incomingForm.reset();
         });
     } else {
@@ -104,3 +113,4 @@ function checkIfSignedIn() {
 }
 
 checkIfSignedIn();
+loadPreviousEntries();

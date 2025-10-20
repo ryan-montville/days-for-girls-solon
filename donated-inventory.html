@@ -66,8 +66,8 @@
                 <input type="date" id="date" name="date" required/>
             </section>
             <section class="form-row">
-                <label for="component-name">What component:</label>
-                <select id="component-name" name="component-name" required>
+                <label for="componentType">What component:</label>
+                <select id="componentType" name="componentType" required>
                     <option value="">Select...</option>
                     <option value="Carry Pouches">Carry Pouches</option>
                     <option value="Shields">Shields</option>
@@ -77,15 +77,15 @@
             </section>
             <section class="form-row">
                 <label for="quantity">How many of the component:</label>
-                <input type="number" id="quantity" name="quantity" />
+                <input type="number" id="quantity" name="quantity" required/>
             </section>
             <section class="form-row">
-                <label for="who-donated">Who donated the component(s):</label>
-                <input type="text" id="who-donated" name="who-donated" />
+                <label for="whoDonated">Who donated the component(s):</label>
+                <input type="text" id="whoDonated" name="whoDonated" required/>
             </section>
             <section class="button-row">
-                <button class="action-button" id="clear">Clear Form</button>
-                <button class="submit-button" id="submit">Submit</button>
+                <button type="reset" class="action-button" id="clear">Clear Form</button>
+                <button type="submit" class="submit-button" id="submit">Submit</button>
             </section>
         </form>
         <section class="card" id="previous-entries">
