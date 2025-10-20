@@ -2,44 +2,46 @@ const eventsLocalStorage = localStorage.getItem('events');
 let eventsData = JSON.parse(eventsLocalStorage);
 
 //page elements
-let createForm = document.getElementById('create-event');
-let eventTitleInput = document.getElementById('event-title');
-let eventDateInput = document.getElementById('event-date');
-let eventLocationInput = document.getElementById('event-location');
-let eventTimeInput = document.getElementById('event-time');
-let eventDescriptionInput = document.getElementById('event-description');
-const clearButton = document.getElementById('clear');
-const submitButton = document.getElementById('submit');
+const createForm = document.getElementById('create-event');
+const mainError = document.getElementById('main-error');
 
 function updateLocalStorage(itemName, data, ) {
     let dataString = JSON.stringify(data);
     localStorage.setItem(itemName, dataString);
 }
 
-function createEvent() {
-    let lastID = eventsData.reduce((prev, current) => {
-        return (parseInt(prev.eventID) > parseInt(current.eventID)) ? prev : current;
+function createErrorMessage(message, location) {
+        let errorMessageP = document.createElement('p');
+        let errorMessage = document.createTextNode(message);
+        errorMessageP.appendChild(errorMessage);
+        if (location === 'sign-in') {
+            signInError.appendChild(errorMessageP);
+        } else {
+            mainError.appendChild(errorMessageP);
+        }
+    }
+
+//Create form submit event listener
+createForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    let createEventData = new FormData(createForm);
+    let lastID = eventsData.reduce((previous, current) => {
+        return (parseInt(previous.eventID) > parseInt(current.eventID)) ? prev : current;
     });
+    let eventDescription = "";
+    if (createEventData.get('eventDescription')) {
+        eventDescription = createEventData.get('eventDescription');
+    }
     let newEvent = {
         "eventID": lastID.eventID + 1,
-        "eventTitle": eventTitleInput.value,
-        "eventDate": eventDateInput.value,
-        "eventLocation": eventLocationInput.value,
-        "eventTime": eventTimeInput.value,
-        "eventDescription": eventDescriptionInput.value,
+        "eventTitle": createEventData.get('eventTitle'),
+        "eventDate": createEventData.get('eventDate'),
+        "eventLocation": createEventData.get('eventLocation'),
+        "eventTime": createEventData.get('eventTime'),
+        "eventDescription": eventDescription,
         "numberAttending": 0
     }
     eventsData.push(newEvent);
     updateLocalStorage("events", eventsData);
     window.location.href = 'events.html';
-}
-
-submitButton.addEventListener('click', function(event) {
-    event.preventDefault();
-    createEvent();
-});
-
-clearButton.addEventListener('click', function(event) {
-    event.preventDefault();
-    createForm.reset();
 });

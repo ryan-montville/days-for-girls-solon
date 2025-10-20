@@ -12,12 +12,20 @@ const eventObject = eventsData.find(eventObject => parseInt(eventObject.eventID)
 
 //page elements
 let signUpHeader = document.getElementById('sign-up-header');
-let signUpForm = document.getElementById('sign-up-form');
-let fullNameInput = document.getElementById('full-name');
-let emailInput = document.getElementById('email');
-let commentsInput = document.getElementById('comments');
-const clearButton = document.getElementById('clear');
-const submitButton = document.getElementById('submit');
+let eventSignUpForm = document.getElementById('sign-up-form');
+const mainError = document.getElementById('main-error');
+
+function createErrorMessage(message, location) {
+        let errorMessageP = document.createElement('p');
+        let errorMessage = document.createTextNode(message);
+        errorMessageP.appendChild(errorMessage);
+        if (location === 'sign-in') {
+            signInError.appendChild(errorMessageP);
+        } else {
+            mainError.appendChild(errorMessageP);
+        }
+    }
+
 
 function setEventInfo() {
     let signUpTitleH2 = document.createElement('h2')
@@ -39,18 +47,6 @@ function updateLocalStorage(itemName, data, ) {
     localStorage.setItem(itemName, dataString);
 }
 
-function submitData() {
-    let newSignUp = {
-        "eventID": paramEventID,
-        "fullName": fullNameInput.value,
-        "email": emailInput.value,
-        "comments": commentsInput.value
-    }
-    SignUpEntriesData.push(newSignUp);
-    updateSignUpCount();
-    updateLocalStorage("SignUpEntries", SignUpEntriesData);
-}
-
 function updateSignUpCount() {
     let eventIndex = eventsData.findIndex(item => {
         return parseInt(item.eventID) === parseInt(paramEventID);
@@ -59,18 +55,20 @@ function updateSignUpCount() {
     updateLocalStorage("events", eventsData);
 }
 
-//event listener for the submit button
-submitButton.addEventListener('click', function(event) {
+//Event Sign up Form Submit event listener
+eventSignUpForm.addEventListener('submit', (event) => {
     event.preventDefault();
-    submitData();
+    let eventSignUpData = new FormData(eventSignUpForm);
+    let newSignUp = {
+        "eventID": paramEventID,
+        "fullName": eventSignUpData.get('fullName'),
+        "email": eventSignUpData.get('email'),
+        "comments": eventSignUpData.get('comments')
+    }
+    SignUpEntriesData.push(newSignUp);
+    updateSignUpCount();
+    updateLocalStorage("SignUpEntries", SignUpEntriesData);
     window.location.href='events.html';
-})
-
-//event listener for the clear button
-clearButton.addEventListener('click', function(event) {
-    event.preventDefault();
-    signUpForm.reset();
-
 });
 
 setEventInfo();

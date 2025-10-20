@@ -61,29 +61,29 @@
         <form id="create-event" class="card">
             <h2>Create New Event</h2>
             <section class="form-row">
-                <label for="event-title">Event Title:</label>
-                <input type="text" id="event-title" name="event-title" />
+                <label for="eventTitle">Event Title:</label>
+                <input type="text" id="eventTitle" name="eventTitle" required/>
             </section>
             <section class="form-row">
-                <label for="event-date">Event Date:</label>
-                <input type="date" id="event-date" name="event-date" />
+                <label for="eventDate">Event Date:</label>
+                <input type="date" id="eventDate" name="eventDate" required/>
             </section>
             <section class="form-row">
-                <label for="event-location">Event Location:</label>
-                <input type="text" id="event-location" name="event-location" />
+                <label for="eventLocation">Event Location:</label>
+                <input type="text" id="eventLocation" name="eventLocation" required/>
             </section>
             <section class="form-row">
-                <label for="event-time">Event Time:</label>
-                <input type="text" id="event-time" name="event-time" />
+                <label for="eventTime">Event Time:</label>
+                <input type="text" id="eventTime" name="eventTime" required/>
             </section>
             <section>
-                <label for="event-description">Event Description:</label>
+                <label for="eventDescription">Event Description:</label>
                 <br />
-                <textarea id="event-description" name="event-description"></textarea>
+                <textarea id="eventDescription" name="eventDescriptionn"></textarea>
             </section>
             <section class="button-row">
-                <button class="action-button" id="clear">Clear Form</button>
-                <button class="submit-button" id="submit">Submit</button>
+                <button type="reset" class="action-button" id="clear">Clear Form</button>
+                <button type="submit" class="submit-button" id="submit">Submit</button>
             </section>
         </form>
     </main>
