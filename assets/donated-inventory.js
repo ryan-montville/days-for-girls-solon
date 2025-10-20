@@ -7,12 +7,28 @@ let username = localStorage.getItem('username');
 let isUserSignedIn = false;
 
 //page elements
-const mainError = document.getElementById('main-error');
+const errorMessageMain = document.getElementById('mainError');
 const donatedForm = document.getElementById('donatedForm');
 const previousEntriesTable = document.getElementById('previous-entries-table');
 const previousEntriesTableBody = document.createElement('tbody');
 previousEntriesTable.appendChild(previousEntriesTableBody);
 const previousEntriesCard = document.getElementById('outgoing-form');
+
+function createErrorMessage(error, location) {
+    if (location === "main") {
+        let p = document.createElement('p');
+        let errorIcon = document.createElement('i');
+        errorIcon.setAttribute('class', 'material-symbols-outlined')
+        let iconName = document.createTextNode('error');
+        errorIcon.appendChild(iconName);
+        p.appendChild(errorIcon);
+        p.setAttribute('id', 'errorMessageMainP')
+        let errorMessageText = document.createTextNode(error);
+        p.appendChild(errorMessageText);
+        errorMessageMain.appendChild(p);
+    }
+
+}
 
 function addItemToTable(component, empty) {
     let newRow = document.createElement('tr');

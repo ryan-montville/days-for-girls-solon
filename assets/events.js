@@ -2,8 +2,25 @@ const mainElement = document.querySelector('main');
 const eventsHeader = document.getElementById('events-header');
 const eventLocalStorage = localStorage.getItem('events');
 const eventData = JSON.parse(eventLocalStorage);
+const errorMessageMain = document.getElementById('mainError');
 let username = localStorage.getItem('username');
 let isUserSignedIn = false;
+
+function createErrorMessage(error, location) {
+    if (location === "main") {
+        let p = document.createElement('p');
+        let errorIcon = document.createElement('i');
+        errorIcon.setAttribute('class', 'material-symbols-outlined')
+        let iconName = document.createTextNode('error');
+        errorIcon.appendChild(iconName);
+        p.appendChild(errorIcon);
+        p.setAttribute('id', 'errorMessageMainP')
+        let errorMessageText = document.createTextNode(error);
+        p.appendChild(errorMessageText);
+        errorMessageMain.appendChild(p);
+    }
+
+}
 
 function createEventElement(eventData) {
     let newEvent = document.createElement('section');
