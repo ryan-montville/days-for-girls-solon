@@ -37,6 +37,7 @@
 
 body {
     background-color: var(--body-background);
+    position: relative;
 }
 .material-symbols-outlined {
   font-variation-settings:
@@ -82,7 +83,7 @@ nav {
     align-items: center;
 }
 
-nav a {
+nav a, nav button {
     padding: 10px;
     font-weight: 200;
     background-color: var(--main-background);

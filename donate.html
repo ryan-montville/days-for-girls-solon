@@ -10,9 +10,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Solway:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet"
+   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <link rel="icon" href="assets/images/icon.png" sizes="192x192" />
 </head>
 
 <body>
@@ -53,50 +52,18 @@
             </div>
         </form>
     </div>
+    <section class="error-message" id="mainError"></section>
     <main>
-        <section class="button-row-left">
-            <a href="inventory.html" class="action-button">← Back to inventory</a>
-        </section>
-        <section class="error-message" id="mainError"></section>
-        <form class="card" id="distributedForm">
-            <h2>Distributed Inventory</h2>
-            <section class="form-row">
-                <label for="date">Date leaving:</label>
-                <input type="date" id="date" name="date" required/>
-            </section>
-            <section class="form-row">
-                <label for="componentType">What component:</label>
-                <select id="componentType" name="componentType" required>
-                    <option value="">Select...</option>
-                    <option value="Carry Pouches">Carry Pouches</option>
-                    <option value="Shields">Shields</option>
-                    <option value="Liners">Liners</option>
-                    <option value="Tote Bags">Tote Bags</option>
-                </select>
-            </section>
-            <section class="form-row">
-                <label for="quantity">How many of the component:</label>
-                <input type="number" id="quantity" name="quantity" required/>
-            </section>
-            <section class="form-row">
-                <label for="destination">Where is the component going:</label>
-                <input type="text" id="destination" name="destination" required/>
-            </section>
-            <section class="button-row">
-                <button type="reset" class="action-button" id="clear">Clear Form</button>
-                <button type="submit" class="submit-button" id="submit">Submit</button>
-            </section>
-        </form>
-        <section class="card" id="previous-entries">
-            <h3>Previous Entries</h3>
-            <table id="previous-entries-table">
-                <thead>
-                    <th>Date</th>
-                    <th>Component</th>
-                    <th>Quantity</th>
-                    <th>Destination</th>
-                </thead>
-            </table>
+        <section class="card">
+        <h2>Days for Girls Guatemala Initiative - December 2025</h2>
+        <p>Our Days for Girls team is building something lasting in Puerto Barrios, Guatemala — a partnership that goes beyond delivering menstrual kits. Together with local leaders, we're helping communities gain the knowledge, confidence, and tools to manage menstrual health with dignity.</p>
+        <p>In December 2025, we'll return to Guatemala to host educational sessions for both girls and boys, distribute 100 reusable menstrual kits, and continue training local men and women to lead these programs themselves. This next step is part of our long-term vision: a locally led education and distribution network that reaches villages year after year.</p>
+        <h3>Your support makes this possible.</h3>
+        <p>Every donation helps provide kits, materials, and education that change lives — keeping girls in school, breaking taboos, and strengthening entire communities.</p>
+        <p><b>Goal: $3,570</b>
+            <br/>(to cover 100 kits, travel, translation, educational materials, and local event costs)</p>
+        <p>Give today — and help build a future where every girl can learn, thrive, and lead with dignity.</p>
+        <a href="#" class="action-button" target="_blank">Donate Now</a>
         </section>
     </main>
     <footer>
@@ -105,7 +72,6 @@
         <a href="https://www.daysforgirls.org/">Days for Girls International</a>
     </footer>
     <script type="text/javascript" src="assets/app.js"></script>
-    <script type="text/javascript" src="assets/distributed-inventory.js"></script>
 </body>
 
 </html>
