@@ -59,29 +59,26 @@
         <form class="card" id="mailing-list">
             <h2>Join our Mailing List</h2>
             <section class="form-row">
-                <label for="full-name">Full name:</label>
-                <input type="text" id="full-name" name="full-name" />
+                <label for="fullName">Full name:</label>
+                <input type="text" id="fullName" name="fullName" required/>
             </section>
             <section class="form-row">
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" />
             </section>
             <section class="form-row">
-                <label for="phone-number">Phone number (optional):</label>
-                <input type="tel" id="phone-number" name="phone-number" />
+                <label for="phoneNumber">Phone number (optional):</label>
+                <input type="tel" id="phoneNumber" name="phoneNumber"/>
             </section>
-            <p>What would you like to do:</p>
-                <input type="checkbox" id="general-volunteer" name="volunteer-type" value="general-volunteer"/>
-                <label for="general-volunteer">General Volunteer</label>
+                <p>What would you like to do:</p>
+                <label for="general-volunteer"><input type="radio" id="general-volunteer" name="volunteerType" value="General Volunteer" required />General Volunteer</label></label>
                 <br />
-                <input type="checkbox" id="sewing" name="volunteer-type" value="sewing"/>
-                <label for="sewing">Sewing</label>
+                <label for="sewing"><input type="radio" id="sewing" name="volunteerType" value="Sewing" />Sewing</label>
                 <br />
-                <input type="checkbox" id="just-emails" name="volunteer-type" value="just-emails"/>
-                <label for="just-emails">I just want to receive emails and newsletters</label>
-            <section class="button-row">
-                <button class="action-button" id="clear">Clear Form</button>
-                <button class="submit-button" id="submit">Submit</button>
+                <label for="just-emails"><input type="radio" id="just-emails" name="volunteerType" value="Just Emails" />I just want to receive emails and newsletters</label>
+                <section class="button-row">
+                <button type="reset" class="action-button" id="clear">Clear Form</button>
+                <button type="submit" class="submit-button" id="submit">Submit</button>
             </section>
         </form>
         <!-- iframe to embed the Google form if making my own form doesn't work -->

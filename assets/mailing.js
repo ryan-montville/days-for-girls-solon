@@ -25,30 +25,20 @@ function createErrorMessage(error, location) {
 }
 
 function submitData() {
-    const volunteerTypes = [];
-    checkboxes.forEach(checkbox => {
-        if (checkbox.checked) {
-            volunteerTypes.push(checkbox.value);
-        }
-    });
+    const mailingFormData = new FormData(mailingListForm);
     let newSignUp = {
-        "fullName": nameInput.value,
-        "email": emailInput.value,
-        "phone": phoneInput.value,
-        "volunteerTypes": volunteerTypes
+        "fullName": mailingFormData.get('fullName'),
+        "email": mailingFormData.get('email'),
+        "phone": mailingFormData.get('phoneNumber'),
+        "volunteerType": mailingFormData.get('volunteerType')
     }
-    alert(`The following info would be emailed/stored\nName: ${nameInput.value}\nemail: ${emailInput.value}\nphone: ${phoneInput.value}\nvolunteer: ${volunteerTypes}`)
+    alert(`The following info would be emailed/stored\nName: ${mailingFormData.get('fullName')}\nemail: ${mailingFormData.get('email')}\nphone: ${mailingFormData.get('phoneNumber')}\nvolunteer: ${mailingFormData.get('volunteerType')}`)
     console.log(newSignUp);
     mailingListForm.reset();
     window.location.href='index.html';
 }
 
-clearButton.addEventListener('click', function(event) {
-    event.preventDefault();
-    mailingListForm.reset();
-});
-
-submitButton.addEventListener('click', function(event) {
+mailingListForm.addEventListener('submit', (event) => {
     event.preventDefault();
     submitData();
 });
