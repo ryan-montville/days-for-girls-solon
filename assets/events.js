@@ -1,7 +1,7 @@
 const mainElement = document.querySelector('main');
 const eventsHeader = document.getElementById('events-header');
 const eventLocalStorage = localStorage.getItem('events');
-const eventData = JSON.parse(eventLocalStorage);
+const eventsData = JSON.parse(eventLocalStorage);
 const errorMessageMain = document.getElementById('mainError');
 let username = localStorage.getItem('username');
 let isUserSignedIn = false;
@@ -68,6 +68,15 @@ function createEventElement(eventData) {
     mainElement.appendChild(newEvent);
 }
 
+function loadEvents() {
+    const eventsListSorted = eventsData.sort((a, b) => {
+        return new Date(a.date) - new Date(b.date);
+    });
+    for (let i = 0; i < eventsListSorted.length; i++) {
+        createEventElement(eventsListSorted[i]);
+    }
+}
+
 function checkIfSignedIn() {
     if (username) {
         isUserSignedIn = true;
@@ -80,7 +89,4 @@ function checkIfSignedIn() {
 }
 
 checkIfSignedIn();
-
-for (let i = 0; i < eventData.length; i++) {
-    createEventElement(eventData[i]);
-}
+loadEvents();
