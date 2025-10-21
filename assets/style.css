@@ -192,6 +192,19 @@ h2 {
     padding: 20px;
 }
 
+.small {
+    display: flex;
+    flex-direction: column;
+}
+
+.small p {
+    flex-grow: 1;
+}
+
+.small a {
+    text-align: center;
+}
+
 .card p {
     padding: 10px 0;
 }
