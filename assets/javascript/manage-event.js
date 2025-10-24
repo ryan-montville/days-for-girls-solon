@@ -124,7 +124,8 @@ function populateEntiresTable() {
     if (eventSignUpEntries.length === 0) {
         addToPersonTable('', true);
     } else {
-        for (let i = 0; i < eventSignUpEntries.length; i++) {
+        let l = eventSignUpEntries.length;
+        for (let i = 0; i < l; i++) {
             addToPersonTable(eventSignUpEntries[i], false);
         }
     }

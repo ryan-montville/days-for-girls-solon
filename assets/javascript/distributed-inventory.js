@@ -111,7 +111,8 @@ function loadPreviousEntries() {
     if (outgoingInventoryData.length < 1) {
         addItemToTable('', true);
     } else {
-        for (let i = outgoingInventoryData.length - 1; i >= 0; i--) {
+        let l = outgoingInventoryData.length - 1
+        for (let i = l; i >= 0; i--) {
             addItemToTable(outgoingInventoryData[i], false);
         }
     }

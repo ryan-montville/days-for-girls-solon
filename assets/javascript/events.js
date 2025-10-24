@@ -72,7 +72,8 @@ function loadEvents() {
     const eventsListSorted = eventsData.sort((a, b) => {
         return new Date(a.date) - new Date(b.date);
     });
-    for (let i = 0; i < eventsListSorted.length; i++) {
+    let l = eventsListSorted.length
+    for (let i = 0; i < l; i++) {
         createEventElement(eventsListSorted[i]);
     }
 }

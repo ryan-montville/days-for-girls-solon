@@ -45,7 +45,8 @@ function addItemToTable(component, tableName) {
 }
 
 function loadCurrentInventory() {
-    for (let i = 0; i < currentInventoryData.length; i++) {
+    let l = currentInventoryData.length;
+    for (let i = 0; i < l; i++) {
         addItemToTable(currentInventoryData[i], "currentInventory");
     }
 }
