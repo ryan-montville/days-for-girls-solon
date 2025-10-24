@@ -1,0 +1,30 @@
+/* Homepage grid layout */
+#about-us {
+    grid-area: about;
+}
+
+#upcoming-events {
+    grid-area: events;
+}
+
+#mailing-list {
+    grid-area: mailing;
+}
+
+#donate {
+    grid-area: donate;
+}
+.homepage-layout {
+    display: grid;
+    grid-template-columns:  1fr 1fr 1fr;
+    grid-template-areas: 
+        "about about about"
+        "events mailing donate";
+    gap: 5px;
+}
+
+/* Events page grid layout */
+
+/* form page grid layout */
+
+/* Inventory page grid layout */

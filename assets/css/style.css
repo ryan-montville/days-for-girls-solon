@@ -3,9 +3,8 @@
     --body-background: #e7e9f1;
     --primary-accent: #ff9f00;
     --secondary-accent: #00bcd9;
-    --danger-background: red;
-    --danger-text: #fff;
-    --logo: url('/images/logo-light.png');
+    --error-background: red;
+    --error-text: #fff;
     --nav-text: #4f4b4e;
     --main-background: #ffffff;
     --main-text: #000000;
@@ -19,9 +18,8 @@
     --body-background: #000000;
     --primary-accent: #ff9f00;
     --secondary-accent: #00bcd9;
-    --danger-background: red;
-    --danger-text: #fff;
-    --logo: url('/images/logo-dark.png');
+    --error-background: red;
+    --error-text: #fff;
     --nav-text: #ccc;
     --main-background: #333;
     --main-text: #ccc;
@@ -77,6 +75,7 @@ header {
     width: auto;
 }
 
+/* Nav */
 nav {
     display: flex;
     justify-content: center;
@@ -139,43 +138,13 @@ nav a:hover {
     right: 5px;
 }
 
+/* main */
 main {
     max-width: 900px;
     margin: 20px auto;
     color: var(--main-text);
     font-size: 20px;
 }
-
-/* Homepage grid layout */
-#about-us {
-    grid-area: about;
-}
-
-#upcoming-events {
-    grid-area: events;
-}
-
-#mailing-list {
-    grid-area: mailing;
-}
-
-#donate {
-    grid-area: donate;
-}
-.homepage-layout {
-    display: grid;
-    grid-template-columns:  1fr 1fr 1fr;
-    grid-template-areas: 
-        "about about about"
-        "events mailing donate";
-    gap: 5px;
-}
-
-/* Events page grid layout */
-
-/* form page grid layout */
-
-/* Inventory page grid layout */
 
 h1, h2, h3, h4 {
     font-family: "Solway", serif;
@@ -220,13 +189,6 @@ h2 {
     font-size: 15px;
 }
 
-/* Events */
-#upcoming-events article {
-    border: 1px solid var(--main-text);
-    margin: 5px;
-    padding: 10px;
-}
-
 footer {
     background-color: var(--footer-background);
     color: var(--footer-text);
@@ -244,97 +206,4 @@ footer a {
 
 footer a:hover {
     text-decoration: underline;
-}
-
-/* forms and rows */
-button {
-    cursor: pointer;
-    border: 0;
-}
-
-.form-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.button-row {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-}
-
-.button-row-left {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-}
-
-.button-row-right {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-}
-
-.submit-button {
-    color: white;
-    background-color: var(--primary-accent);
-    margin: 5px 0;
-    padding: 10px;
-    text-decoration: none;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: 900;
-    font-size: 15px;
-}
-
-input, select {
-    border: 1px solid var(--main-text);
-    background-color: var(--main-background);
-    color: var(--main-text);
-    padding: 5px;
-    margin: 5px;
-}
-
-.form-row button {
-    background-color: var(--primary-accent);
-    border: 0;
-    padding: 10px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: 900;
-}
-
-.button-full {
-    flex-grow: 1;
-}
-
-.delete-button {
-    background-color: var(--danger-background);
-    color: var(--danger-text);
-    border: 0;
-    padding: 10px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: 900;
-}
-
-/* tables */
-table {
-    border-collapse: collapse;
-    border: 1px solid var(--footer-background);
-    width: 100%;
-    margin: 10px 0;
-    overflow-y: scroll;
-}
-
-thead {
-    background-color: var(--footer-background);
-    color: white;
-    text-align: left;
-}
-
-td {
-    padding: 5px;
-}
-
-tr:nth-child(even) {
-    background-color: var(--body-background);
 }
