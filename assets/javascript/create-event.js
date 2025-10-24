@@ -12,6 +12,7 @@ function updateLocalStorage(itemName, data, ) {
 
 function createErrorMessage(message, location) {
         let errorMessageP = document.createElement('p');
+        errorMessageP.setAttribute('role', 'alert');
         let errorIcon = document.createElement('i');
         errorIcon.setAttribute('class', 'material-symbols-outlined')
         let iconName = document.createTextNode('error');

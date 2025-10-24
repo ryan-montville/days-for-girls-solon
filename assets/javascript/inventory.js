@@ -16,15 +16,16 @@ const generateForm = document.getElementById('generate-form');
 
 function createErrorMessage(error, location) {
     if (location === "main") {
-        let p = document.createElement('p');
+        let errorMessageP = document.createElement('p');
+        errorMessageP.setAttribute('role', 'alert');
         let errorIcon = document.createElement('i');
         errorIcon.setAttribute('class', 'material-symbols-outlined')
         let iconName = document.createTextNode('error');
         errorIcon.appendChild(iconName);
-        p.appendChild(errorIcon);
-        p.setAttribute('id', 'errorMessageMainP')
+        errorMessageP.appendChild(errorIcon);
+        errorMessageP.setAttribute('id', 'errorMessageMainP')
         let errorMessageText = document.createTextNode(error);
-        p.appendChild(errorMessageText);
+        errorMessageP.appendChild(errorMessageText);
         errorMessageMain.appendChild(p);
     }
 

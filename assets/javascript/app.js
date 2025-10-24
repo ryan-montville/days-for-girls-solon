@@ -67,6 +67,7 @@ function app() {
 
     function createErrorMessage(message, location) {
         let errorMessageP = document.createElement('p');
+        errorMessageP.setAttribute('role', 'alert');
         let errorMessage = document.createTextNode(message);
         errorMessageP.appendChild(errorMessage);
         if (location === 'sign-in') {
