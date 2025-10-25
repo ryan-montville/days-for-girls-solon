@@ -1,3 +1,5 @@
+import { createErrorMessage, fixDate } from './coreFunctions.js'
+
 const currentInventoryLocalStorage = localStorage.getItem("currentInventory");
 let currentInventoryData = JSON.parse(currentInventoryLocalStorage);
 const incomingInventoryLocalStorage = localStorage.getItem("incomingInventory");
@@ -14,35 +16,14 @@ const manageInventoryButtons = document.getElementById('manage-inventory');
 const inventoryReportCard = document.getElementById('inventory-report-card');
 const generateForm = document.getElementById('generate-form');
 
-function createErrorMessage(error, location) {
-    if (location === "main") {
-        let errorMessageP = document.createElement('p');
-        errorMessageP.setAttribute('role', 'alert');
-        let errorIcon = document.createElement('i');
-        errorIcon.setAttribute('class', 'material-symbols-outlined')
-        let iconName = document.createTextNode('error');
-        errorIcon.appendChild(iconName);
-        errorMessageP.appendChild(errorIcon);
-        errorMessageP.setAttribute('id', 'errorMessageMainP')
-        let errorMessageText = document.createTextNode(error);
-        errorMessageP.appendChild(errorMessageText);
-        errorMessageMain.appendChild(p);
-    }
-
-}
-
 function addItemToTable(component, tableName) {
-    if (tableName === "currentInventory") {
-        let newRow = currentInventoryTableBody.insertRow();
+    let newRow = currentInventoryTableBody.insertRow();
         let componentNameCell = newRow.insertCell();
         let componentName = document.createTextNode(component.componentType);
         componentNameCell.appendChild(componentName);
         let componentQuantityCell = newRow.insertCell();
         let componentQuantity = document.createTextNode(component.quantity);
         componentQuantityCell.appendChild(componentQuantity);
-    } else {
-        console.log(`tableName param not right: ${tableName}`);
-    }
 }
 
 function loadCurrentInventory() {
@@ -163,14 +144,7 @@ function createEntriesTable(filteredResults) {
     for (let i = 0; i < filteredResults.length; i++) {
         const entryRow = document.createElement('tr');
         const dateCell = document.createElement('td');
-        let dateObj = new Date(filteredResults[i].date);
-        let dateTimezoneFixed = new Date(dateObj.getTime() - dateObj.getTimezoneOffset() * -60000);
-        let dateFormatted = dateTimezoneFixed.toLocaleDateString('en-US', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-        });
-        const date = document.createTextNode(dateFormatted);
+        const date = document.createTextNode(fixDate(filteredResults[i].date));
         dateCell.appendChild(date);
         entryRow.appendChild(dateCell);
         const entryCell = document.createElement('td');
@@ -198,23 +172,8 @@ function generateReport(startDate, endDate) {
      
     let reportContainer = document.createElement('div');
     //Create inventory report h3 with date range
-    /* I learned how to fix the date being off by one from these
-    stackOverflow threads: https://stackoverflow.com/questions/7556591/is-the-javascript-date-object-always-one-day-off
-    and https://stackoverflow.com/questions/2035699/how-to-convert-a-full-date-to-a-short-date-in-javascript */
-    let startDateTimezoneFixed = new Date(startDate.getTime() - startDate.getTimezoneOffset() * -60000);
-    let startDateFormatted = startDateTimezoneFixed.toLocaleDateString('en-US', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-    });
-    let endDateTimezoneFixed = new Date(endDate.getTime() - endDate.getTimezoneOffset() * -60000);
-    let endDateFormatted = endDateTimezoneFixed.toLocaleDateString('en-US', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-    });
     let reportTitleH3 = document.createElement('h3');
-    let reportTitle = document.createTextNode(`Inventory report for ${startDateFormatted} to ${endDateFormatted}`);
+    let reportTitle = document.createTextNode(`Inventory report for ${fixDate(startDate)} to ${fixDate(endDate)}`);
     reportTitleH3.appendChild(reportTitle);
     reportContainer.appendChild(reportTitleH3);
     //Create list of entries within date range

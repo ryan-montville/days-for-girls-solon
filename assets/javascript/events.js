@@ -1,3 +1,5 @@
+import { createErrorMessage, fixDate, updateLocalStorage } from "./coreFunctions.js";
+
 const mainElement = document.querySelector('main');
 const eventsHeader = document.getElementById('events-header');
 const eventLocalStorage = localStorage.getItem('events');
@@ -5,23 +7,6 @@ const eventsData = JSON.parse(eventLocalStorage);
 const errorMessageMain = document.getElementById('mainError');
 let username = localStorage.getItem('username');
 let isUserSignedIn = false;
-
-function createErrorMessage(error, location) {
-    if (location === "main") {
-        let errorMessageP = document.createElement('p');
-        errorMessageP.setAttribute('role', 'alert');
-        let errorIcon = document.createElement('i');
-        errorIcon.setAttribute('class', 'material-symbols-outlined')
-        let iconName = document.createTextNode('error');
-        errorIcon.appendChild(iconName);
-        errorMessageP.appendChild(errorIcon);
-        errorMessageP.setAttribute('id', 'errorMessageMainP')
-        let errorMessageText = document.createTextNode(error);
-        errorMessageP.appendChild(errorMessageText);
-        errorMessageMain.appendChild(p);
-    }
-
-}
 
 function createEventElement(eventData) {
     let newEvent = document.createElement('section');
@@ -32,12 +17,7 @@ function createEventElement(eventData) {
     eventH3.appendChild(eventTitle);
     newEvent.appendChild(eventH3);
     let eventDateAndTimeH4 = document.createElement('h4');
-    /* I learned how to fix the date being off by one from this
-    stackOverflow thread: https://stackoverflow.com/questions/7556591/is-the-javascript-date-object-always-one-day-off */
-    let dateObj = new Date(eventData.eventDate);
-    let dateTimezoneFixed = new Date(dateObj.getTime() - dateObj.getTimezoneOffset() * -60000);
-    let dateFormatted = dateTimezoneFixed.toDateString();
-    let eventDateAndTime = document.createTextNode(`${dateFormatted} ${eventData.eventTime}`);
+    let eventDateAndTime = document.createTextNode(`${fixDate(eventData.eventDate, false)} ${eventData.eventTime}`);
     eventDateAndTimeH4.appendChild(eventDateAndTime);
     newEvent.appendChild(eventDateAndTimeH4);
     let eventLocationH4 = document.createElement('h4');

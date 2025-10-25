@@ -1,3 +1,5 @@
+import { createErrorMessage, fixDate, updateLocalStorage } from './coreFunctions.js'
+
 const eventsLocalStorage = localStorage.getItem('events');
 let eventsData = JSON.parse(eventsLocalStorage);
 const SignUpEntriesLocalStorge = localStorage.getItem('SignUpEntries');
@@ -15,42 +17,19 @@ let signUpHeader = document.getElementById('sign-up-header');
 let eventSignUpForm = document.getElementById('sign-up-form');
 const errorMessageMain = document.getElementById('mainError');
 
-function createErrorMessage(error, location) {
-    if (location === "main") {
-        let errorMessageP = document.createElement('p');
-        errorMessageP.setAttribute('role', 'alert');
-        let errorIcon = document.createElement('i');
-        errorIcon.setAttribute('class', 'material-symbols-outlined')
-        let iconName = document.createTextNode('error');
-        errorIcon.appendChild(iconName);
-        errorMessageP.appendChild(errorIcon);
-        errorMessageP.setAttribute('id', 'errorMessageMainP')
-        let errorMessageText = document.createTextNode(error);
-        errorMessageP.appendChild(errorMessageText);
-        errorMessageMain.appendChild(p);
-    }
-
-}
-
-
 function setEventInfo() {
     let signUpTitleH2 = document.createElement('h2')
     let signUpTitle = document.createTextNode(`Sign up for ${eventObject.eventTitle}`);
     signUpTitleH2.appendChild(signUpTitle);
     signUpHeader.appendChild(signUpTitleH2);
     let dateTimeH3 = document.createElement('h3');
-    let dateTime = document.createTextNode(`${eventObject.eventDate} ${eventObject.eventTime}`);
+    let dateTime = document.createTextNode(`${fixDate(eventObject.eventDate, false)} ${eventObject.eventTime}`);
     dateTimeH3.appendChild(dateTime);
     signUpHeader.appendChild(dateTimeH3)
     let eventLocationH3 = document.createElement('h3');
     let eventLocation = document.createTextNode(eventObject.eventLocation);
     eventLocationH3.appendChild(eventLocation);
     signUpHeader.appendChild(eventLocationH3);
-}
-
-function updateLocalStorage(itemName, data, ) {
-    let dataString = JSON.stringify(data);
-    localStorage.setItem(itemName, dataString);
 }
 
 function updateSignUpCount() {

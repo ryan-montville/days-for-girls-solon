@@ -1,3 +1,5 @@
+import { createErrorMessage, fixDate, updateLocalStorage } from './coreFunctions.js'
+
 //Get data from local storage
 const currentInventoryLocalStorage = localStorage.getItem("currentInventory");
 let currentInventoryData = JSON.parse(currentInventoryLocalStorage);
@@ -14,35 +16,11 @@ const previousEntriesTableBody = document.createElement('tbody');
 previousEntriesTable.appendChild(previousEntriesTableBody);
 const previousEntriesCard = document.getElementById('outgoing-form');
 
-function createErrorMessage(error, location) {
-    if (location === "main") {
-        let errorMessageP = document.createElement('p');
-        errorMessageP.setAttribute('role', 'alert');
-        let errorIcon = document.createElement('i');
-        errorIcon.setAttribute('class', 'material-symbols-outlined')
-        let iconName = document.createTextNode('error');
-        errorIcon.appendChild(iconName);
-        errorMessageP.appendChild(errorIcon);
-        errorMessageP.setAttribute('id', 'errorMessageMainP')
-        let errorMessageText = document.createTextNode(error);
-        errorMessageP.appendChild(errorMessageText);
-        errorMessageMain.appendChild(p);
-    }
-
-}
-
 function addItemToTable(component, empty) {
     let newRow = document.createElement('tr');
     if (!empty) {
         let dateCell = document.createElement('td');
-        let dateOBJ = new Date(component.date);
-        let startDateTimezoneFixed = new Date(dateOBJ.getTime() - dateOBJ.getTimezoneOffset() * -60000);
-        let dateFormatted = startDateTimezoneFixed.toLocaleDateString('en-US', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-        });
-        let date = document.createTextNode(dateFormatted);
+        let date = document.createTextNode(fixDate(component.date, true));
         dateCell.appendChild(date);
         newRow.appendChild(dateCell);
         let componentNameCell = document.createElement('td');
@@ -98,11 +76,6 @@ function updateCurrentInventory(componentName, quantity, mathOperator) {
     currentInventoryData[componentIndex].quantity = updatedQuantity;
     updateLocalStorage("currentInventory", currentInventoryData);
     window.location.reload();
-}
-
-function updateLocalStorage(itemName, data,) {
-    let dataString = JSON.stringify(data);
-    localStorage.setItem(itemName, dataString);
 }
 
 function loadPreviousEntries() {

@@ -1,3 +1,5 @@
+import { createErrorMessage, updateLocalStorage } from './coreFunctions.js'
+
 function app() {
     "use strict";
     let currentInventoryLocalStorage = localStorage.getItem("currentInventory");
@@ -65,18 +67,6 @@ function app() {
         window.location.reload();
     });
 
-    function createErrorMessage(message, location) {
-        let errorMessageP = document.createElement('p');
-        errorMessageP.setAttribute('role', 'alert');
-        let errorMessage = document.createTextNode(message);
-        errorMessageP.appendChild(errorMessage);
-        if (location === 'sign-in') {
-            signInError.appendChild(errorMessageP);
-        } else {
-            mainError.appendChild(errorMessageP);
-        }
-    }
-
     async function loadJsonData() {
         try {
             //Fetch inventory data from inventory.json
@@ -88,14 +78,11 @@ function app() {
             let data = await response.json();
             console.log(`Fetched inventory data`);
             //Adding current inventory data to local storage
-            let currentInventoryString = JSON.stringify(data.currentInventory);
-            localStorage.setItem("currentInventory", currentInventoryString);
+            updateLocalStorage("currentInventory", data.currentInventory);
             //Adding incoming inventory data to local storage
-            let incomingInventoryString = JSON.stringify(data.incomingInventory);
-            localStorage.setItem("incomingInventory", incomingInventoryString);
+            updateLocalStorage("incomingInventory", data.incomingInventory);
             //Adding outgoing inventory data to local storage
-            let outgoingInventoryString = JSON.stringify(data.outgoingInventory);
-            localStorage.setItem("outgoingInventory", outgoingInventoryString);
+            updateLocalStorage("outgoingInventory", data.outgoingInventory)
             //fetch events data from events.json
             response = await fetch('assets/events.json');
             if (!response.ok) {
@@ -104,11 +91,9 @@ function app() {
             }
             data = await response.json();
             console.log(`Fetched events data`);
-            //Adding events data to local storage
-            let eventsString = JSON.stringify(data.upcomingEvents);
-            localStorage.setItem("events", eventsString);
-            let signUpEntriesString = JSON.stringify(data.SignUpEntries);
-            localStorage.setItem("SignUpEntries", signUpEntriesString);
+            //Adding events and sign up data to local storage
+            updateLocalStorage("events", data.upcomingEvents);
+            updateLocalStorage("SignUpEntries", data.SignUpEntries)
 
         } catch (error) {
             createErrorMessage(error, 'main');
@@ -122,6 +107,5 @@ function app() {
 
     checkIfSignedIn();
 }
-
 
 app();

@@ -1,3 +1,5 @@
+import { createErrorMessage, updateLocalStorage } from './coreFunctions.js'
+
 //Get event id from url
 const queryString = window.location.search;
 const urlParam = new URLSearchParams(queryString);
@@ -63,11 +65,6 @@ function resetInfo() {
     eventDescriptionInput.value = eventObject.eventDescription;
 }
 
-function updateLocalStorage(itemName, data,) {
-    let dataString = JSON.stringify(data);
-    localStorage.setItem(itemName, dataString);
-}
-
 function updateEvent() {
     let eventIndex = eventsData.findIndex(item => {
         return parseInt(item.eventID) === parseInt(paramEventID);
@@ -108,7 +105,6 @@ function addToPersonTable(person, empty) {
         noneCell.appendChild(noneText);
         newRow.appendChild(noneCell);
     }
-    
     entriesTableBody.appendChild(newRow);
 }
 
