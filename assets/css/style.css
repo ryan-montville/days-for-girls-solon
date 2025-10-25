@@ -1,31 +1,31 @@
 @media (prefers-color-scheme: light) {
-  :root {
-    --body-background: #e7e9f1;
-    --primary-accent: #ff9f00;
-    --secondary-accent: #00bcd9;
-    --error-background: red;
-    --error-text: #fff;
-    --nav-text: #4f4b4e;
-    --main-background: #ffffff;
-    --main-text: #000000;
-    --footer-background: #676486;
-    --footer-text: #fff;
-  }
+    :root {
+        --body-background: #e7e9f1;
+        --primary-accent: #ff9f00;
+        --secondary-accent: #00bcd9;
+        --error-background: red;
+        --error-text: #fff;
+        --nav-text: #4f4b4e;
+        --main-background: #ffffff;
+        --main-text: #000000;
+        --footer-background: #676486;
+        --footer-text: #fff;
+    }
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --body-background: #000000;
-    --primary-accent: #ff9f00;
-    --secondary-accent: #00bcd9;
-    --error-background: red;
-    --error-text: #fff;
-    --nav-text: #ccc;
-    --main-background: #333;
-    --main-text: #ccc;
-    --footer-background: #676486;
-    --footer-text: #fff;
-  }
+    :root {
+        --body-background: #000000;
+        --primary-accent: #ff9f00;
+        --secondary-accent: #00bcd9;
+        --error-background: red;
+        --error-text: #fff;
+        --nav-text: #ccc;
+        --main-background: #333;
+        --main-text: #ccc;
+        --footer-background: #676486;
+        --footer-text: #fff;
+    }
 }
 
 * {
@@ -37,17 +37,20 @@ body {
     background-color: var(--body-background);
     position: relative;
 }
+
 .material-symbols-outlined {
-  font-variation-settings:
-  'FILL' 0,
-  'wght' 400,
-  'GRAD' 0,
-  'opsz' 24
+    font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24
 }
+
 .error-message {
     display: flex;
     justify-content: center;
 }
+
 .error-message p {
     background-color: var(--error-background);
     color: var(--error-text);
@@ -55,7 +58,7 @@ body {
     padding: 10px;
     display: flex;
     align-items: center;
-    font-family:Arial, Helvetica, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .error-message i {
@@ -82,25 +85,33 @@ nav {
     align-items: center;
 }
 
-nav a, nav button {
+nav a,
+nav button {
     padding: 10px;
     font-weight: 200;
     background-color: var(--main-background);
     color: var(--nav-text);
     text-decoration: none;
     font-size: 25px;
-    font-family:Arial, Helvetica, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 nav a:hover {
     text-decoration: underline;
 }
 
+[aria-current]:not([aria-current="false"]) {
+    background-color: var(--secondary-accent);
+    color: white;
+    font-weight: 900;
+}
+
 #inventory-link {
     display: none;
 }
 
-#sign-in-button, #sign-out-button {
+#sign-in-button,
+#sign-out-button {
     background-color: var(--primary-accent);
     color: white;
     font-weight: 900;
@@ -110,11 +121,6 @@ nav a:hover {
     display: none;
 }
 
-#donate-button {
-    background-color: var(--secondary-accent);
-    color: white;
-    font-weight: 900;
-}
 #pop-up-container {
     display: none;
     background-color: rgba(0, 0, 0, 0.80);
@@ -126,12 +132,14 @@ nav a:hover {
     justify-content: center;
     align-items: center;
 }
+
 #sign-in-pop-up {
     position: relative;
     background-color: var(--main-background);
     color: var(--main-text);
     padding: 20px;
 }
+
 .close-button {
     position: absolute;
     top: 5px;
@@ -146,7 +154,10 @@ main {
     font-size: 20px;
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
     font-family: "Solway", serif;
 }
 
