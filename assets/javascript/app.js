@@ -5,6 +5,7 @@ function app() {
     let currentInventoryLocalStorage = localStorage.getItem("currentInventory");
     let username = localStorage.getItem('username');
     let isUserSignedIn = false;
+    let isPopUpOpen = false;
 
     //page elements
     const inventoryLink = document.getElementById('inventory-link');
@@ -19,12 +20,30 @@ function app() {
     //event listener for sign in button to open sign in pop up
     navSignInButton.addEventListener('click', () => {
         signInPopUp.style.display = 'flex';
+        isPopUpOpen = true;
+        //event listen to close pop up if user clicks outside of pop up
+        signInPopUp.addEventListener('click', () => {
+            isPopUpOpen = false;
+            signInPopUp.style.display = 'none';
+        });
     });
 
     //event listener for the pop up close button
     closeButton.addEventListener('click', () => {
         signInPopUp.style.display = 'none';
+        isPopUpOpen = false;
     });
+
+    //event listener for the user to press escape to close the sign in pop up
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isPopUpOpen === true) {
+            console.log("Esc pressed and sign in open")
+            isPopUpOpen = false;
+            signInPopUp.style.display = 'none';
+        } else {
+            console.log("Esc pressed but sign in not open?")
+        }
+    })
 
     function signIn() {
         inventoryLink.style.display = 'block';
