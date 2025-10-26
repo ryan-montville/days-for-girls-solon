@@ -8,6 +8,7 @@
     <link href="assets/css/forms.css" rel="stylesheet" />
     <link href="assets/css/grid.css" rel="stylesheet" />
     <link href="assets/css/tables.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="assets/images/icon.png">
     <meta name="theme-color" content="#ff9f00">
     <title>Days For Girls Solon Team</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,15 +36,18 @@
             <a href="events.html" aria-current="page">Upcoming Events</a>
             <a href="inventory.html" id="inventory-link">inventory</a>
             <a href="donate.html">Donate</a>
-            <button id="sign-in-button">Sign In</button>
+            <button id="open-sign-in-modal-button" aria-controls="signin-modal">Sign In</button>
             <button id="sign-out-button">Sign Out</button>
         </nav>
     </header>
-    <div id="pop-up-container">
-        <form id="sign-in-pop-up">
-            <button type="button" class="material-symbols-outlined close-button" id="close">close</button>
-            <h2>Sign In</h2>
-            <div id="sign-in-error"></div>
+    <div id="backdrop">
+        <form
+            role="dialog"
+            id="sign-in-modal"
+            aria-modal="false"
+            aria-labelledby="dialog-label">
+            <div id="form-response"></div>
+            <h2 id="dialog-label">Sign In</h2>
             <section class="form-row">
                 <label for="username">Username:</label>
                 <input type="email" id="username" name="username" required/>
@@ -52,9 +56,10 @@
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required/>
             </section>
-            <div class="form-row">
-                <button type="submit" id="form-sign-in-button" class="button-full">Sign In</button>
-            </div>
+            <section class="form-row">
+                <button type="button" id="close-modal-button" class="secondary">Close</button>
+                <button type="submit" id="form-sign-in-button" class="primary">Sign In</button>
+            </section>
         </form>
     </div>
     <section class="error-message" id="mainError"></section>

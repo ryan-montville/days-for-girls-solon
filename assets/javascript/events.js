@@ -32,8 +32,10 @@ function createEventElement(eventData) {
     let eventDescription = document.createTextNode(eventData.eventDescription);
     eventDescriptionP.appendChild(eventDescription);
     newEvent.appendChild(eventDescriptionP);
+    let buttonRow = document.createElement('div');
+    buttonRow.setAttribute('class', 'button-row left');
     let button = document.createElement('a');
-    button.setAttribute('class', 'action-button');
+    button.setAttribute('class', 'secondary');
     if (isUserSignedIn) {
         //Add manage event button
         button.setAttribute('href', `manage-event.html?id=${eventData.eventID}`);
@@ -45,7 +47,8 @@ function createEventElement(eventData) {
         button.textContent = 'Sign Up';
 
     }
-    newEvent.appendChild(button);
+    buttonRow.appendChild(button);
+    newEvent.appendChild(buttonRow);
     mainElement.appendChild(newEvent);
 }
 
@@ -64,7 +67,7 @@ function checkIfSignedIn() {
         isUserSignedIn = true;
         let createNewEventButton = document.createElement('a');
         createNewEventButton.setAttribute('href', 'create-new-event.html');
-        createNewEventButton.setAttribute('class', 'action-button');
+        createNewEventButton.setAttribute('class', 'secondary');
         createNewEventButton.textContent = "Create New Event";
         eventsHeader.appendChild(createNewEventButton);
     }

@@ -61,6 +61,7 @@ body {
 }
 
 .material-symbols-outlined {
+    vertical-align: middle;
     font-variation-settings:
         'FILL' 0,
         'wght' 400,

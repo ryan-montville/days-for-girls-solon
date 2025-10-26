@@ -15,10 +15,8 @@ button {
     align-items: center;
 }
 
-.button-row-left {
-    display: flex;
+.left {
     justify-content: flex-start;
-    align-items: center;
 }
 
 .button-row-right {
@@ -27,7 +25,7 @@ button {
     align-items: center;
 }
 
-.form-row button, .form-row a {
+.form-row button, .form-row a, .button-row button, .button-row a {
     border: 0;
     padding: 10px;
     font-family: Arial, Helvetica, sans-serif;
@@ -58,8 +56,8 @@ input, select {
 }
 
 .delete-button {
-    background-color: var(--danger-background);
-    color: var(--danger-text);
+    background-color: var(--error-background);
+    color: var(--error-text);
     border: 0;
     padding: 10px;
     font-family: Arial, Helvetica, sans-serif;
