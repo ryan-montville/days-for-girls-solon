@@ -27,15 +27,22 @@ button {
     align-items: center;
 }
 
-.submit-button {
-    color: white;
-    background-color: var(--primary-accent);
-    margin: 5px 0;
+.form-row button, .form-row a {
+    border: 0;
     padding: 10px;
-    text-decoration: none;
     font-family: Arial, Helvetica, sans-serif;
     font-weight: 900;
-    font-size: 15px;
+    text-decoration: none;
+}
+
+.primary {
+    background-color: var(--primary-accent);
+    color: white;
+}
+
+.secondary {
+    background-color: var(--secondary-accent);
+    color: white;
 }
 
 input, select {
@@ -46,15 +53,7 @@ input, select {
     margin: 5px;
 }
 
-.form-row button {
-    background-color: var(--primary-accent);
-    border: 0;
-    padding: 10px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: 900;
-}
-
-.button-full {
+.full {
     flex-grow: 1;
 }
 

@@ -132,7 +132,7 @@ nav a:hover {
     display: none;
 }
 
-#sign-in-button,
+#open-sign-in-modal-button,
 #sign-out-button {
     background-color: var(--primary-accent);
     color: white;
@@ -143,7 +143,7 @@ nav a:hover {
     display: none;
 }
 
-#pop-up-container {
+#backdrop {
     display: none;
     background-color: rgba(0, 0, 0, 0.80);
     position: absolute;
@@ -155,17 +155,11 @@ nav a:hover {
     align-items: center;
 }
 
-#sign-in-pop-up {
+#sign-in-modal {
     position: relative;
     background-color: var(--main-background);
     color: var(--main-text);
     padding: 20px;
-}
-
-.close-button {
-    position: absolute;
-    top: 5px;
-    right: 5px;
 }
 
 /* main */

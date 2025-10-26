@@ -1,53 +1,70 @@
-import { createErrorMessage, updateLocalStorage } from './coreFunctions.js'
+import { createErrorMessage, trapFocus, updateLocalStorage } from './coreFunctions.js'
 
 function app() {
     "use strict";
     let currentInventoryLocalStorage = localStorage.getItem("currentInventory");
     let username = localStorage.getItem('username');
     let isUserSignedIn = false;
-    let isPopUpOpen = false;
+    let isSignInModalOpen = false;
 
     //page elements
     const inventoryLink = document.getElementById('inventory-link');
-    const navSignInButton = document.getElementById('sign-in-button');
+    const openSignInModal = document.getElementById('open-sign-in-modal-button');
     const navSignOutButton = document.getElementById('sign-out-button');
-    const signInPopUp = document.getElementById('pop-up-container');
-    const signInForm = document.getElementById('sign-in-pop-up');
-    const closeButton = document.getElementById('close');
+    const signInModalBackdrop = document.getElementById('backdrop');
+    const signInModal = document.getElementById('sign-in-modal');
+    const signInLabel = document.getElementById('dialog-label');
+    const closeModalButton = document.getElementById('close-modal-button');
     const signInError = document.getElementById('sign-in-error');
     const mainError = document.getElementById('main-error');
 
-    //event listener for sign in button to open sign in pop up
-    navSignInButton.addEventListener('click', () => {
-        signInPopUp.style.display = 'flex';
-        isPopUpOpen = true;
-        //event listen to close pop up if user clicks outside of pop up
-        signInPopUp.addEventListener('click', () => {
-            isPopUpOpen = false;
-            signInPopUp.style.display = 'none';
-        });
+    //event listener for sign in button to open sign in modal
+    openSignInModal.addEventListener('click', (e) => {
+        e.preventDefault();
+        signInModalBackdrop.style.display = 'flex';
+        signInModal.setAttribute('aria-modal', 'true');
+        const usernameInput = document.getElementById('username');
+        usernameInput.focus();
+        isSignInModalOpen = true;
+        trapFocus(signInModal, signInModalBackdrop);
+        
     });
 
-    //event listener for the pop up close button
-    closeButton.addEventListener('click', () => {
-        signInPopUp.style.display = 'none';
-        isPopUpOpen = false;
+    //event listener for the sign in modal close button
+    closeModalButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        signInModal.reset();
+        signInModalBackdrop.style.display = 'none';
+        signInModal.setAttribute('aria-modal', 'false');
+        isSignInModalOpen = false;
     });
 
-    //event listener for the user to press escape to close the sign in pop up
+    //event listener for the user to press escape to close the sign in modal
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && isPopUpOpen === true) {
-            console.log("Esc pressed and sign in open")
-            isPopUpOpen = false;
-            signInPopUp.style.display = 'none';
-        } else {
-            console.log("Esc pressed but sign in not open?")
+        if (e.key === 'Escape' && isSignInModalOpen === true) {
+            e.preventDefault();
+            signInModal.reset();
+            isSignInModalOpen = false;
+            signInModalBackdrop.style.display = 'none';
+            signInModal.setAttribute('aria-modal', 'false');
         }
-    })
+    });
+
+    //event listener to sign in
+    signInModal.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const modalFormData = new FormData(signInModal);
+        const username = modalFormData.get('username');
+        const password = modalFormData.get('password');
+        console.log(`It's not being used yet, but the passworded entered is ${password}`);
+        localStorage.setItem('username', username);
+        backdrop.style.display = 'none';
+        signIn();
+    });
 
     function signIn() {
         inventoryLink.style.display = 'block';
-        navSignInButton.style.display = 'none';
+        openSignInModal.style.display = 'none';
         navSignOutButton.style.display = 'block';
         console.log('Found username in local storage. Sign in successful');
     }
@@ -57,7 +74,7 @@ function app() {
         localStorage.removeItem("username");
         inventoryLink.style.display = 'none';
         navSignOutButton.style.display = 'none';
-        navSignInButton.style.display = 'block';
+        openSignInModal.style.display = 'block';
     }
 
     //check if signed in
@@ -68,17 +85,7 @@ function app() {
         }
     }
 
-    //event listener to sign in
-    signInForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const signInData = new FormData(signInForm);
-        const username = signInData.get('username');
-        const password = signInData.get('password');
-        console.log(`It's not being used yet, but the passworded entered is ${password}`);
-        localStorage.setItem('username', username);
-        signInPopUp.style.display = 'none';
-        signIn();
-    });
+    
 
     //event listener to sign out
     navSignOutButton.addEventListener('click', () => {

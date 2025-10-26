@@ -33,9 +33,39 @@ function fixDate(dateString, shortDate) {
   }
 }
 
+function trapFocus(modal, backdropID) {
+  //Don't trap focus if the modal/backdrop isn't open
+  if (backdropID.style.display === 'none') {
+    return;
+  }
+  //get all the elements to tab through, define first and last elements
+  const focusableElements = modal.querySelectorAll('button, [href], input, select, textarea');
+  const firstFocusableElement = focusableElements[0];
+  const lastFocusableElement = focusableElements[focusableElements.length - 1];
+  document.addEventListener('keydown', (e) => {
+    //Let user tab through only the elements in the modal
+  if (e.key === 'Tab') {
+    if (e.shiftKey) {
+      //If at first element, loop back to last element
+      if (document.activeElement === firstFocusableElement) {
+        lastFocusableElement.focus();
+        e.preventDefault();
+      }
+    } else {
+      //If at last element, loop to first element
+      if (document.activeElement === lastFocusableElement) {
+        firstFocusableElement.focus();
+        e.preventDefault();
+      }
+    }
+  }
+  });
+  
+}
+
 function updateLocalStorage(itemName, data) {
     let dataString = JSON.stringify(data);
     localStorage.setItem(itemName, dataString);
 }
 
-export { createErrorMessage, fixDate, updateLocalStorage }
+export { createErrorMessage, fixDate, trapFocus, updateLocalStorage }
