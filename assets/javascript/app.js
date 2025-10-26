@@ -106,9 +106,9 @@ function app() {
             //Adding current inventory data to local storage
             updateLocalStorage("currentInventory", data.currentInventory);
             //Adding incoming inventory data to local storage
-            updateLocalStorage("incomingInventory", data.incomingInventory);
+            updateLocalStorage("donatedInventory", data.donatedInventory);
             //Adding outgoing inventory data to local storage
-            updateLocalStorage("outgoingInventory", data.outgoingInventory)
+            updateLocalStorage("distributedInventory", data.distributedInventory)
             //fetch events data from events.json
             response = await fetch('assets/events.json');
             if (!response.ok) {

@@ -1,9 +1,9 @@
-import { createErrorMessage, updateLocalStorage } from './coreFunctions.js'
+import { addItemToTable, createErrorMessage, updateLocalStorage } from './coreFunctions.js'
 
 //Get event id from url
 const queryString = window.location.search;
 const urlParam = new URLSearchParams(queryString);
-const paramEventID = urlParam.get('id');
+const parameventId = urlParam.get('id');
 //Get data from local storage
 let username = localStorage.getItem('username');
 let isUserSignedIn = false;
@@ -11,9 +11,9 @@ const eventsLocalStorage = localStorage.getItem('events');
 let eventsData = JSON.parse(eventsLocalStorage);
 const SignUpEntriesLocalStorge = localStorage.getItem('SignUpEntries');
 let SignUpEntriesData = JSON.parse(SignUpEntriesLocalStorge);
-//Get event and sign up entries matching eventID
-const eventObject = eventsData.find(eventObject => parseInt(eventObject.eventID) === parseInt(paramEventID));
-let eventSignUpEntries = SignUpEntriesData.filter(person => parseInt(person.eventID) === parseInt(paramEventID));
+//Get event and sign up entries matching eventId
+const eventObject = eventsData.find(eventObject => parseInt(eventObject.eventId) === parseInt(parameventId));
+let eventSignUpEntries = SignUpEntriesData.filter(person => parseInt(person.eventId) === parseInt(parameventId));
 //page elements
 const editForm = document.getElementById('edit-form');
 let eventTitleInput = document.getElementById('event-title');
@@ -66,11 +66,12 @@ function resetInfo() {
 }
 
 function updateEvent() {
+    //Update this when data storage is implemented
     let eventIndex = eventsData.findIndex(item => {
-        return parseInt(item.eventID) === parseInt(paramEventID);
+        return parseInt(item.eventId) === parseInt(parameventId);
     });
     let updatedEvent = {
-        "eventID": paramEventID,
+        "eventId": parameventId,
         "eventTitle": eventTitleInput.value,
         "eventDate": eventDateInput.value,
         "eventLocation": eventLocationInput.value,
@@ -83,46 +84,24 @@ function updateEvent() {
     window.location.reload();
 }
 
-function addToPersonTable(person, empty) {
-    let newRow = document.createElement('tr');
-    if (!empty) {
-        let nameCell = document.createElement('td');
-        let name = document.createTextNode(person.fullName);
-        nameCell.appendChild(name);
-        newRow.appendChild(nameCell);
-        let emailCell = document.createElement('td');
-        let email = document.createTextNode(person.email);
-        emailCell.appendChild(email);
-        newRow.appendChild(emailCell);
-        let commentsCell = document.createElement('td');
-        let comments = document.createTextNode(person.comments);
-        commentsCell.appendChild(comments);
-        newRow.appendChild(commentsCell);
-    } else {
-        let noneCell = document.createElement('td');
-        noneCell.setAttribute('colspan', '3');
-        let noneText = document.createTextNode("No sign up entires for this event");
-        noneCell.appendChild(noneText);
-        newRow.appendChild(noneCell);
-    }
-    entriesTableBody.appendChild(newRow);
-}
-
 function deleteEvent() {
-    let signUpEntriesWithoutEvent = SignUpEntriesData.filter(item => parseInt(item.eventID) !== parseInt(paramEventID));
+    let signUpEntriesWithoutEvent = SignUpEntriesData.filter(item => parseInt(item.eventId) !== parseInt(parameventId));
     updateLocalStorage("SignUpEntries", signUpEntriesWithoutEvent);
-    let arrayWithoutEvent = eventsData.filter(item => parseInt(item.eventID) !== parseInt(paramEventID));
+    let arrayWithoutEvent = eventsData.filter(item => parseInt(item.eventId) !== parseInt(parameventId));
     updateLocalStorage("events", arrayWithoutEvent);
     window.location.href = 'events.html';
 }
 
 function populateEntiresTable() {
-    if (eventSignUpEntries.length === 0) {
-        addToPersonTable('', true);
+    //entriesTableBody
+    let entiresLength = eventSignUpEntries.length;
+    if (entiresLength === 0) {
+        let noneRow = addItemToTable({}, 4);
+        entriesTableBody.appendChild(noneRow);
     } else {
-        let l = eventSignUpEntries.length;
-        for (let i = 0; i < l; i++) {
-            addToPersonTable(eventSignUpEntries[i], false);
+        for (let i = 0; i < entiresLength; i++) {
+            let newRow = addItemToTable(eventSignUpEntries[i], 4, "SignUpEntries");
+            entriesTableBody.appendChild(newRow);
         }
     }
 }

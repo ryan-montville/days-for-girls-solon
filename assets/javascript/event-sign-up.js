@@ -8,9 +8,9 @@ let SignUpEntriesData = JSON.parse(SignUpEntriesLocalStorge);
 //Get event id from url
 const queryString = window.location.search;
 const urlParam = new URLSearchParams(queryString);
-const paramEventID = urlParam.get('id');
-//Get event matching eventID
-const eventObject = eventsData.find(eventObject => parseInt(eventObject.eventID) === parseInt(paramEventID));
+const parameventId = urlParam.get('id');
+//Get event matching eventId
+const eventObject = eventsData.find(eventObject => parseInt(eventObject.eventId) === parseInt(parameventId));
 
 //page elements
 let signUpHeader = document.getElementById('sign-up-header');
@@ -34,7 +34,7 @@ function setEventInfo() {
 
 function updateSignUpCount() {
     let eventIndex = eventsData.findIndex(item => {
-        return parseInt(item.eventID) === parseInt(paramEventID);
+        return parseInt(item.eventId) === parseInt(parameventId);
     });
     eventsData[eventIndex].numberAttending = parseInt(eventObject.numberAttending) + 1;
     updateLocalStorage("events", eventsData);
@@ -45,7 +45,7 @@ eventSignUpForm.addEventListener('submit', (event) => {
     event.preventDefault();
     let eventSignUpData = new FormData(eventSignUpForm);
     let newSignUp = {
-        "eventID": paramEventID,
+        "eventId": parameventId,
         "fullName": eventSignUpData.get('fullName'),
         "email": eventSignUpData.get('email'),
         "comments": eventSignUpData.get('comments')

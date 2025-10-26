@@ -10,7 +10,7 @@ let isUserSignedIn = false;
 
 function createEventElement(eventData) {
     let newEvent = document.createElement('section');
-    newEvent.setAttribute('id', eventData.eventID);
+    newEvent.setAttribute('id', eventData.eventId);
     newEvent.setAttribute('class', 'card');
     let eventH3 = document.createElement('h3');
     let eventTitle = document.createTextNode(eventData.eventTitle);
@@ -38,12 +38,12 @@ function createEventElement(eventData) {
     button.setAttribute('class', 'secondary');
     if (isUserSignedIn) {
         //Add manage event button
-        button.setAttribute('href', `manage-event.html?id=${eventData.eventID}`);
+        button.setAttribute('href', `manage-event.html?id=${eventData.eventId}`);
         button.textContent = 'Manage Event';
 
     } else {
         //Add sign up button
-        button.setAttribute('href', `event-sign-up.html?id=${eventData.eventID}`);
+        button.setAttribute('href', `event-sign-up.html?id=${eventData.eventId}`);
         button.textContent = 'Sign Up';
 
     }

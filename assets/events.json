@@ -1,7 +1,7 @@
 {
     "upcomingEvents": [
         {
-            "eventID": 1,
+            "eventId": 1,
             "eventTitle": "Sewing Day",
             "eventDate": "10/25/2025",
             "eventLocation": "Community Center 123 Street RD Solon, OH 44139",
@@ -10,7 +10,7 @@
             "numberAttending": 6
         },
         {
-            "eventID": 2,
+            "eventId": 2,
             "eventTitle": "Kit Assembly",
             "eventDate": "11/01/2025",
             "eventLocation": "Community Center 123 Street RD Solon, OH 44139",
@@ -19,7 +19,7 @@
             "numberAttending": 10
         },
         {
-            "eventID": 3,
+            "eventId": 3,
             "eventTitle": "Sewing Day",
             "eventDate": "11/02/2025",
             "eventLocation": "54321 Random AVE Solon, OH 44139",
@@ -30,139 +30,162 @@
     ],
     "SignUpEntries": [
         {
-            "eventID": 1,
+            "entryId": 1,
+            "eventId": 1,
             "fullName": "Mae R",
             "email": "maer42@gmail.com",
             "comments": ""
         },
         {
-            "eventID": 1,
+            "entryId": 7,
+            "eventId": 1,
             "fullName": "Brenda C",
             "email": "brendac159@yahoo.com",
             "comments": ""
         },
         {
-            "eventID": 1,
+            "entryId": 2,
+            "eventId": 1,
             "fullName": "Phillip B",
             "email": "phillipb327@gmail.com",
             "comments": ""
         },
         {
-            "eventID": 1,
+            "entryId": 3,
+            "eventId": 1,
             "fullName": "Kelly M",
             "email": "kellym55@aol.com",
             "comments": ""
         },
         {
-            "eventID": 1,
+            "entryId": 4,
+            "eventId": 1,
             "fullName": "Kayla P",
             "email": "kaylap@gmail.com",
             "comments": ""
         },
         {
-            "eventID": 1,
+            "entryId": 5,
+            "eventId": 1,
             "fullName": "Monica J",
             "email": "monicaj57@yahoo.com",
             "comments": ""
         },
         {
-            "eventID": 2,
+            "entryId": 6,
+            "eventId": 2,
             "fullName": "Gene M",
             "email": "genem147@gmail.com",
             "comments": ""
         },
         {
-            "eventID": 2,
+            "entryId": 7,
+            "eventId": 2,
             "fullName": "Marlene C",
             "email": "marlenec12@gmail.com",
             "comments": ""
         },
         {
-            "eventID": 2,
+            "entryId": 8,
+            "eventId": 2,
             "fullName": "Katie R",
             "email": "katier@yahoo.com",
             "comments": ""
         },
         {
-            "eventID": 2,
+            "entryId": 9,
+            "eventId": 2,
             "fullName": "Susan R",
             "email": "susanr@gmail.com",
             "comments": ""
         },
         {
-            "eventID": 2,
+            "entryId": 10,
+            "eventId": 2,
             "fullName": "Beverly M",
             "email": "beverlym42@aol.com",
             "comments": ""
         },
         {
-            "eventID": 2,
+            "entryId": 11,
+            "eventId": 2,
             "fullName": "Jeffery G",
             "email": "bigjeff@gmail.com",
             "comments": ""
         },
         {
-            "eventID": 2,
+            "entryId": 12,
+            "eventId": 2,
             "fullName": "Nicole G",
             "email": "nicoleg@gmail.com",
             "comments": ""
         },
         {
-            "eventID": 2,
+            "entryId": 13,
+            "eventId": 2,
             "fullName": "Zachary A",
             "email": "zacha99@gmail.com",
             "comments": ""
         },
         {
-            "eventID": 2,
+            "entryId": 14,
+            "eventId": 2,
             "fullName": "Kennedy H",
             "email": "kennyh7000@gmail.com",
             "comments": ""
         },
         {
-            "eventID": 2,
+            "entryId": 15,
+            "eventId": 2,
             "fullName": "Morris W",
             "email": "morrisw12@yahoo.com",
             "comments": ""
         },
         {
-            "eventID": 3,
+            "entryId": 16,
+            "eventId": 3,
             "fullName": "Shannon G",
             "email": "channong3@gmail.com",
             "comments": ""
         },
         {
-            "eventID": 3,
+            "entryId": 17,
+            "eventId": 3,
             "fullName": "Anna T",
             "email": "doglover123@gmail.com",
             "comments": ""
         },
         {
-            "eventID": 3,
+            "entryId": 18,
+            "eventId": 3,
             "fullName": "Katherine P",
             "email": "katp789@aol.com",
             "comments": ""
         },
         {
-            "eventID": 3,
+            "entryId": 19,
+            "eventId": 3,
             "fullName": "George H",
             "email": "georgeh37@gmail.com",
             "comments": ""
         },
         {
-            "eventID": 3,
+            "entryId": 20,
+            "eventId": 3,
             "fullName": "Tristan P",
             "email": "tristanp@gmail.com",
             "comments": ""
         },
         {
-            "eventID": 3,
+            "entryId": 21,
+            "eventId": 3,
             "fullName": "Brittney F",
             "email": "brittenyfforever@gmail.com",
             "comments": ""
         },
         {
-            "eventID": 3,
+            "entryId": 22,
+            "eventId": 3,
             "fullName": "Vincent J",
             "email": "vincentj55@gmail.com",
             "comments": ""

@@ -1,10 +1,10 @@
-import { createErrorMessage, fixDate, updateLocalStorage } from './coreFunctions.js'
+import { addItemToTable, createErrorMessage, updateLocalStorage } from './coreFunctions.js'
 
 //Get data from local storage
 const currentInventoryLocalStorage = localStorage.getItem("currentInventory");
 let currentInventoryData = JSON.parse(currentInventoryLocalStorage);
-const outgoingInventoryLocalStorage = localStorage.getItem("outgoingInventory");
-let outgoingInventoryData = JSON.parse(outgoingInventoryLocalStorage);
+const distributedInventoryLocalStorage = localStorage.getItem("distributedInventory");
+let distributedInventoryData = JSON.parse(distributedInventoryLocalStorage);
 let username = localStorage.getItem('username');
 let isUserSignedIn = false;
 
@@ -14,39 +14,6 @@ const distributedForm = document.getElementById('distributedForm');
 const previousEntriesTable = document.getElementById('previous-entries-table');
 const previousEntriesTableBody = document.createElement('tbody');
 previousEntriesTable.appendChild(previousEntriesTableBody);
-const previousEntriesCard = document.getElementById('outgoing-form');
-
-
-function addItemToTable(component, empty) {
-    let newRow = document.createElement('tr');
-    if (!empty) {
-
-        let dateCell = document.createElement('td');
-        let date = document.createTextNode(fixDate(component.date, true));
-        dateCell.appendChild(date);
-        newRow.appendChild(dateCell);
-        let componentNameCell = document.createElement('td');
-        let componentName = document.createTextNode(component.componentType);
-        componentNameCell.appendChild(componentName);
-        newRow.appendChild(componentNameCell);
-        let componentQuantityCell = document.createElement('td');
-        let componentQuantity = document.createTextNode(component.quantity);
-        newRow.appendChild(componentQuantityCell);
-        componentQuantityCell.appendChild(componentQuantity);
-        let destinationCell = document.createElement('td');
-        let destination = document.createTextNode(component.destination);
-        destinationCell.appendChild(destination);
-        newRow.appendChild(destinationCell);
-
-    } else {
-        let noneCell = document.createElement('td');
-        noneCell.setAttribute('colspan', '3');
-        let noneText = document.createTextNode("No sign up entires for this event");
-        noneCell.appendChild(noneText);
-        newRow.appendChild(noneCell);
-    }
-    previousEntriesTableBody.appendChild(newRow);
-}
 
 function submitData() {
     const distributedFormData = new FormData(distributedForm);
@@ -59,9 +26,9 @@ function submitData() {
             "quantity": distributedFormData.get('quantity'),
             "destination": distributedFormData.get('destination')
         };
-        outgoingInventoryData.push(newComponent);
+        distributedInventoryData.push(newComponent);
         updateCurrentInventory(distributedFormData.get('componentType'), distributedFormData.get('quantity'), "-");
-        updateLocalStorage("outgoingInventory", outgoingInventoryData);
+        updateLocalStorage("outgoingInventory", distributedInventoryData);
         distributedForm.reset();
     }
 }
@@ -83,12 +50,14 @@ function updateCurrentInventory(componentName, quantity, mathOperator) {
 
 //Load data in previous entries table
 function loadPreviousEntries() {
-    if (outgoingInventoryData.length < 1) {
-        addItemToTable('', true);
+    if (distributedInventoryData.length < 1) {
+        let noneRow = addItemToTable({}, 5);
+        previousEntriesTableBody.appendChild(noneRow);
     } else {
-        let l = outgoingInventoryData.length - 1
+        let l = distributedInventoryData.length - 1;
         for (let i = l; i >= 0; i--) {
-            addItemToTable(outgoingInventoryData[i], false);
+            let newRow = addItemToTable( distributedInventoryData[i], 5, "distributedInventory", 'shortDate');
+            previousEntriesTableBody.appendChild(newRow);
         }
     }
 }
