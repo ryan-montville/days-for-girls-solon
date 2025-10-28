@@ -1,0 +1,82 @@
+import { createErrorMessage, fixDate, updateLocalStorage } from "./utils.js";
+import { Event } from "./models.js";
+
+let isUserSignedIn: boolean = false;
+
+function addEventToPage(eventData: Event) {
+    let newEvent: HTMLElement = document.createElement('article');
+    newEvent.setAttribute('id', eventData['eventId'].toString());
+    newEvent.setAttribute('class', 'card');
+    let eventH3: HTMLElement = document.createElement('h3');
+    let eventTitle: Text = document.createTextNode(eventData['eventTitle']);
+    eventH3.appendChild(eventTitle);
+    newEvent.appendChild(eventH3);
+    let eventDateAndTimeH4: HTMLElement = document.createElement('h4');
+    let eventDateAndTime: Text = document.createTextNode(`${fixDate(eventData.eventDate, 'longDate')} ${eventData.eventTime}`);
+    eventDateAndTimeH4.appendChild(eventDateAndTime);
+    newEvent.appendChild(eventDateAndTimeH4);
+    let eventLocationH4: HTMLElement = document.createElement('h4');
+    let eventLocation: Text = document.createTextNode(eventData.eventLocation);
+    eventLocationH4.appendChild(eventLocation);
+    newEvent.appendChild(eventLocationH4);
+    let numberAttendingH4: HTMLElement = document.createElement('h4');
+    let numberAttending: Text = document.createTextNode(`Number Attending: ${eventData.numberAttending}`);
+    numberAttendingH4.appendChild(numberAttending);
+    newEvent.appendChild(numberAttendingH4);
+    let eventDescriptionP: HTMLElement = document.createElement('p');
+    let eventDescription: Text = document.createTextNode(eventData.eventDescription);
+    eventDescriptionP.appendChild(eventDescription);
+    newEvent.appendChild(eventDescriptionP);
+    let buttonRow: HTMLElement = document.createElement('section');
+    buttonRow.setAttribute('class', 'button-row left');
+    let button: HTMLElement = document.createElement('a');
+    button.setAttribute('class', 'secondary');
+    if (isUserSignedIn) {
+        //Add manage event button
+        button.setAttribute('href', `manage-event.html?id=${eventData.eventId}`);
+        button.textContent = 'Manage Event';
+
+    } else {
+        //Add sign up button
+        button.setAttribute('href', `event-sign-up.html?id=${eventData.eventId}`);
+        button.textContent = 'Sign Up';
+
+    }
+    buttonRow.appendChild(button);
+    newEvent.appendChild(buttonRow);
+    let main = document.getElementById('maincontent') as HTMLElement;
+    main.appendChild(newEvent);
+}
+
+function loadEvents() {
+    const eventsData = localStorage.getItem("events");
+    let eventsList: Event[] = []
+    if (eventsData) {
+        eventsList = JSON.parse(eventsData);
+    }
+    const sortedEvents = eventsList.sort((a, b) => {
+        const dateA = new Date(a['eventDate']).getTime();
+        const dateB = new Date(b['eventDate']).getTime();
+        return dateA - dateB;
+    });
+    const eventsListLength = sortedEvents.length;
+    for (let i=0; i<eventsListLength; i++) {
+        addEventToPage(sortedEvents[i]);
+    }
+}
+
+function checkIfSignedIn() {
+    let username = localStorage.getItem("username");
+    if (username) {
+        isUserSignedIn = true;
+        let createNewEventButton = document.createElement('a');
+        createNewEventButton.setAttribute('href', 'create-new-event.html');
+        createNewEventButton.setAttribute('class', 'secondary');
+        createNewEventButton.textContent = "Create New Event";
+        let eventsHeader = document.getElementById('events-header') as HTMLElement;
+        eventsHeader.appendChild(createNewEventButton);
+    }
+}
+
+checkIfSignedIn();
+loadEvents();

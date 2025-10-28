@@ -1,0 +1,16 @@
+{
+  "name": "days-for-girls-solon",
+  "version": "1.0.0",
+  "description": "A web app for the Days for Girls Solon Ohio team",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "start": "npm run watch"
+  },
+  "author": "Ryan Montville",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

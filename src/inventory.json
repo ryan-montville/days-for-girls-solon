@@ -1,18 +1,22 @@
 {
     "currentInventory": [
         {
+            "componentId": 1,
             "componentType": "Carry Pouches",
             "quantity": 131
         },
         {
+            "componentId":2,
             "componentType": "Shields",
             "quantity": 0
         },
         {
+            "componentId": 3,
             "componentType": "Liners",
             "quantity": 772
         },
         {
+            "componentId": 4,
             "componentType": "Tote Bags",
             "quantity": 78
         }

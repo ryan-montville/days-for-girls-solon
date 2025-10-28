@@ -1,4 +1,13 @@
 //This function will be updated once data storage is implemented
+
+/**
+ * 
+ * @param {*} item 
+ * @param {*} numCells 
+ * @param {*} dataTableName 
+ * @param {*} dateFormat 
+ * @returns 
+ */
 function addItemToTable(item, numCells, dataTableName, dateFormat) {
   //Turn the item into arrays of its keys and values
   const itemKeys = Object.keys(item);
