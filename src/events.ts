@@ -1,4 +1,4 @@
-import { createErrorMessage, fixDate, updateLocalStorage } from "./utils.js";
+import { createMessage, fixDate, updateLocalStorage } from "./utils.js";
 import { Event } from "./models.js";
 
 let isUserSignedIn: boolean = false;

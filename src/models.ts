@@ -24,7 +24,7 @@ export interface ComponentItem {
 
 export interface InventoryEntry {
     entryId: number;
-    entryDate: string;
+    entryDate: Date;
     componentType: string;
     quantity: number;
     whoDonated?: string;

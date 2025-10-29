@@ -1,4 +1,4 @@
-import { createErrorMessage, updateLocalStorage } from "./utils.js";
+import { createMessage, updateLocalStorage } from "./utils.js";
 import { Event } from "./models";
 
 const createForm = document.getElementById('create-event') as HTMLFormElement;

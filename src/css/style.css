@@ -3,8 +3,9 @@
         --body-background: #e7e9f1;
         --primary-accent: #ff9f00;
         --secondary-accent: #00bcd9;
-        --error-background: red;
-        --error-text: #fff;
+        --message-text: white;
+        --error-background: #b81f24;
+        --success-background: green;
         --nav-text: #4f4b4e;
         --main-background: #ffffff;
         --main-text: #000000;
@@ -18,7 +19,9 @@
         --body-background: #000000;
         --primary-accent: #ff9f00;
         --secondary-accent: #00bcd9;
-        --error-background: red;
+        --message-text: white;
+        --error-background: #b81f24;
+        --success-background: green;
         --error-text: #fff;
         --nav-text: #ccc;
         --main-background: #333;
@@ -69,19 +72,44 @@ body {
         'opsz' 24
 }
 
-.error-message {
+.message-wrapper {
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
-.error-message p {
-    background-color: var(--error-background);
-    color: var(--error-text);
+.message {
     margin: 10px;
     padding: 10px;
     display: flex;
     align-items: center;
     font-family: Arial, Helvetica, sans-serif;
+    font-weight: 700;
+}
+
+.message button {
+    background-color: inherit;
+    color: inherit;
+    border: 1px solid var(--message-text);
+    border-radius: 5px;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+.success {
+    background-color: var(--success-background);
+    color: var(--message-text);
+}
+
+.error {
+    background-color: var(--error-background);
+    color: var(--message-text);
+}
+
+.error-message p {
+    background-color: var(--error-background);
+    color: var(--error-text);
+    
 }
 
 .error-message i {
@@ -165,8 +193,9 @@ nav a:hover {
 
 /* main */
 main {
+    width: 100%;
     max-width: 900px;
-    margin: 20px auto;
+    margin: 20px 0;
     color: var(--main-text);
     font-size: 20px;
 }
@@ -224,6 +253,7 @@ footer {
     display: flex;
     justify-content: space-around;
     align-items: center;
+    width: 100%;
 }
 
 footer a {

@@ -1,4 +1,4 @@
-import { createErrorMessage, trapFocus, updateLocalStorage } from "./utils.js";
+import { createMessage, trapFocus, updateLocalStorage } from "./utils.js";
 async function loadData() {
     //This will change when proper data storage is implemented
     console.log("Fetching data from JSON and putting in local storage");
@@ -6,8 +6,7 @@ async function loadData() {
         //Fetch inventory data from inventory.json
         let response = await fetch('src/inventory.json');
         if (!response.ok) {
-            createErrorMessage(`Error loading the data. Status: ${response.status}`, 'main');
-            throw new Error(`Error loading data. Status: ${response.status}`);
+            createMessage(`Error loading the data. Status: ${response.status}`, 'main-message', 'error');
         }
         let data = await response.json();
         console.log(`Fetched inventory data`);
@@ -20,8 +19,7 @@ async function loadData() {
         //fetch events data from events.json
         response = await fetch('src/events.json');
         if (!response.ok) {
-            createErrorMessage(`Error loading the data. Status: ${response.status}`, 'main');
-            throw new Error(`Error loading data. Status: ${response.status}`);
+            createMessage(`Error loading the data. Status: ${response.status}`, 'main-message', 'error');
         }
         data = await response.json();
         console.log(`Fetched events data`);
@@ -30,8 +28,7 @@ async function loadData() {
         updateLocalStorage("SignUpEntries", data['SignUpEntries']);
     }
     catch (error) {
-        createErrorMessage(error, 'main');
-        console.error("Failed to load data: ", error);
+        createMessage(error, 'main-message', 'error');
     }
 }
 function checkForLocalStorageData() {
@@ -88,9 +85,10 @@ signInModal.addEventListener('submit', (event) => {
         localStorage.setItem('username', username?.toString());
     }
     else {
-        createErrorMessage("Username must not be empty", "signin");
+        createMessage("Username must not be empty", "sign-in-message", "error");
     }
     signInModalBackdrop.style.display = 'none';
+    createMessage("Sign In Successful", "main-message", "check_circle");
     signIn();
 });
 //event listener to sign out
