@@ -12,19 +12,19 @@ function addEventToPage(eventData: Event) {
     eventH3.appendChild(eventTitle);
     newEvent.appendChild(eventH3);
     let eventDateAndTimeH4: HTMLElement = document.createElement('h4');
-    let eventDateAndTime: Text = document.createTextNode(`${fixDate(eventData['eventDate'].toString(), 'longDate')} ${eventData.eventTime}`);
+    let eventDateAndTime: Text = document.createTextNode(`${fixDate(eventData['eventDate'].toString(), 'longDate')} ${eventData['eventTime']}`);
     eventDateAndTimeH4.appendChild(eventDateAndTime);
     newEvent.appendChild(eventDateAndTimeH4);
     let eventLocationH4: HTMLElement = document.createElement('h4');
-    let eventLocation: Text = document.createTextNode(eventData.eventLocation);
+    let eventLocation: Text = document.createTextNode(eventData['eventLocation']);
     eventLocationH4.appendChild(eventLocation);
     newEvent.appendChild(eventLocationH4);
     let numberAttendingH4: HTMLElement = document.createElement('h4');
-    let numberAttending: Text = document.createTextNode(`Number Attending: ${eventData.numberAttending}`);
+    let numberAttending: Text = document.createTextNode(`Number Attending: ${eventData['numberAttending']}`);
     numberAttendingH4.appendChild(numberAttending);
     newEvent.appendChild(numberAttendingH4);
     let eventDescriptionP: HTMLElement = document.createElement('p');
-    let eventDescription: Text = document.createTextNode(eventData.eventDescription);
+    let eventDescription: Text = document.createTextNode(eventData['eventDescription']);
     eventDescriptionP.appendChild(eventDescription);
     newEvent.appendChild(eventDescriptionP);
     let buttonRow: HTMLElement = document.createElement('section');
@@ -33,12 +33,12 @@ function addEventToPage(eventData: Event) {
     button.setAttribute('class', 'secondary');
     if (isUserSignedIn) {
         //Add manage event button
-        button.setAttribute('href', `manage-event.html?id=${eventData.eventId}`);
+        button.setAttribute('href', `manage-event.html?id=${eventData['eventId']}`);
         button.textContent = 'Manage Event';
 
     } else {
         //Add sign up button
-        button.setAttribute('href', `event-sign-up.html?id=${eventData.eventId}`);
+        button.setAttribute('href', `event-sign-up.html?id=${eventData['eventId']}`);
         button.textContent = 'Sign Up';
 
     }

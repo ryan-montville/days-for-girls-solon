@@ -9,19 +9,19 @@ function addEventToPage(eventData) {
     eventH3.appendChild(eventTitle);
     newEvent.appendChild(eventH3);
     let eventDateAndTimeH4 = document.createElement('h4');
-    let eventDateAndTime = document.createTextNode(`${fixDate(eventData['eventDate'].toString(), 'longDate')} ${eventData.eventTime}`);
+    let eventDateAndTime = document.createTextNode(`${fixDate(eventData['eventDate'].toString(), 'longDate')} ${eventData['eventTime']}`);
     eventDateAndTimeH4.appendChild(eventDateAndTime);
     newEvent.appendChild(eventDateAndTimeH4);
     let eventLocationH4 = document.createElement('h4');
-    let eventLocation = document.createTextNode(eventData.eventLocation);
+    let eventLocation = document.createTextNode(eventData['eventLocation']);
     eventLocationH4.appendChild(eventLocation);
     newEvent.appendChild(eventLocationH4);
     let numberAttendingH4 = document.createElement('h4');
-    let numberAttending = document.createTextNode(`Number Attending: ${eventData.numberAttending}`);
+    let numberAttending = document.createTextNode(`Number Attending: ${eventData['numberAttending']}`);
     numberAttendingH4.appendChild(numberAttending);
     newEvent.appendChild(numberAttendingH4);
     let eventDescriptionP = document.createElement('p');
-    let eventDescription = document.createTextNode(eventData.eventDescription);
+    let eventDescription = document.createTextNode(eventData['eventDescription']);
     eventDescriptionP.appendChild(eventDescription);
     newEvent.appendChild(eventDescriptionP);
     let buttonRow = document.createElement('section');
@@ -30,12 +30,12 @@ function addEventToPage(eventData) {
     button.setAttribute('class', 'secondary');
     if (isUserSignedIn) {
         //Add manage event button
-        button.setAttribute('href', `manage-event.html?id=${eventData.eventId}`);
+        button.setAttribute('href', `manage-event.html?id=${eventData['eventId']}`);
         button.textContent = 'Manage Event';
     }
     else {
         //Add sign up button
-        button.setAttribute('href', `event-sign-up.html?id=${eventData.eventId}`);
+        button.setAttribute('href', `event-sign-up.html?id=${eventData['eventId']}`);
         button.textContent = 'Sign Up';
     }
     buttonRow.appendChild(button);
