@@ -61,7 +61,7 @@ function submitData() {
         createMessage("Please enter a description for the event", "main-message", "error");
         return;
     } else {
-        newEvent['eventDescription'] = eventDescription.toString();
+        newEvent['eventDescription'] = eventDescriptionValue.toString();
     }
     eventsData.push(newEvent);
     updateLocalStorage("events", eventsData);

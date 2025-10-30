@@ -62,7 +62,7 @@ function submitData() {
         return;
     }
     else {
-        newEvent['eventDescription'] = eventDescription.toString();
+        newEvent['eventDescription'] = eventDescriptionValue.toString();
     }
     eventsData.push(newEvent);
     updateLocalStorage("events", eventsData);
