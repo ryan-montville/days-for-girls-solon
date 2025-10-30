@@ -1,4 +1,4 @@
-import { createMessage, fixDate, updateLocalStorage } from "./utils.js";
+import { createMessage, clearMessages, fixDate, updateLocalStorage } from "./utils.js";
 const eventsLocalStorage = localStorage.getItem('events');
 let eventsData = JSON.parse(eventsLocalStorage);
 const SignUpEntriesLocalStorge = localStorage.getItem('SignUpEntries');
@@ -39,6 +39,7 @@ function setEventInfo(eventInfo) {
     signUpHeader.appendChild(eventLocationH3);
 }
 function submitData() {
+    clearMessages();
     //Get the form data
     const signUpFormData = new FormData(signUpForm);
     //Create an object for the entry

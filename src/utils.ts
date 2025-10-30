@@ -66,6 +66,10 @@ export function createMessage(message: string, location: string, type: string) {
         messageDiv.setAttribute('class', 'delete message');
         messageDiv.setAttribute('aria-live', 'polite');
         console.warn(message);
+    } else {
+        messageDiv.setAttribute('class', 'info message');
+        messageDiv.setAttribute('aria-live', 'polite');
+        console.log(message);
     }
     let icon = document.createElement('span');
     icon.setAttribute('class', 'material-symbols-outlined');

@@ -113,6 +113,11 @@ body {
     color: var(--message-text);
 }
 
+.info {
+    background-color: var(--secondary-accent);
+    color: var(--message-text);
+}
+
 header {
     margin: 20px;
     display: flex;
