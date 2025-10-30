@@ -33,24 +33,83 @@ const eventObject: Event | undefined = eventsData.find(eventObject => eventObjec
 
 function resetInfo(eventObject: Event) {
     //Get event title input and set the value
-    let eventTitleInput = document.getElementById('event-title') as HTMLInputElement;
+    let eventTitleInput = document.getElementById('eventTitle') as HTMLInputElement;
     eventTitleInput.value = eventObject['eventTitle'];
     //Get event date input, create a new date object, get the date, and set the value
-    let eventDateInput = document.getElementById('event-date') as HTMLInputElement;
+    let eventDateInput = document.getElementById('eventDate') as HTMLInputElement;
     let eventDate: Date = new Date(eventObject['eventDate']);
     eventDateInput.value = eventDate.toISOString().split('T')[0];
     //Get event location input and set the value
-    let eventLocationInput = document.getElementById('event-location') as HTMLInputElement;
+    let eventLocationInput = document.getElementById('eventLocation') as HTMLInputElement;
     eventLocationInput.value = eventObject['eventLocation'];
     //Get event time input and set the value
-    let eventTimeInput = document.getElementById('event-time') as HTMLInputElement;
+    let eventTimeInput = document.getElementById('eventTime') as HTMLInputElement;
     eventTimeInput.value = eventObject['eventTime'];
     //Get event description textarea and set the value
-    let eventDescriptionInput = document.getElementById('event-description') as HTMLInputElement
+    let eventDescriptionInput = document.getElementById('eventDescription') as HTMLInputElement
     eventDescriptionInput.value = eventObject['eventDescription'];
 }
 
 function editEventInfo() {
+    let formData: FormData = new FormData(editForm);
+    //Create an object for the updated event
+    let updatedEvent: Event = {
+        eventId: paramEventId,
+        eventTitle: "",
+        eventDate: new Date(),
+        eventLocation: "",
+        eventTime: "",
+        eventDescription: "",
+        numberAttending: 0
+    }
+    //Validate the event title input
+    let TitleValue = formData.get('eventTitle');
+    if (TitleValue === null || TitleValue.toString().trim() === '') {
+        createMessage("Please enter the title of the event", "main-message", "error");
+        return;
+    } else {
+        updatedEvent['eventTitle'] = TitleValue.toString();
+    }
+    //Validate the event date input
+    const dateValue = formData.get('eventDate');
+    if (dateValue === null || dateValue === '') {
+        createMessage("Please enter the date of the event", "main-message", "error");
+        return;
+    }
+    else {
+        updatedEvent['eventDate'] = new Date(dateValue.toString());
+    }
+    //Validate event location input
+    let locationValue = formData.get('eventLocation');
+    if (locationValue === null || locationValue.toString().trim() === '') {
+        createMessage("Please enter the location of the event", "main-message", "error");
+        return;
+    } else {
+        updatedEvent['eventLocation'] = locationValue.toString();
+    }
+    //Validate event time input
+    let timeValue = formData.get('eventTime');
+    if (timeValue === null || timeValue.toString().trim() === '') {
+        createMessage("Please enter the time of the event", "main-message", "error");
+        return;
+    } else {
+        updatedEvent['eventTime'] = timeValue.toString();
+    }
+    //Get the event description from the textarea, validate, and turn it into a string
+    let eventDescription: string = "";
+    let eventDescriptionValue = formData.get('eventDescription');
+    if (eventDescriptionValue === null || eventDescriptionValue.toString().trim() === '') {
+        createMessage("Please enter a description for the event", "main-message", "error");
+        return;
+    } else {
+        updatedEvent['eventDescription'] = eventDescriptionValue.toString();
+    }
+    //Get index of event object in array for local storage
+    //This will probably change with proper data storage
+    let eventObjIndex: number = eventsData.findIndex(item => item['eventId'] === paramEventId);
+    eventsData[eventObjIndex] = updatedEvent;
+    updateLocalStorage("events", eventsData);
+    createMessage("The event was successfully updated", "main-message", "check_circle")
 
 }
 

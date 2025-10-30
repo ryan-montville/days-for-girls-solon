@@ -108,7 +108,7 @@ body {
     color: var(--message-text);
 }
 
-.delete {
+.warn {
     background-color: var(--delete-background);
     color: var(--message-text);
 }

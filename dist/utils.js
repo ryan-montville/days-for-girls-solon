@@ -61,8 +61,8 @@ export function createMessage(message, location, type) {
         messageDiv.setAttribute('role', 'alert');
         console.error(message);
     }
-    else if (type === 'delete') {
-        messageDiv.setAttribute('class', 'delete message');
+    else if (type === 'delete' || type === 'warn') {
+        messageDiv.setAttribute('class', 'warn message');
         messageDiv.setAttribute('aria-live', 'polite');
         console.warn(message);
     }

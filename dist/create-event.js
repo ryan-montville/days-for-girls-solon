@@ -56,7 +56,6 @@ function submitData() {
     //Get the event description from the textarea, validate, and turn it into a string
     let eventDescription = "";
     let eventDescriptionValue = formData.get('eventDescription');
-    console.log(`Event desc = ${eventDescriptionValue}`);
     if (eventDescriptionValue === null || eventDescriptionValue.toString().trim() === '') {
         createMessage("Please enter a description for the event", "main-message", "error");
         return;
