@@ -6,6 +6,7 @@
         --message-text: white;
         --error-background: #b81f24;
         --success-background: green;
+        --delete-background: #FC6A03;
         --nav-text: #4f4b4e;
         --main-background: #ffffff;
         --main-text: #000000;
@@ -22,6 +23,7 @@
         --message-text: white;
         --error-background: #b81f24;
         --success-background: green;
+        --delete-background: #FC6A03;
         --error-text: #fff;
         --nav-text: #ccc;
         --main-background: #333;
@@ -106,14 +108,9 @@ body {
     color: var(--message-text);
 }
 
-.error-message p {
-    background-color: var(--error-background);
-    color: var(--error-text);
-    
-}
-
-.error-message i {
-    margin-right: 5px;
+.delete {
+    background-color: var(--delete-background);
+    color: var(--message-text);
 }
 
 header {
@@ -253,7 +250,7 @@ footer {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    width: 100%;
+    width: calc(99vw - 20px);
 }
 
 footer a {

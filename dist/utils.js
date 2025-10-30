@@ -3,7 +3,6 @@ export function addITemToTable(item, numCells, dataTableName, dateFormat) {
     const itemKeys = Object.keys(item);
     const itemValues = Object.values(item);
     const itemValuesLength = itemValues.length;
-    console.log(`Adding item #${itemValues[0]} to the table`);
     //Find how many keys are ids, set keyStartIndex to skip them
     const keyStartIndex = itemKeys.filter(keyName => keyName.includes('Id')).length;
     let newRow = document.createElement('tr');
@@ -22,7 +21,6 @@ export function addITemToTable(item, numCells, dataTableName, dateFormat) {
             if (itemKeys[i] === 'entryDate') {
                 if (dateFormat) {
                     let dateFixed = fixDate(itemValues[i], dateFormat);
-                    console.log(`The fixed date for item #${itemValues[0]} = ${dateFixed}`);
                     let dateString = document.createTextNode(dateFixed);
                     newCell.appendChild(dateString);
                 }
@@ -61,6 +59,10 @@ export function createMessage(message, location, type) {
         messageDiv.setAttribute('class', 'error message');
         console.error(message);
     }
+    else if (type === 'delete') {
+        messageDiv.setAttribute('class', 'delete message');
+        console.warn(message);
+    }
     let icon = document.createElement('span');
     icon.setAttribute('class', 'material-symbols-outlined');
     let iconName = document.createTextNode(type);
@@ -85,13 +87,36 @@ export function clearMessages() {
 }
 function deleteItem(dataTableName, idKeyName, itemId) {
     //This function will be updated once data storage is resolved. Currently just updates local storage
+    let deleteMessage = "";
     let itemArrayLocalStorage = localStorage.getItem(dataTableName);
-    if (itemArrayLocalStorage) {
-        let itemArray = JSON.parse(itemArrayLocalStorage);
+    let itemArray = JSON.parse(itemArrayLocalStorage);
+    let itemToDelete = null;
+    if (dataTableName === 'donatedInventory') {
+        itemToDelete = itemArray.find((item) => item[idKeyName] === itemId);
+        deleteMessage = `Deleted ${itemToDelete['quantity']} ${itemToDelete['componentType']} donated on ${fixDate(itemToDelete.entryDate.toString(), 'shortDate')} by ${itemToDelete['whoDonated']}`;
+    }
+    else if (dataTableName === 'distributedInventory') {
+        itemToDelete = itemArray.find((item) => item[idKeyName] === itemId);
+        deleteMessage = `Deleted ${itemToDelete['quantity']} ${itemToDelete['componentType']} distributed on ${fixDate(itemToDelete.entryDate.toString(), 'shortDate')} to ${itemToDelete['destination']}`;
+    }
+    else if (dataTableName === 'SignUpEntries') {
+        itemToDelete = itemArray.find((item) => item[idKeyName] === itemId);
+        deleteMessage = `Deleted sign up from ${itemToDelete['fullName']}`;
+    }
+    else if (dataTableName === 'currentInventory') {
+        itemToDelete = itemArray.find((item) => item[idKeyName] === itemId);
+        deleteMessage = `Deleted ${itemToDelete.componentType} from database`;
+    }
+    if (itemToDelete) {
         alert(`Deleting ${idKeyName} ${itemId}`);
         let filteredItemArray = itemArray.filter((item) => item[idKeyName] !== itemId);
+        //If deleting component from current inventory, delete from donatedInventory and distributedInventory as well
         updateLocalStorage(dataTableName, filteredItemArray);
-        window.location.reload();
+        createMessage(deleteMessage, "main-message", "delete");
+        //window.location.reload(); figure out different way to update the dom without reloading page
+    }
+    else {
+        createMessage("Item already removed from database. Try reloading the page", "main-message", "error");
     }
 }
 export function fixDate(dateString, dateFormat) {
@@ -105,7 +130,6 @@ export function fixDate(dateString, dateFormat) {
         });
     }
     else {
-        console.log(`The date format given is ${dateFormat}`);
         return dateTimezoneFixed.toLocaleDateString('en-US', {
             month: 'long',
             day: '2-digit',
