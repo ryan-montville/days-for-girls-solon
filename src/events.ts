@@ -12,7 +12,7 @@ function addEventToPage(eventData: Event) {
     eventH3.appendChild(eventTitle);
     newEvent.appendChild(eventH3);
     let eventDateAndTimeH4: HTMLElement = document.createElement('h4');
-    let eventDateAndTime: Text = document.createTextNode(`${fixDate(eventData.eventDate, 'longDate')} ${eventData.eventTime}`);
+    let eventDateAndTime: Text = document.createTextNode(`${fixDate(eventData['eventDate'].toString(), 'longDate')} ${eventData.eventTime}`);
     eventDateAndTimeH4.appendChild(eventDateAndTime);
     newEvent.appendChild(eventDateAndTimeH4);
     let eventLocationH4: HTMLElement = document.createElement('h4');

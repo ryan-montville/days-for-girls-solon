@@ -56,12 +56,15 @@ export function createMessage(message: string, location: string, type: string) {
     let messageDiv = document.createElement('div');
     if (type === 'check_circle') {
         messageDiv.setAttribute('class', 'success message');
+        messageDiv.setAttribute('aria-live', 'polite');
         console.log(message);
     } else if (type === 'error') {
         messageDiv.setAttribute('class', 'error message');
+        messageDiv.setAttribute('role', 'alert');
         console.error(message);
     } else if (type === 'delete') {
         messageDiv.setAttribute('class', 'delete message');
+        messageDiv.setAttribute('aria-live', 'polite');
         console.warn(message);
     }
     let icon = document.createElement('span');

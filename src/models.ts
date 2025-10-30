@@ -13,7 +13,7 @@ export interface SignUpEntry {
     eventId: number;
     fullName: string;
     email: string;
-    comments: string;
+    comments?: string;
 }
 
 export interface ComponentItem {
