@@ -4,31 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="assets/css/style.css" rel="stylesheet" />
-    <link href="assets/css/forms.css" rel="stylesheet" />
-    <link href="assets/css/grid.css" rel="stylesheet" />
-    <link href="assets/css/tables.css" rel="stylesheet" />
-    <link rel="icon" type="image/x-icon" href="assets/images/icon.png">
+    <link href="src/css/style.css" rel="stylesheet" />
+    <link href="src/css/forms.css" rel="stylesheet" />
+    <link href="src/css/grid.css" rel="stylesheet" />
+    <link href="src/css/tables.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="src/images/icon.png">
     <meta name="theme-color" content="#ff9f00">
     <title>Days For Girls Solon Team</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Solway:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <link rel="icon" href="assets/images/icon.png" sizes="192x192" />
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 
 <body>
     <a href="#maincontent" class="skip-link">Skip to main content</a>
+    <div id="page-wrapper">
     <header>
         <picture>
             <!--user's system is set to dark mode-->
-            <source srcset="assets/images/logo-light.png" media="(prefers-color-scheme: light)" id="header-logo" />
+            <source srcset="src/images/logo-light.png" media="(prefers-color-scheme: light)" id="header-logo" />
             <!--user's system is set to light mode-->
-            <source srcset="assets/images/logo-dark.png" media="(prefers-color-scheme: dark)" id="header-logo" />
+            <source srcset="src/images/logo-dark.png" media="(prefers-color-scheme: dark)" id="header-logo" />
             <!--no color preference found: use light mode-->
-            <img src="assets/images/logo-light.png" alt="Days for Girls logo" id="header-logo" />
+            <img src="src/images/logo-light.png" alt="Days for Girls logo" id="header-logo" />
         </picture>
         <nav>
             <a href="index.html">Home</a>
@@ -40,34 +40,12 @@
             <button id="sign-out-button">Sign Out</button>
         </nav>
     </header>
-    <div id="backdrop">
-        <form
-            role="dialog"
-            id="sign-in-modal"
-            aria-modal="false"
-            aria-labelledby="dialog-label">
-            <div id="form-response"></div>
-            <h2 id="dialog-label">Sign In</h2>
-            <section class="form-row">
-                <label for="username">Username:</label>
-                <input type="email" id="username" name="username" required/>
-            </section>
-            <section class="form-row">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required/>
-            </section>
-            <section class="form-row">
-                <button type="button" id="close-modal-button" class="secondary">Close</button>
-                <button type="submit" id="form-sign-in-button" class="primary">Sign In</button>
-            </section>
-        </form>
-    </div>
+    <section class="message-wrapper" id="main-message"></section>
     <main id="maincontent">
         <section class="button-row left">
             <a href="events.html" class="secondary">
                 <span class="material-symbols-outlined">arrow_back</span> Back to Events</a>
         </section>
-        <section class="error-message" id="mainError"></section>
         <form class="card" id="edit-form">
             <h2 id="form-title">Edit Event</h2>
             <section class="form-row">
@@ -92,8 +70,8 @@
                 <textarea id="event-description" name="event-description"></textarea>
             </section>
             <div class="button-row">
-                <button class="secondary" id="reset">Reset Form</button>
-                <button class="primary" id="update">Update Event</button>
+                <button type="button" class="secondary" id="reset">Reset Form</button>
+                <button type="submit" class="primary" id="update">Update Event</button>
             </div>
         </form>
         <section class="card" id="sign-up-entires">
@@ -110,7 +88,7 @@
         <section class="card" id="deleteEventCard">
             <h2 id="delete-title"></h2>
             <div class="button-row">
-                <button class="delete-button full" id="delete-button">DELETE</button>
+                <button type="button" class="delete-button full" id="delete-button">DELETE</button>
             </div>
         </section>
     </main>
@@ -119,8 +97,28 @@
         <a href="#">Follow us on Instagram</a>
         <a href="https://www.daysforgirls.org/">Days for Girls International</a>
     </footer>
-    <script type="module" src="assets/javascript/app.js"></script>
-    <script type="module" src="assets/javascript/manage-event.js"></script>
+    </div>
+    <!--Sign In Modal-->
+    <div id="backdrop">
+        <form role="dialog" id="sign-in-modal" aria-modal="false" aria-labelledby="dialog-label">
+            <section class="message-wrapper" id="sign-in-message"></section>
+            <h2 id="dialog-label">Sign In</h2>
+            <section class="form-row">
+                <label for="username">Username:</label>
+                <input type="email" id="username" name="username" required />
+            </section>
+            <section class="form-row">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required />
+            </section>
+            <section class="form-row">
+                <button type="button" id="close-modal-button" class="secondary">Close</button>
+                <button type="submit" id="form-sign-in-button" class="primary">Sign In</button>
+            </section>
+        </form>
+    </div>
+    <script type="module" src="dist/app.js"></script>
+    <script type="module" src="dist/manage-event.js"></script>
 </body>
 
 </html>
