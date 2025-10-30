@@ -31,3 +31,10 @@ export interface InventoryEntry {
     destination?: string;
 }
 
+export interface ContactEntry {
+    contactId: number;
+    fullName: string;
+    email: string;
+    volunteerType: string;
+    phone?: number;
+}
