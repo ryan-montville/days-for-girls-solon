@@ -1,4 +1,4 @@
-import { createMessage, updateLocalStorage } from "./utils.js";
+import { clearMessages, createMessage, updateLocalStorage } from "./utils.js";
 import { Event } from "./models";
 
 const createForm = document.getElementById('create-event') as HTMLFormElement;
@@ -71,5 +71,6 @@ function submitData() {
 //Create form submit event listener
 createForm.addEventListener('submit', (e) => {
     e.preventDefault();
+    clearMessages();
     submitData();
 });

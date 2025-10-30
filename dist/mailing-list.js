@@ -75,5 +75,6 @@ function submitData() {
 }
 mailingListForm.addEventListener('submit', (e) => {
     e.preventDefault();
+    clearMessages();
     submitData();
 });

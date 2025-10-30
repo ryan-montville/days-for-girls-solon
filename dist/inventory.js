@@ -1,4 +1,4 @@
-import { addITemToTable, createMessage } from "./utils.js";
+import { addITemToTable, createMessage, clearMessages } from "./utils.js";
 const currentInventoryLocalStorage = localStorage.getItem("currentInventory");
 let currentInventoryData = JSON.parse(currentInventoryLocalStorage);
 const incomingInventoryLocalStorage = localStorage.getItem("incomingInventory");
@@ -59,5 +59,6 @@ function generateReport() {
 loadCurrentInventory();
 generateForm.addEventListener('submit', (e) => {
     e.preventDefault();
+    clearMessages();
     generateReport();
 });

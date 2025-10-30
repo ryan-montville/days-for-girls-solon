@@ -42,7 +42,6 @@ function setEventInfo(eventInfo: Event) {
 }
 
 function submitData() {
-    clearMessages();
     //Get the form data
     const signUpFormData: FormData = new FormData(signUpForm);
     //Create an object for the entry
@@ -119,5 +118,6 @@ if (!eventObject) {
 
 signUpForm.addEventListener('submit', (e) => {
     e.preventDefault();
+    clearMessages();
     submitData();
 });

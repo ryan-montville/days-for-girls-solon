@@ -1,4 +1,4 @@
-import { createMessage, updateLocalStorage } from "./utils.js";
+import { clearMessages, createMessage, updateLocalStorage } from "./utils.js";
 const createForm = document.getElementById('create-event');
 const eventsLocalStorage = localStorage.getItem('events');
 let eventsData = JSON.parse(eventsLocalStorage);
@@ -71,5 +71,6 @@ function submitData() {
 //Create form submit event listener
 createForm.addEventListener('submit', (e) => {
     e.preventDefault();
+    clearMessages();
     submitData();
 });

@@ -39,7 +39,6 @@ function setEventInfo(eventInfo) {
     signUpHeader.appendChild(eventLocationH3);
 }
 function submitData() {
-    clearMessages();
     //Get the form data
     const signUpFormData = new FormData(signUpForm);
     //Create an object for the entry
@@ -117,5 +116,6 @@ else {
 }
 signUpForm.addEventListener('submit', (e) => {
     e.preventDefault();
+    clearMessages();
     submitData();
 });

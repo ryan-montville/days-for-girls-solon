@@ -77,6 +77,7 @@ function submitData() {
 }
 
 function loadPreviousEntries() {
+    clearMessages();
     const previousEntriesTable = document.getElementById('previous-entries-table') as HTMLElement;
     let previousEntriesTableBody = previousEntriesTable.querySelector('tbody');
     if (previousEntriesTableBody === null) {

@@ -69,5 +69,6 @@ function generateReport() {
 loadCurrentInventory();
 generateForm.addEventListener('submit', (e) => {
     e.preventDefault();
+    clearMessages();
     generateReport();
 });
