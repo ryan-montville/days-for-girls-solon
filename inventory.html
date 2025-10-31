@@ -47,7 +47,7 @@
             <a href="donated-inventory.html" class="secondary">Donated Inventory</a>
             <a href="distributed-inventory.html" class="secondary">Distributed inventory</a>
         </section>
-        <section class="card" id="current-inventory">
+        <article class="card" id="current-inventory">
             <h2>Current Inventory</h2>
             <table id="current-inventory-table">
                 <thead>
@@ -55,10 +55,9 @@
                     <th>Quantity</th>
                 </thead>
             </table>
-        </section>
+        </article>
         <section class="message-wrapper" id="report-message"></section>
-        <section class="card" id="inventory-report-card">
-            <form id="generateForm">
+            <form id="generateForm" class="card">
                 <div class="form-row">
                 <span>
                     <label for="startDate">Start Date:</label>
@@ -71,7 +70,6 @@
                 <button type="submit" id="generate-button" class="primary">Generate Report</button>
             </div>
             </form>
-        </section>
     </main>
     <footer>
         <a href="https://www.facebook.com/days.for.girls.solon/">Follow us on Facebook</a>

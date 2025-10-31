@@ -38,3 +38,9 @@ export interface ContactEntry {
     volunteerType: string;
     phone?: number;
 }
+
+export interface ComponentSummary {
+    componentType: string;
+    quantityDonated: number;
+    quantityDistributed: number;
+}
