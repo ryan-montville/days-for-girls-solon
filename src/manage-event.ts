@@ -137,13 +137,6 @@ function deleteEvent() {
     clearMessages();
     if (eventObject) {
         deleteItem("events", "eventId", eventObject['eventId']);
-        // let signUpEntriesWithoutEvent = signUpEntriesData.filter(item => item['eventId'] !== paramEventId);
-        // updateLocalStorage("SignUpEntries", signUpEntriesWithoutEvent);
-        // let arrayWithoutEvent = eventsData.filter(item => item['eventId'] !== paramEventId);
-        // updateLocalStorage("events", arrayWithoutEvent);
-        // createMessage(`"${eventObject['eventTitle']} has been deleted"`, "main-message", "delete");
-        //Figure out how to pass the message to the events page if redirecting user
-        // window.location.href = 'events.html';
     } else {
         createMessage(`The was an error deleting the event. Please go back to the events page and try again`, "main-message", "error");
         deleteEventCard.remove();
