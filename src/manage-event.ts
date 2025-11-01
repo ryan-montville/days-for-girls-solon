@@ -1,4 +1,4 @@
-import { addITemToTable, createMessage, clearMessages, fixDate, updateLocalStorage } from "./utils.js";
+import { addITemToTable, createMessage, clearMessages, deleteItem, fixDate, updateLocalStorage } from "./utils.js";
 import { SignUpEntry, Event } from "./models.js";
 
 const eventsLocalStorage = localStorage.getItem('events') as string;
@@ -136,11 +136,12 @@ function populateEntriesTable(eventObject: Event) {
 function deleteEvent() {
     clearMessages();
     if (eventObject) {
-        let signUpEntriesWithoutEvent = signUpEntriesData.filter(item => item['eventId'] !== paramEventId);
-        updateLocalStorage("SignUpEntries", signUpEntriesWithoutEvent);
-        let arrayWithoutEvent = eventsData.filter(item => item['eventId'] !== paramEventId);
-        updateLocalStorage("events", arrayWithoutEvent);
-        createMessage(`"${eventObject['eventTitle']} has been deleted"`, "main-message", "delete");
+        deleteItem("events", "eventId", eventObject['eventId']);
+        // let signUpEntriesWithoutEvent = signUpEntriesData.filter(item => item['eventId'] !== paramEventId);
+        // updateLocalStorage("SignUpEntries", signUpEntriesWithoutEvent);
+        // let arrayWithoutEvent = eventsData.filter(item => item['eventId'] !== paramEventId);
+        // updateLocalStorage("events", arrayWithoutEvent);
+        // createMessage(`"${eventObject['eventTitle']} has been deleted"`, "main-message", "delete");
         //Figure out how to pass the message to the events page if redirecting user
         // window.location.href = 'events.html';
     } else {

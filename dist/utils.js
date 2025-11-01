@@ -93,7 +93,24 @@ export function clearMessages() {
     mainMessageElement.innerHTML = '';
     signInMessage.innerHTML = '';
 }
-function deleteItem(dataTableName, idKeyName, itemId) {
+function updateItemTotal(item, reasonForUpdate) {
+    if (reasonForUpdate === 'delete') {
+        //update counts to remove item value
+        //Donate - subtract from current inventory
+        //Distribute - add to currrent inventory
+        //sign up - subtract from num attending
+        //Event - remove sign up entries for that event
+        //Component - remove compontent type from donate/distribut forms
+        //Should these last two be in a different function?
+    }
+    else {
+        //update the counts to include new quantity
+        //Donate - add to current inventory
+        //Distribute - subtract from currrent inventory
+        //sign up - add to num attending
+    }
+}
+export function deleteItem(dataTableName, idKeyName, itemId) {
     //This function will be updated once data storage is resolved. Currently just updates local storage
     let deleteModalTitle = "";
     let deletedMessage = "";
@@ -130,9 +147,19 @@ function deleteItem(dataTableName, idKeyName, itemId) {
         //Get the item to delete
         itemToDelete = itemArray.find((item) => item[idKeyName] === itemId);
         //Create the title for the delete modal
-        deleteModalTitle = `Are you sure you want to delete ${itemToDelete.componentType} from database?`;
+        deleteModalTitle = `Are you sure you want to delete ${itemToDelete['componentType']} from database?`;
         //Create the message for successful delete
-        deletedMessage = `Deleted ${itemToDelete.componentType} from database`;
+        deletedMessage = `Deleted ${itemToDelete['componentType']} from database`;
+    }
+    else if (dataTableName === 'events') {
+        //Get the item to delete
+        itemToDelete = itemArray.find((item) => item[idKeyName] === itemId);
+        if (itemToDelete) {
+            //Create the title for the delete modal
+            deleteModalTitle = `Are you sure you want to delete the event "${itemToDelete['eventTitle']} from database"?`;
+            //Create the message for successful delete
+            deletedMessage = `Deleted the event "${itemToDelete['eventTitle']}"`;
+        }
     }
     if (itemToDelete) {
         //Open delete item modal by changing the display of the backdrop
@@ -176,9 +203,10 @@ function deleteItem(dataTableName, idKeyName, itemId) {
         yesButton.addEventListener('click', () => {
             //Filter the item from local storage array
             let filteredItemArray = itemArray.filter((item) => item[idKeyName] !== itemId);
-            //If deleting component from current inventory, delete from donatedInventory and distributedInventory as well
             //Update local storage
             updateLocalStorage(dataTableName, filteredItemArray);
+            //Update the count for the item
+            updateItemTotal(itemToDelete, 'delete');
             //Close the delete modal
             deleteItemBackdrop.style.display = 'none';
             //Create a message after the item is deleted
