@@ -96,7 +96,6 @@ export function clearMessages() {
 function deleteItem(dataTableName, idKeyName, itemId) {
     //This function will be updated once data storage is resolved. Currently just updates local storage
     let deleteModalTitle = "";
-    let deleteModalMessage = "";
     let deletedMessage = "";
     //Get the local storage array that the item to delete is in
     let itemArrayLocalStorage = localStorage.getItem(dataTableName);
@@ -107,7 +106,7 @@ function deleteItem(dataTableName, idKeyName, itemId) {
         //Get the item to delete
         itemToDelete = itemArray.find((item) => item[idKeyName] === itemId);
         //Create the title for the delete modal
-        deleteModalTitle = `Are you sure you want to delete ${itemToDelete['quantity']} ${itemToDelete['componentType']}?`;
+        deleteModalTitle = `Are you sure you want to delete these donated ${itemToDelete['componentType']}?`;
         //Create the message for successful delete
         deletedMessage = `Deleted ${itemToDelete['quantity']} ${itemToDelete['componentType']} donated on ${fixDate(itemToDelete.entryDate.toString(), 'shortDate')} by ${itemToDelete['whoDonated']}`;
     }
@@ -115,7 +114,7 @@ function deleteItem(dataTableName, idKeyName, itemId) {
         //Get the item to delete
         itemToDelete = itemArray.find((item) => item[idKeyName] === itemId);
         //Create the title for the delete modal
-        deleteModalTitle = `Are you sure you want to delete ${itemToDelete['quantity']} ${itemToDelete['componentType']} distributed on ${fixDate(itemToDelete.entryDate.toString(), 'shortDate')} to ${itemToDelete['destination']}?`;
+        deleteModalTitle = `Are you sure you want to delete these distributed ${itemToDelete['componentType']}?`;
         //Create the message for successful delete
         deletedMessage = `Deleted ${itemToDelete['quantity']} ${itemToDelete['componentType']} distributed on ${fixDate(itemToDelete.entryDate.toString(), 'shortDate')} to ${itemToDelete['destination']}`;
     }
@@ -123,7 +122,7 @@ function deleteItem(dataTableName, idKeyName, itemId) {
         //Get the item to delete
         itemToDelete = itemArray.find((item) => item[idKeyName] === itemId);
         //Create the title for the delete modal
-        deleteModalTitle = `Are you sure you want to delete sign up from ${itemToDelete['fullName']}?`;
+        deleteModalTitle = `Are you sure you want to delete this sign up?`;
         //Create the message for successful delete
         deletedMessage = `Deleted sign up from ${itemToDelete['fullName']}`;
     }

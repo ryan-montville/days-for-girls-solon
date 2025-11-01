@@ -98,7 +98,6 @@ export function clearMessages() {
 function deleteItem(dataTableName: string, idKeyName: string, itemId: string) {
     //This function will be updated once data storage is resolved. Currently just updates local storage
     let deleteModalTitle: string = "";
-    let deleteModalMessage: string = "";
     let deletedMessage: string = "";
     //Get the local storage array that the item to delete is in
     let itemArrayLocalStorage = localStorage.getItem(dataTableName) as string;
@@ -109,21 +108,21 @@ function deleteItem(dataTableName: string, idKeyName: string, itemId: string) {
         //Get the item to delete
         itemToDelete = itemArray.find((item: any) => item[idKeyName] === itemId) as InventoryEntry;
         //Create the title for the delete modal
-        deleteModalTitle = `Are you sure you want to delete ${itemToDelete['quantity']} ${itemToDelete['componentType']}?`;
+        deleteModalTitle = `Are you sure you want to delete these donated ${itemToDelete['componentType']}?`;
         //Create the message for successful delete
         deletedMessage = `Deleted ${itemToDelete['quantity']} ${itemToDelete['componentType']} donated on ${fixDate(itemToDelete.entryDate.toString(), 'shortDate')} by ${itemToDelete['whoDonated']}`;
     } else if (dataTableName === 'distributedInventory') {
         //Get the item to delete
         itemToDelete = itemArray.find((item: any) => item[idKeyName] === itemId) as InventoryEntry;
         //Create the title for the delete modal
-        deleteModalTitle = `Are you sure you want to delete ${itemToDelete['quantity']} ${itemToDelete['componentType']} distributed on ${fixDate(itemToDelete.entryDate.toString(), 'shortDate')} to ${itemToDelete['destination']}?`;
+        deleteModalTitle = `Are you sure you want to delete these distributed ${itemToDelete['componentType']}?`;
         //Create the message for successful delete
         deletedMessage = `Deleted ${itemToDelete['quantity']} ${itemToDelete['componentType']} distributed on ${fixDate(itemToDelete.entryDate.toString(), 'shortDate')} to ${itemToDelete['destination']}`;
     } else if (dataTableName === 'SignUpEntries') {
         //Get the item to delete
         itemToDelete = itemArray.find((item: any) => item[idKeyName] === itemId) as SignUpEntry;
         //Create the title for the delete modal
-        deleteModalTitle = `Are you sure you want to delete sign up from ${itemToDelete['fullName']}?`;
+        deleteModalTitle = `Are you sure you want to delete this sign up?`;
         //Create the message for successful delete
         deletedMessage = `Deleted sign up from ${itemToDelete['fullName']}`;
     } else if (dataTableName === 'currentInventory') {
