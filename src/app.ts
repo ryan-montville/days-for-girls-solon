@@ -43,7 +43,7 @@ function checkForLocalStorageData() {
 const inventoryLink = document.getElementById('inventory-link') as HTMLElement;
 const openSignInModal = document.getElementById('open-sign-in-modal-button') as HTMLElement;
 const navSignOutButton = document.getElementById('sign-out-button') as HTMLElement;
-const signInModalBackdrop = document.getElementById('backdrop') as HTMLElement;
+const signInModalBackdrop = document.getElementById('sign-in-backdrop') as HTMLElement;
 const signInModal = document.getElementById('sign-in-modal') as HTMLFormElement;
 const signInLabel = document.getElementById('dialog-label') as HTMLElement;
 const closeModalButton = document.getElementById('close-modal-button') as HTMLElement;
@@ -54,6 +54,7 @@ let isUserSignedIn: boolean = false;
 openSignInModal.addEventListener('click', (e) => {
     e.preventDefault();
     signInModalBackdrop.style.display = 'flex';
+    signInModal.classList.add('opening');
     signInModal.setAttribute('aria-modal', 'true');
     const usernameInput: HTMLElement | null = document.getElementById('username');
     if (usernameInput) usernameInput.focus();
@@ -61,23 +62,24 @@ openSignInModal.addEventListener('click', (e) => {
     trapFocus(signInModal, signInModalBackdrop);
 });
 
+function closeModal() {
+    signInModal.reset();
+    signInModal.setAttribute('aria-modal', 'false');
+    signInModalBackdrop.style.display = 'none';
+    isSignInModalOpen = false;
+}
+
 //event listener for the sign in modal close button
 closeModalButton.addEventListener('click', (e) => {
     e.preventDefault();
-    signInModal.reset();
-    signInModalBackdrop.style.display = 'none';
-    signInModal.setAttribute('aria-modal', 'false');
-    isSignInModalOpen = false;
+    closeModal();
 });
 
 //event listener for the user to press escape to close the sign in modal
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && isSignInModalOpen === true) {
         e.preventDefault();
-        signInModal.reset();
-        isSignInModalOpen = false;
-        signInModalBackdrop.style.display = 'none';
-        signInModal.setAttribute('aria-modal', 'false');
+        closeModal();
     }
 });
 

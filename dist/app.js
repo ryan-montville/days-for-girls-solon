@@ -41,7 +41,7 @@ function checkForLocalStorageData() {
 const inventoryLink = document.getElementById('inventory-link');
 const openSignInModal = document.getElementById('open-sign-in-modal-button');
 const navSignOutButton = document.getElementById('sign-out-button');
-const signInModalBackdrop = document.getElementById('backdrop');
+const signInModalBackdrop = document.getElementById('sign-in-backdrop');
 const signInModal = document.getElementById('sign-in-modal');
 const signInLabel = document.getElementById('dialog-label');
 const closeModalButton = document.getElementById('close-modal-button');
@@ -51,6 +51,7 @@ let isUserSignedIn = false;
 openSignInModal.addEventListener('click', (e) => {
     e.preventDefault();
     signInModalBackdrop.style.display = 'flex';
+    signInModal.classList.add('opening');
     signInModal.setAttribute('aria-modal', 'true');
     const usernameInput = document.getElementById('username');
     if (usernameInput)
@@ -58,22 +59,22 @@ openSignInModal.addEventListener('click', (e) => {
     isSignInModalOpen = true;
     trapFocus(signInModal, signInModalBackdrop);
 });
+function closeModal() {
+    signInModal.reset();
+    signInModal.setAttribute('aria-modal', 'false');
+    signInModalBackdrop.style.display = 'none';
+    isSignInModalOpen = false;
+}
 //event listener for the sign in modal close button
 closeModalButton.addEventListener('click', (e) => {
     e.preventDefault();
-    signInModal.reset();
-    signInModalBackdrop.style.display = 'none';
-    signInModal.setAttribute('aria-modal', 'false');
-    isSignInModalOpen = false;
+    closeModal();
 });
 //event listener for the user to press escape to close the sign in modal
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && isSignInModalOpen === true) {
         e.preventDefault();
-        signInModal.reset();
-        isSignInModalOpen = false;
-        signInModalBackdrop.style.display = 'none';
-        signInModal.setAttribute('aria-modal', 'false');
+        closeModal();
     }
 });
 //event listener to sign in

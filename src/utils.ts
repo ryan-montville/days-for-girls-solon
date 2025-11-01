@@ -97,30 +97,96 @@ export function clearMessages() {
 
 function deleteItem(dataTableName: string, idKeyName: string, itemId: string) {
     //This function will be updated once data storage is resolved. Currently just updates local storage
-    let deleteMessage: string = "";
+    let deleteModalTitle: string = "";
+    let deleteModalMessage: string = "";
+    let deletedMessage: string = "";
+    //Get the local storage array that the item to delete is in
     let itemArrayLocalStorage = localStorage.getItem(dataTableName) as string;
     let itemArray = JSON.parse(itemArrayLocalStorage);
     let itemToDelete: Event | InventoryEntry | ComponentItem | SignUpEntry | null = null;
+    //Set item to delete based on local storage itemKey which will set the type
     if (dataTableName === 'donatedInventory') {
+        //Get the item to delete
         itemToDelete = itemArray.find((item: any) => item[idKeyName] === itemId) as InventoryEntry;
-        deleteMessage = `Deleted ${itemToDelete['quantity']} ${itemToDelete['componentType']} donated on ${fixDate(itemToDelete.entryDate.toString(), 'shortDate')} by ${itemToDelete['whoDonated']}`;
+        //Create the title for the delete modal
+        deleteModalTitle = `Are you sure you want to delete ${itemToDelete['quantity']} ${itemToDelete['componentType']}?`;
+        //Create the message for successful delete
+        deletedMessage = `Deleted ${itemToDelete['quantity']} ${itemToDelete['componentType']} donated on ${fixDate(itemToDelete.entryDate.toString(), 'shortDate')} by ${itemToDelete['whoDonated']}`;
     } else if (dataTableName === 'distributedInventory') {
+        //Get the item to delete
         itemToDelete = itemArray.find((item: any) => item[idKeyName] === itemId) as InventoryEntry;
-        deleteMessage = `Deleted ${itemToDelete['quantity']} ${itemToDelete['componentType']} distributed on ${fixDate(itemToDelete.entryDate.toString(), 'shortDate')} to ${itemToDelete['destination']}`;
+        //Create the title for the delete modal
+        deleteModalTitle = `Are you sure you want to delete ${itemToDelete['quantity']} ${itemToDelete['componentType']} distributed on ${fixDate(itemToDelete.entryDate.toString(), 'shortDate')} to ${itemToDelete['destination']}?`;
+        //Create the message for successful delete
+        deletedMessage = `Deleted ${itemToDelete['quantity']} ${itemToDelete['componentType']} distributed on ${fixDate(itemToDelete.entryDate.toString(), 'shortDate')} to ${itemToDelete['destination']}`;
     } else if (dataTableName === 'SignUpEntries') {
+        //Get the item to delete
         itemToDelete = itemArray.find((item: any) => item[idKeyName] === itemId) as SignUpEntry;
-        deleteMessage = `Deleted sign up from ${itemToDelete['fullName']}`;
+        //Create the title for the delete modal
+        deleteModalTitle = `Are you sure you want to delete sign up from ${itemToDelete['fullName']}?`;
+        //Create the message for successful delete
+        deletedMessage = `Deleted sign up from ${itemToDelete['fullName']}`;
     } else if (dataTableName === 'currentInventory') {
+        //Get the item to delete
         itemToDelete = itemArray.find((item: any) => item[idKeyName] === itemId) as ComponentItem;
-        deleteMessage = `Deleted ${itemToDelete.componentType} from database`;
+        //Create the title for the delete modal
+        deleteModalTitle = `Are you sure you want to delete ${itemToDelete.componentType} from database?`;
+        //Create the message for successful delete
+        deletedMessage = `Deleted ${itemToDelete.componentType} from database`;
     }
     if (itemToDelete) {
-        alert(`Deleting ${idKeyName} ${itemId}`);
-        let filteredItemArray = itemArray.filter((item: any) => item[idKeyName] !== itemId);
-        //If deleting component from current inventory, delete from donatedInventory and distributedInventory as well
-        updateLocalStorage(dataTableName, filteredItemArray);
-        createMessage(deleteMessage, "main-message", "delete");
-        //window.location.reload(); figure out different way to update the dom without reloading page
+        //Open delete item modal by changing the display of the backdrop
+        const deleteItemBackdrop = document.getElementById('delete-item-backdrop') as HTMLElement;
+        deleteItemBackdrop.style.display = 'flex';
+        const deleteItemModal = document.getElementById('delete-item-modal') as HTMLFormElement;
+        //Display the modal title
+        let deleteMoalH2 = document.createElement('h2');
+        let deleteModalText = document.createTextNode(`${deleteModalTitle}`);
+        deleteMoalH2.appendChild(deleteModalText);
+        deleteItemModal.appendChild(deleteMoalH2);
+        //Create an array of the item's keys and values
+        let itemKeys = Object.keys(itemToDelete);
+        let itemValues = Object.values(itemToDelete);
+        let l = itemValues.length;
+        //Display the item's key value pairs. Will make this better
+        for (let i = 0; i < l; i++) {
+            let keyValueP = document.createElement('p');
+            let keyValue = document.createTextNode(`${itemKeys[i]}: ${itemValues[i]}`);
+            keyValueP.appendChild(keyValue);
+            deleteItemModal.appendChild(keyValueP);
+        }
+        //Create button row
+        let buttonRow = document.createElement('section');
+        buttonRow.setAttribute('class', 'button-row');
+        let noButton = document.createElement('button');
+        noButton.setAttribute('type', 'button');
+        noButton.setAttribute('class', 'secondary');
+        let noButtonText = document.createTextNode("No");
+        noButton.appendChild(noButtonText);
+        noButton.addEventListener('click', () => {
+            //Close delete modal
+            deleteItemBackdrop.style.display = 'none';
+        });
+        buttonRow.appendChild(noButton);
+        let yesButton = document.createElement('button');
+        let yesButtonText = document.createTextNode('Yes');
+        yesButton.appendChild(yesButtonText);
+        yesButton.setAttribute('type', 'button');
+        yesButton.setAttribute('class', 'delete-button');
+        yesButton.addEventListener('click', () => {
+            //Filter the item from local storage array
+            let filteredItemArray = itemArray.filter((item: any) => item[idKeyName] !== itemId);
+            //If deleting component from current inventory, delete from donatedInventory and distributedInventory as well
+            //Update local storage
+            updateLocalStorage(dataTableName, filteredItemArray);
+            //Close the delete modal
+            deleteItemBackdrop.style.display = 'none';
+            //Create a message after the item is deleted
+            createMessage(deletedMessage, "main-message", "delete");
+            // window.location.reload(); figure out different way to update the dom without reloading page
+        });
+        buttonRow.appendChild(yesButton);
+        deleteItemModal.appendChild(buttonRow);
     } else {
         createMessage("Item already removed from database. Try reloading the page", "main-message", "error");
     }
