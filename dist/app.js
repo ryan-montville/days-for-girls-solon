@@ -1,4 +1,4 @@
-import { createMessage, trapFocus, updateLocalStorage } from "./utils.js";
+import { createMessage, closeModal, trapFocus, updateLocalStorage } from "./utils.js";
 async function loadData() {
     //This will change when proper data storage is implemented
     console.log("Fetching data from JSON and putting in local storage");
@@ -56,14 +56,6 @@ openSignInModal.addEventListener('click', (e) => {
         usernameInput.focus();
     trapFocus(signInModal, signInModalBackdrop);
 });
-function closeModal(modalBackdropId) {
-    let modalBackdrop = document.getElementById(modalBackdropId);
-    let modal = modalBackdrop.getElementsByClassName('modal');
-    if (modal) {
-        modal[0].setAttribute('aria-modal', 'false');
-    }
-    modalBackdrop.style.display = 'none';
-}
 //event listener for the sign in modal close button
 closeModalButton.addEventListener('click', (e) => {
     e.preventDefault();

@@ -88,6 +88,15 @@ export function createMessage(message: string, location: string, type: string) {
     messageWrapper.appendChild(messageDiv);
 }
 
+export function closeModal(modalBackdropId: string) {
+    let modalBackdrop = document.getElementById(modalBackdropId) as HTMLElement;
+    let modal = modalBackdrop.getElementsByClassName('modal');
+    if (modal) {
+        modal[0].setAttribute('aria-modal', 'false');
+    }
+    modalBackdrop.style.display = 'none';
+}
+
 export function clearMessages() {
     const mainMessageElement = document.getElementById('main-message') as HTMLElement;
     const signInMessage = document.getElementById('sign-in-message') as HTMLElement;

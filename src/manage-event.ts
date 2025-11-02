@@ -1,4 +1,4 @@
-import { addITemToTable, createMessage, clearMessages, deleteItem, fixDate, updateLocalStorage } from "./utils.js";
+import { addITemToTable, createMessage, clearMessages, closeModal, deleteItem, fixDate, updateLocalStorage } from "./utils.js";
 import { SignUpEntry, Event } from "./models.js";
 
 const eventsLocalStorage = localStorage.getItem('events') as string;
@@ -36,6 +36,7 @@ const deleteEventModalBackdrop = document.getElementById('delete-item-backdrop')
 
 function displayEventInfo(eventObject: Event) {
     const eventInfoCard = document.getElementById('event-info') as HTMLElement;
+    eventInfoCard.innerHTML = '';
     const eventH2: HTMLElement = document.createElement('h2');
     const eventTitle: Text = document.createTextNode(eventObject['eventTitle']);
     eventH2.appendChild(eventTitle);
@@ -72,7 +73,6 @@ function displayEventInfo(eventObject: Event) {
         //Open the edit event modal
         editModalBackdrop.style.display = 'flex';
         editEventModal.setAttribute('aria-modal', 'true');
-        isEditModalOpen = true;
     });
     buttonRow.appendChild(editButton);
     eventInfoCard.appendChild(buttonRow);
@@ -156,8 +156,9 @@ function editEventInfo() {
     let eventObjIndex: number = eventsData.findIndex(item => item['eventId'] === paramEventId);
     eventsData[eventObjIndex] = updatedEvent;
     updateLocalStorage("events", eventsData);
-    createMessage("The event was successfully updated", "main-message", "check_circle")
-
+    displayEventInfo(updatedEvent);
+    closeModal("edit-event-backdrop");
+    createMessage("The event was successfully updated", "main-message", "check_circle");
 }
 
 function populateEntriesTable(eventObject: Event) {
@@ -191,17 +192,6 @@ function deleteEvent() {
 
 }
 
-function closeModal(modal: string) {
-    if (modal === 'delete') {
-        deleteEventModalBackdrop.setAttribute('aria-modal', 'false');
-        deleteEventModalBackdrop.style.display = 'none';
-    } else if (modal === 'edit') {
-        editModalBackdrop.setAttribute('aria-modal', 'false');
-        editModalBackdrop.style.display = 'none';
-        editEventModal.reset();
-    }
-}
-
 //If the event doesn't exist, remove cards from page and add an error card
 if (!eventObject) {
     createMessage("Could not find event", "main-message", "error");
@@ -225,25 +215,23 @@ if (!eventObject) {
     resetInfo(eventObject);
     populateEntriesTable(eventObject);
     displayEventInfo(eventObject);
-
-    //Some where need to add event listener for the cancel, reset and submit buttons inside the edit form modal
-    //Instead of submit its editEventInfo();
-
-
-
     //Event listener for the delete button
     deleteEventButton.addEventListener('click', () => {
         //Need a way to see if deleteItem() in utils closes the modal, change boolean back to false
         deleteEvent();
     });
-
+    //Event listener to reset the form to the event data
+    let resetFormButton = document.getElementById('reset') as HTMLElement;
+    resetFormButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        resetInfo(eventObject);
+    });
+    //Event listener to close the edit event modal
+    const cancelFormButton = document.getElementById('cancel') as HTMLElement;
+    cancelFormButton.addEventListener('click', () => { closeModal("edit-event-backdrop"); })
+    //Event listener to submit the data to update the event
+    editEventModal.addEventListener('submit', (e) => {
+        e.preventDefault();
+        editEventInfo();
+    });   
 }
-
-//Event listener to submit the data to update the form
-
-//Event listener to reset the form to the event data
-
-//Event listener to close the edit event modal
-
-
-
