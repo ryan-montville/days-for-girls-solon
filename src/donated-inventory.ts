@@ -1,4 +1,4 @@
-import { addITemToTable, createMessage, clearMessages, updateLocalStorage } from "./utils.js";
+import { addITemToTable, createMessage, clearMessages, updateItemTotal, updateLocalStorage } from "./utils.js";
 import { ComponentItem, InventoryEntry } from "./models.js";
 
 //Get data from local storage
@@ -41,23 +41,16 @@ function submitData() {
     }
     //Validate quantity input
     const quantityValue = donatedFormData.get('quantity');
-    const currentInventoryComponent: ComponentItem | undefined = currentInventoryData.find(item => item['componentType'] === componentTypeValue.toString());
-    let CurrentInventoryUpdatedQuantity: number = 0;
-    if (currentInventoryComponent !== undefined) {
-        CurrentInventoryUpdatedQuantity = currentInventoryComponent['quantity'];
-        if (quantityValue === null) {
-            createMessage("Please enter the quantity of the components being donated", "main-message", "error");
+    if (quantityValue === null) {
+        createMessage("Please enter the quantity of the components being donated", "main-message", "error");
+        return;
+    } else {
+        const quantity: number = +quantityValue;
+        if (quantity < 1) {
+            createMessage("Please enter a quantity greater that 0", "main-message", "error");
             return;
         } else {
-            const quantity: number = +quantityValue;
-            if (quantity < 1) {
-                createMessage("Please enter a quantity greater that 0", "main-message", "error");
-                return;
-            } else {
-                newEntry['quantity'] = quantity;
-                currentInventoryComponent['quantity'] += quantity;
-                updateLocalStorage("currentInventory", currentInventoryData);
-            }
+            newEntry['quantity'] = quantity;
         }
     }
     //Validate who donated input
@@ -70,6 +63,8 @@ function submitData() {
     }
     //Add the new entry to the array
     donateInventoryData.push(newEntry);
+    //Update current inventory count for component
+    updateItemTotal(newEntry, "updateCounts");
     //Update local storage. Will change 
     updateLocalStorage("donatedInventory", donateInventoryData);
     createMessage("The inventory has successfully been updated", "main-message", "check_circle");

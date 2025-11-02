@@ -1,4 +1,4 @@
-import { createMessage, clearMessages, fixDate, updateLocalStorage } from "./utils.js";
+import { createMessage, clearMessages, fixDate, updateItemTotal, updateLocalStorage } from "./utils.js";
 import { SignUpEntry, Event } from "./models.js";
 
 const eventsLocalStorage = localStorage.getItem('events') as string;
@@ -81,19 +81,13 @@ function submitData() {
     if (commentsValue) {
         newSignUp['comments'] = commentsValue.toString();
     }
-    updateAttendingCount();
+    //Update the number attending for the event
+    updateItemTotal(newSignUp, "updateCounts");
     signUpEntriesData.push(newSignUp);
     updateLocalStorage("SignUpEntries", signUpEntriesData)
     //window.location.href = 'events.html';
     //Find a way to pass this message to the events page after the redirect
     createMessage("You have sucessfully signed up for the event", "main-message", "check_circle");
-}
-
-function updateAttendingCount() {
-    //This will change when proper data storage is implemented
-    const eventIndex = eventsData.findIndex(item => item['eventId'] === paramEventId);
-    eventsData[eventIndex]['numberAttending'] += 1;
-    updateLocalStorage("events", eventsData);
 }
 
 if (!eventObject) {

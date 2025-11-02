@@ -95,21 +95,59 @@ export function clearMessages() {
     signInMessage.innerHTML = '';
 }
 
-function updateItemTotal(item: Event | InventoryEntry | ComponentItem | SignUpEntry, reasonForUpdate: string) {
+export function updateItemTotal(itemForUpdate: Event | InventoryEntry | ComponentItem | SignUpEntry, reasonForUpdate: string) {
+    let currentInventoryLocalStorage = localStorage.getItem("currentInventory") as string;
+    let currentInventoryArray: ComponentItem[] = JSON.parse(currentInventoryLocalStorage);
+    let donatedInventoryLocalStorage = localStorage.getItem("donatedInventory") as string;
+    let donatedInventoryArray: InventoryEntry[] = JSON.parse(donatedInventoryLocalStorage);
+    let distributedInventoryLocalStorage = localStorage.getItem("distributedInventory") as string;
+    let distributedInventoryArray: InventoryEntry[] = JSON.parse(distributedInventoryLocalStorage);
+    let eventsLocalStorage = localStorage.getItem("events") as string;
+    let eventsArray: Event[] = JSON.parse(eventsLocalStorage);
+    let SignUpEntriesLocalStorge = localStorage.getItem("SignUpEntries") as string;
+    let SignUpEntriesArray: SignUpEntry[] = JSON.parse(SignUpEntriesLocalStorge);
+    let itemkeys = Object.keys(itemForUpdate);
     if (reasonForUpdate === 'delete') {
         //update counts to remove item value
+        if ("whoDonated" in itemForUpdate) {
+            //When removing an entry from donated inventory - subtact component quantity from current inventory
+
+
+        }
         //Donate - subtract from current inventory
         //Distribute - add to currrent inventory
-        //sign up - subtract from num attending
+
+        if ("comments" in itemForUpdate) {
+            //When deleting a sign up entry - subtract from num attending
+            const eventIndex = eventsArray.findIndex(item => item['eventId'] === itemForUpdate['eventId'])
+            eventsArray[eventIndex]['numberAttending'] -= 1;
+            updateLocalStorage("events", eventsArray);
+        }
         //Event - remove sign up entries for that event
         //Component - remove compontent type from donate/distribut forms
         //Should these last two be in a different function?
 
-    } else {
+    } else if (reasonForUpdate === 'updateCounts') {
         //update the counts to include new quantity
-        //Donate - add to current inventory
+        if ("whoDonated" in itemForUpdate) {
+            //Comonents donated - add to current inventory
+            //Get the component from current inventory
+            const currentInventoryComponent: ComponentItem | undefined = currentInventoryArray.find(item => item['componentType'] === itemForUpdate['componentType']);
+            //If the component is found, update the quantity count
+            if (currentInventoryComponent !== undefined) {
+                currentInventoryComponent['quantity'] += itemForUpdate['quantity'];
+                //Update the current inventory array in local storage
+                updateLocalStorage("currentInventory", currentInventoryArray);
+            }
+
+        }
         //Distribute - subtract from currrent inventory
-        //sign up - add to num attending
+        if ("comments" in itemForUpdate) {
+            // New sign up - add to num attending
+            const eventIndex = eventsArray.findIndex(item => item['eventId'] === itemForUpdate['eventId'])
+            eventsArray[eventIndex]['numberAttending'] += 1;
+            updateLocalStorage("events", eventsArray);
+        }
     }
 }
 
