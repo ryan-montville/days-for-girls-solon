@@ -96,15 +96,10 @@ export function clearMessages() {
 export function updateItemTotal(itemForUpdate, reasonForUpdate) {
     let currentInventoryLocalStorage = localStorage.getItem("currentInventory");
     let currentInventoryArray = JSON.parse(currentInventoryLocalStorage);
-    let donatedInventoryLocalStorage = localStorage.getItem("donatedInventory");
-    let donatedInventoryArray = JSON.parse(donatedInventoryLocalStorage);
-    let distributedInventoryLocalStorage = localStorage.getItem("distributedInventory");
-    let distributedInventoryArray = JSON.parse(distributedInventoryLocalStorage);
     let eventsLocalStorage = localStorage.getItem("events");
     let eventsArray = JSON.parse(eventsLocalStorage);
     let SignUpEntriesLocalStorge = localStorage.getItem("SignUpEntries");
     let SignUpEntriesArray = JSON.parse(SignUpEntriesLocalStorge);
-    let itemkeys = Object.keys(itemForUpdate);
     if (reasonForUpdate === 'delete') {
         //update counts to remove item value
         if ("whoDonated" in itemForUpdate) {
@@ -129,14 +124,19 @@ export function updateItemTotal(itemForUpdate, reasonForUpdate) {
                 updateLocalStorage("currentInventory", currentInventoryArray);
             }
         }
-        //Distribute - add to currrent inventory
-        if ("comments" in itemForUpdate) {
+        else if ("comments" in itemForUpdate) {
             //When deleting a sign up entry - subtract from num attending
             const eventIndex = eventsArray.findIndex(item => item['eventId'] === itemForUpdate['eventId']);
             eventsArray[eventIndex]['numberAttending'] -= 1;
             updateLocalStorage("events", eventsArray);
         }
-        //Event - remove sign up entries for that event
+        else if ("eventTitle" in itemForUpdate) {
+            //When deleting an evetn - remove all sign up entries tied to the event
+            let filteredSignUpEntries = SignUpEntriesArray.filter(entry => {
+                return entry['eventId'] !== itemForUpdate['eventId'];
+            });
+            updateLocalStorage("SignUpEntries", filteredSignUpEntries);
+        }
         //Component - remove compontent type from donate/distribut forms
         //Should these last two be in a different function?
     }
@@ -164,7 +164,7 @@ export function updateItemTotal(itemForUpdate, reasonForUpdate) {
                 updateLocalStorage("currentInventory", currentInventoryArray);
             }
         }
-        if ("comments" in itemForUpdate) {
+        else if ("comments" in itemForUpdate) {
             // New sign up - add to num attending
             const eventIndex = eventsArray.findIndex(item => item['eventId'] === itemForUpdate['eventId']);
             eventsArray[eventIndex]['numberAttending'] += 1;
@@ -226,8 +226,11 @@ export function deleteItem(dataTableName, idKeyName, itemId) {
     if (itemToDelete) {
         //Open delete item modal by changing the display of the backdrop
         const deleteItemBackdrop = document.getElementById('delete-item-backdrop');
+        const deleteForm = document.getElementById('delete-item-modal');
         deleteItemBackdrop.style.display = 'flex';
+        deleteForm.setAttribute('aria-modal', 'true');
         const deleteItemModal = document.getElementById('delete-item-modal');
+        deleteItemModal.innerHTML = '';
         //Display the modal title
         let deleteMoalH2 = document.createElement('h2');
         let deleteModalText = document.createTextNode(`${deleteModalTitle}`);

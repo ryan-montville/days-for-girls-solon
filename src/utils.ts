@@ -98,15 +98,10 @@ export function clearMessages() {
 export function updateItemTotal(itemForUpdate: Event | InventoryEntry | ComponentItem | SignUpEntry, reasonForUpdate: string) {
     let currentInventoryLocalStorage = localStorage.getItem("currentInventory") as string;
     let currentInventoryArray: ComponentItem[] = JSON.parse(currentInventoryLocalStorage);
-    let donatedInventoryLocalStorage = localStorage.getItem("donatedInventory") as string;
-    let donatedInventoryArray: InventoryEntry[] = JSON.parse(donatedInventoryLocalStorage);
-    let distributedInventoryLocalStorage = localStorage.getItem("distributedInventory") as string;
-    let distributedInventoryArray: InventoryEntry[] = JSON.parse(distributedInventoryLocalStorage);
     let eventsLocalStorage = localStorage.getItem("events") as string;
     let eventsArray: Event[] = JSON.parse(eventsLocalStorage);
     let SignUpEntriesLocalStorge = localStorage.getItem("SignUpEntries") as string;
     let SignUpEntriesArray: SignUpEntry[] = JSON.parse(SignUpEntriesLocalStorge);
-    let itemkeys = Object.keys(itemForUpdate);
     if (reasonForUpdate === 'delete') {
         //update counts to remove item value
         if ("whoDonated" in itemForUpdate) {
@@ -129,17 +124,18 @@ export function updateItemTotal(itemForUpdate: Event | InventoryEntry | Componen
                 //Update the current inventory array in local storage
                 updateLocalStorage("currentInventory", currentInventoryArray);
             }
-        }
-
-        //Distribute - add to currrent inventory
-
-        if ("comments" in itemForUpdate) {
+        } else if ("comments" in itemForUpdate) {
             //When deleting a sign up entry - subtract from num attending
             const eventIndex = eventsArray.findIndex(item => item['eventId'] === itemForUpdate['eventId'])
             eventsArray[eventIndex]['numberAttending'] -= 1;
             updateLocalStorage("events", eventsArray);
+        } else if ("eventTitle" in itemForUpdate) {
+            //When deleting an evetn - remove all sign up entries tied to the event
+            let filteredSignUpEntries: SignUpEntry[] = SignUpEntriesArray.filter(entry => {
+                return entry['eventId'] !== itemForUpdate['eventId'];
+            });
+            updateLocalStorage("SignUpEntries", filteredSignUpEntries);
         }
-        //Event - remove sign up entries for that event
         //Component - remove compontent type from donate/distribut forms
         //Should these last two be in a different function?
 
@@ -165,9 +161,7 @@ export function updateItemTotal(itemForUpdate: Event | InventoryEntry | Componen
                 //Update the current inventory array in local storage
                 updateLocalStorage("currentInventory", currentInventoryArray);
             }
-        }
-        
-        if ("comments" in itemForUpdate) {
+        } else if ("comments" in itemForUpdate) {
             // New sign up - add to num attending
             const eventIndex = eventsArray.findIndex(item => item['eventId'] === itemForUpdate['eventId'])
             eventsArray[eventIndex]['numberAttending'] += 1;
@@ -226,8 +220,11 @@ export function deleteItem(dataTableName: string, idKeyName: string, itemId: num
     if (itemToDelete) {
         //Open delete item modal by changing the display of the backdrop
         const deleteItemBackdrop = document.getElementById('delete-item-backdrop') as HTMLElement;
+        const deleteForm = document.getElementById('delete-item-modal') as HTMLFormElement;
         deleteItemBackdrop.style.display = 'flex';
+        deleteForm.setAttribute('aria-modal', 'true');
         const deleteItemModal = document.getElementById('delete-item-modal') as HTMLFormElement;
+        deleteItemModal.innerHTML = '';
         //Display the modal title
         let deleteMoalH2 = document.createElement('h2');
         let deleteModalText = document.createTextNode(`${deleteModalTitle}`);

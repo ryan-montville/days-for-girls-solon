@@ -45,9 +45,7 @@ const openSignInModal = document.getElementById('open-sign-in-modal-button') as 
 const navSignOutButton = document.getElementById('sign-out-button') as HTMLElement;
 const signInModalBackdrop = document.getElementById('sign-in-backdrop') as HTMLElement;
 const signInModal = document.getElementById('sign-in-modal') as HTMLFormElement;
-const signInLabel = document.getElementById('dialog-label') as HTMLElement;
 const closeModalButton = document.getElementById('close-modal-button') as HTMLElement;
-let isSignInModalOpen: boolean = false;
 let isUserSignedIn: boolean = false;
 
 //event listener for sign in button to open sign in modal
@@ -58,29 +56,43 @@ openSignInModal.addEventListener('click', (e) => {
     signInModal.setAttribute('aria-modal', 'true');
     const usernameInput: HTMLElement | null = document.getElementById('username');
     if (usernameInput) usernameInput.focus();
-    isSignInModalOpen = true;
     trapFocus(signInModal, signInModalBackdrop);
 });
 
-function closeModal() {
-    signInModal.reset();
-    signInModal.setAttribute('aria-modal', 'false');
-    signInModalBackdrop.style.display = 'none';
-    isSignInModalOpen = false;
+function closeModal(modalBackdropId: string) {
+    let modalBackdrop = document.getElementById(modalBackdropId) as HTMLElement;
+    let modal = modalBackdrop.getElementsByClassName('modal');
+    if (modal) {
+        modal[0].setAttribute('aria-modal', 'false');
+    }
+    modalBackdrop.style.display = 'none';
 }
 
 //event listener for the sign in modal close button
 closeModalButton.addEventListener('click', (e) => {
     e.preventDefault();
-    closeModal();
+    closeModal("sign-in-backdrop");
 });
 
-//event listener for the user to press escape to close the sign in modal
+//event listener for the user to press escape to close any modal that is open
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && isSignInModalOpen === true) {
+    let deleteItemModalBackdrop = document.getElementById('delete-item-backdrop');
+    let signInModalBackdrop = document.getElementById('sign-in-backdrop');
+    let editEventModalBackdrop = document.getElementById('edit-event-backdrop');
+    if (e.key === 'Escape') {
         e.preventDefault();
-        closeModal();
+        if (deleteItemModalBackdrop && deleteItemModalBackdrop.style.display === 'flex') {
+            closeModal("delete-item-backdrop");
+        } else if (signInModalBackdrop && signInModalBackdrop.style.display === 'flex') {
+            closeModal("sign-in-backdrop");
+        } else if (editEventModalBackdrop && editEventModalBackdrop.style.display === 'flex') {
+            closeModal("edit-event-backdrop");
+        } else {
+            console.log("No modals are open");
+        }
     }
+
+        
 });
 
    //event listener to sign in

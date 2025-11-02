@@ -1,9 +1,8 @@
-import { addITemToTable, createMessage, clearMessages, deleteItem, updateLocalStorage } from "./utils.js";
+import { addITemToTable, createMessage, clearMessages, deleteItem, fixDate, updateLocalStorage } from "./utils.js";
 const eventsLocalStorage = localStorage.getItem('events');
 let eventsData = JSON.parse(eventsLocalStorage);
 const SignUpEntriesLocalStorge = localStorage.getItem('SignUpEntries');
 let signUpEntriesData = JSON.parse(SignUpEntriesLocalStorge);
-const editForm = document.getElementById('edit-form');
 const resteEventInfoButton = document.getElementById('reset');
 const entriesCard = document.getElementById('sign-up-entires');
 const entriesTable = document.getElementById('entries-table');
@@ -29,6 +28,53 @@ else {
 }
 //Get event matching eventId
 const eventObject = eventsData.find(eventObject => eventObject['eventId'] === paramEventId);
+//Get modal backdrop elements
+const editModalBackdrop = document.getElementById('edit-event-backdrop');
+const editEventModal = document.getElementById('edit-event-modal');
+const deleteEventModalBackdrop = document.getElementById('delete-item-backdrop');
+function displayEventInfo(eventObject) {
+    const eventInfoCard = document.getElementById('event-info');
+    const eventH2 = document.createElement('h2');
+    const eventTitle = document.createTextNode(eventObject['eventTitle']);
+    eventH2.appendChild(eventTitle);
+    eventInfoCard.appendChild(eventH2);
+    const eventDateAndTimeH3 = document.createElement('h3');
+    const eventDateAndTime = document.createTextNode(`${fixDate(eventObject['eventDate'].toString(), 'longDate')} ${eventObject['eventTime']}`);
+    eventDateAndTimeH3.appendChild(eventDateAndTime);
+    eventInfoCard.appendChild(eventDateAndTimeH3);
+    const eventLocationH3 = document.createElement('h3');
+    const eventLocation = document.createTextNode(eventObject['eventLocation']);
+    eventLocationH3.appendChild(eventLocation);
+    eventInfoCard.appendChild(eventLocationH3);
+    const numberAttendingH3 = document.createElement('h3');
+    const numberAttending = document.createTextNode(`Number Attending: ${eventObject['numberAttending']}`);
+    numberAttendingH3.appendChild(numberAttending);
+    eventInfoCard.appendChild(numberAttendingH3);
+    const eventDescriptionP = document.createElement('p');
+    const eventDescription = document.createTextNode(eventObject['eventDescription']);
+    eventDescriptionP.appendChild(eventDescription);
+    eventInfoCard.appendChild(eventDescriptionP);
+    const buttonRow = document.createElement('section');
+    buttonRow.setAttribute('class', 'form-row');
+    const editButton = document.createElement('button');
+    editButton.setAttribute('class', 'primary');
+    editButton.setAttribute('type', 'button');
+    const editIcon = document.createElement('span');
+    editIcon.setAttribute('class', 'material-symbols-outlined');
+    const editIconName = document.createTextNode('edit');
+    editIcon.appendChild(editIconName);
+    editButton.appendChild(editIcon);
+    const editButtonText = document.createTextNode('Edit Event Info');
+    editButton.appendChild(editButtonText);
+    editButton.addEventListener('click', () => {
+        //Open the edit event modal
+        editModalBackdrop.style.display = 'flex';
+        editEventModal.setAttribute('aria-modal', 'true');
+        isEditModalOpen = true;
+    });
+    buttonRow.appendChild(editButton);
+    eventInfoCard.appendChild(buttonRow);
+}
 function resetInfo(eventObject) {
     //Get event title input and set the value
     let eventTitleInput = document.getElementById('eventTitle');
@@ -48,7 +94,7 @@ function resetInfo(eventObject) {
     eventDescriptionInput.value = eventObject['eventDescription'];
 }
 function editEventInfo() {
-    let formData = new FormData(editForm);
+    let formData = new FormData(editEventModal);
     //Create an object for the updated event
     let updatedEvent = {
         eventId: paramEventId,
@@ -96,7 +142,6 @@ function editEventInfo() {
         updatedEvent['eventTime'] = timeValue.toString();
     }
     //Get the event description from the textarea, validate, and turn it into a string
-    let eventDescription = "";
     let eventDescriptionValue = formData.get('eventDescription');
     if (eventDescriptionValue === null || eventDescriptionValue.toString().trim() === '') {
         createMessage("Please enter a description for the event", "main-message", "error");
@@ -142,10 +187,21 @@ function deleteEvent() {
         deleteEventCard.remove();
     }
 }
+function closeModal(modal) {
+    if (modal === 'delete') {
+        deleteEventModalBackdrop.setAttribute('aria-modal', 'false');
+        deleteEventModalBackdrop.style.display = 'none';
+    }
+    else if (modal === 'edit') {
+        editModalBackdrop.setAttribute('aria-modal', 'false');
+        editModalBackdrop.style.display = 'none';
+        editEventModal.reset();
+    }
+}
 //If the event doesn't exist, remove cards from page and add an error card
 if (!eventObject) {
     createMessage("Could not find event", "main-message", "error");
-    editForm.remove();
+    editEventModal.remove();
     signUpEntriesCard.remove();
     deleteEventCard.remove();
     let errorCard = document.createElement('section');
@@ -166,19 +222,15 @@ else {
     //Else, load the event data into the edit form and load the signup entries
     resetInfo(eventObject);
     populateEntriesTable(eventObject);
+    displayEventInfo(eventObject);
+    //Some where need to add event listener for the cancel, reset and submit buttons inside the edit form modal
+    //Instead of submit its editEventInfo();
     //Event listener for the delete button
-    deleteEventButton.addEventListener('click', () => deleteEvent());
-    //Event listener for the reset form button
-    resteEventInfoButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        clearMessages();
-        createMessage("Event information has been reset", "main-message", "info");
-        resetInfo(eventObject);
-    });
-    //Event lsitener for the edit/update event form button
-    editForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        clearMessages();
-        editEventInfo();
+    deleteEventButton.addEventListener('click', () => {
+        //Need a way to see if deleteItem() in utils closes the modal, change boolean back to false
+        deleteEvent();
     });
 }
+//Event listener to submit the data to update the form
+//Event listener to reset the form to the event data
+//Event listener to close the edit event modal
