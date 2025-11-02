@@ -1,4 +1,4 @@
-import { addITemToTable, createMessage, clearMessages, updateLocalStorage } from "./utils.js";
+import { addITemToTable, createMessage, clearMessages, updateItemTotal, updateLocalStorage } from "./utils.js";
 //Get data from local storage
 const currentInventoryLocalStorage = localStorage.getItem("currentInventory");
 let currentInventoryData = JSON.parse(currentInventoryLocalStorage);
@@ -40,25 +40,18 @@ function submitData() {
     }
     //Validate quantity input
     const quantityValue = distributedFormData.get('quantity');
-    const currentInventoryComponent = currentInventoryData.find(item => item['componentType'] === componentTypeValue.toString());
-    let CurrentInventoryUpdatedQuantity = 0;
-    if (currentInventoryComponent !== undefined) {
-        CurrentInventoryUpdatedQuantity = currentInventoryComponent['quantity'];
-        if (quantityValue === null) {
-            createMessage("Please enter the quantity of the components being distributed", "main-message", "error");
+    if (quantityValue === null) {
+        createMessage("Please enter the quantity of the components being distributed", "main-message", "error");
+        return;
+    }
+    else {
+        const quantity = +quantityValue;
+        if (quantity < 1) {
+            createMessage("Please enter a quantity greater that 0", "main-message", "error");
             return;
         }
         else {
-            const quantity = +quantityValue;
-            if (quantity < 1) {
-                createMessage("Please enter a quantity greater that 0", "main-message", "error");
-                return;
-            }
-            else {
-                newEntry['quantity'] = quantity;
-                currentInventoryComponent['quantity'] -= quantity;
-                updateLocalStorage("currentInventory", currentInventoryData);
-            }
+            newEntry['quantity'] = quantity;
         }
     }
     //Validate destination input
@@ -72,6 +65,8 @@ function submitData() {
     }
     //Add the new entry to the array
     distributedInventoryData.push(newEntry);
+    //Update current inventory count for component
+    updateItemTotal(newEntry, "updateCounts");
     //Update local storage. Will change 
     updateLocalStorage("distributedInventory", distributedInventoryData);
     createMessage("The inventory has successfully been updated", "main-message", "check_circle");
