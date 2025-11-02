@@ -95,7 +95,7 @@ export function clearMessages() {
     signInMessage.innerHTML = '';
 }
 
-function updateItemTotal(item: Event | InventoryEntry | ComponentItem | SignUpEntry,  reasonForUpdate: string) {
+function updateItemTotal(item: Event | InventoryEntry | ComponentItem | SignUpEntry, reasonForUpdate: string) {
     if (reasonForUpdate === 'delete') {
         //update counts to remove item value
         //Donate - subtract from current inventory
@@ -155,11 +155,10 @@ export function deleteItem(dataTableName: string, idKeyName: string, itemId: num
         itemToDelete = itemArray.find((item: any) => item[idKeyName] === itemId) as Event;
         if (itemToDelete) {
             //Create the title for the delete modal
-        deleteModalTitle = `Are you sure you want to delete the event "${itemToDelete['eventTitle']} from database"?`;
-        //Create the message for successful delete
-        deletedMessage = `Deleted the event "${itemToDelete['eventTitle']}"`;
+            deleteModalTitle = `Are you sure you want to delete the event "${itemToDelete['eventTitle']}"?`;
+            //Create the message for successful delete
+            deletedMessage = `Deleted the event "${itemToDelete['eventTitle']}"`;
         }
-        
     }
     if (itemToDelete) {
         //Open delete item modal by changing the display of the backdrop
@@ -175,12 +174,16 @@ export function deleteItem(dataTableName: string, idKeyName: string, itemId: num
         let itemKeys = Object.keys(itemToDelete);
         let itemValues = Object.values(itemToDelete);
         let l = itemValues.length;
-        //Display the item's key value pairs. Will make this better
+        //Display the item's key value pairs
         for (let i = 0; i < l; i++) {
             let keyValueP = document.createElement('p');
-            let keyValue = document.createTextNode(`${itemKeys[i]}: ${itemValues[i]}`);
-            keyValueP.appendChild(keyValue);
-            deleteItemModal.appendChild(keyValueP);
+            //Don't display the id key/values or event description
+            if (!itemKeys[i].includes("Id") && !itemKeys[i].includes("eventDescription")) {
+                let readableKey: string = itemKeys[i].replace(/([a-z])([A-Z])/g, '$1 $2');
+                let keyValue = document.createTextNode(`${readableKey.toLowerCase()}: ${itemValues[i]}`);
+                keyValueP.appendChild(keyValue);
+                deleteItemModal.appendChild(keyValueP);
+            }
         }
         //Create button row
         let buttonRow = document.createElement('section');

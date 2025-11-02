@@ -156,7 +156,7 @@ export function deleteItem(dataTableName, idKeyName, itemId) {
         itemToDelete = itemArray.find((item) => item[idKeyName] === itemId);
         if (itemToDelete) {
             //Create the title for the delete modal
-            deleteModalTitle = `Are you sure you want to delete the event "${itemToDelete['eventTitle']} from database"?`;
+            deleteModalTitle = `Are you sure you want to delete the event "${itemToDelete['eventTitle']}"?`;
             //Create the message for successful delete
             deletedMessage = `Deleted the event "${itemToDelete['eventTitle']}"`;
         }
@@ -175,12 +175,16 @@ export function deleteItem(dataTableName, idKeyName, itemId) {
         let itemKeys = Object.keys(itemToDelete);
         let itemValues = Object.values(itemToDelete);
         let l = itemValues.length;
-        //Display the item's key value pairs. Will make this better
+        //Display the item's key value pairs
         for (let i = 0; i < l; i++) {
             let keyValueP = document.createElement('p');
-            let keyValue = document.createTextNode(`${itemKeys[i]}: ${itemValues[i]}`);
-            keyValueP.appendChild(keyValue);
-            deleteItemModal.appendChild(keyValueP);
+            //Don't display the id key/values or event description
+            if (!itemKeys[i].includes("Id") && !itemKeys[i].includes("eventDescription")) {
+                let readableKey = itemKeys[i].replace(/([a-z])([A-Z])/g, '$1 $2');
+                let keyValue = document.createTextNode(`${readableKey.toLowerCase()}: ${itemValues[i]}`);
+                keyValueP.appendChild(keyValue);
+                deleteItemModal.appendChild(keyValueP);
+            }
         }
         //Create button row
         let buttonRow = document.createElement('section');
