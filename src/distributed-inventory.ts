@@ -1,18 +1,15 @@
-import { addITemToTable, createMessage, clearMessages, updateItemTotal, updateLocalStorage } from "./utils.js";
+import { addITemToTable, createMessage, clearMessages, closeModal, trapFocus, updateItemTotal, updateLocalStorage } from "./utils.js";
 import { ComponentItem, InventoryEntry } from "./models.js";
 
 //Get data from local storage
-const currentInventoryLocalStorage = localStorage.getItem("currentInventory") as string;
-let currentInventoryData: ComponentItem[] = JSON.parse(currentInventoryLocalStorage);
 const distributedInventoryLocalStorage = localStorage.getItem("distributedInventory") as string;
 let distributedInventoryData: InventoryEntry[] = JSON.parse(distributedInventoryLocalStorage);
-const distributedForm = document.getElementById('distributedForm') as HTMLFormElement;
-let username = localStorage.getItem('username');
-let isUserSignedIn = false;
+const distributeInventoryModal = document.getElementById('distribute-inventory-modal') as HTMLFormElement;
+const distributeInventoryBackdrop = document.getElementById('distribute-inventory-backdrop') as HTMLElement;
 
 function submitData() {
     //Get the data from the form
-    const distributedFormData: FormData = new FormData(distributedForm);
+    const distributedFormData: FormData = new FormData(distributeInventoryModal);
     //Create an object for the entry
     let newEntry: InventoryEntry = {
         entryId: 0,
@@ -68,13 +65,13 @@ function submitData() {
     updateItemTotal(newEntry, "updateCounts");
     //Update local storage. Will change 
     updateLocalStorage("distributedInventory", distributedInventoryData);
+    closeModal('distribute-inventory-backdrop');
     createMessage("The inventory has successfully been updated", "main-message", "check_circle");
     loadPreviousEntries();
 
 }
 
 function loadPreviousEntries() {
-    clearMessages();
     const previousEntriesTable = document.getElementById('previous-entries-table') as HTMLElement;
     let previousEntriesTableBody = previousEntriesTable.querySelector('tbody');
     if (previousEntriesTableBody === null) {
@@ -96,10 +93,25 @@ function loadPreviousEntries() {
     }
 }
 
-distributedForm.addEventListener('submit', (e) => {
+//Event listener for distribute inventory form submit
+distributeInventoryModal.addEventListener('submit', (e) => {
     e.preventDefault();
     clearMessages();
     submitData();
 });
+
+//Event listener to open the distribute inventory modal
+const openModalButton = document.getElementById('open-distribute-modal-button') as HTMLElement;
+openModalButton.addEventListener('click', () => {
+    distributeInventoryBackdrop.style.display = 'flex';
+    distributeInventoryModal.setAttribute('aria-modal', 'true');
+    const dateInput = document.getElementById('date') as HTMLInputElement;
+    dateInput.focus();
+    trapFocus(distributeInventoryModal, distributeInventoryBackdrop);
+});
+
+//Event listener to close the distribute inventory modal
+const closeModalButton = document.getElementById('cancel') as HTMLElement;
+closeModalButton.addEventListener('click', () => closeModal('distribute-inventory-backdrop'));
 
 loadPreviousEntries();

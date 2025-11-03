@@ -15,86 +15,58 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Solway:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="icon" href="assets/images/icon.png" sizes="192x192" />
 </head>
 
 <body>
     <a href="#maincontent" class="skip-link">Skip to main content</a>
     <div id="page-wrapper">
-    <header>
-        <picture>
-            <!--user's system is set to dark mode-->
-            <source srcset="src/images/logo-light.png" media="(prefers-color-scheme: light)" id="header-logo" />
-            <!--user's system is set to light mode-->
-            <source srcset="src/images/logo-dark.png" media="(prefers-color-scheme: dark)" id="header-logo" />
-            <!--no color preference found: use light mode-->
-            <img src="src/images/logo-light.png" alt="Days for Girls logo" id="header-logo" />
-        </picture>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="mailing-list.html">Mailing List</a>
-            <a href="events.html">Upcoming Events</a>
-            <a href="inventory.html" id="inventory-link"  aria-current="page">inventory</a>
-            <a href="donate.html">Donate</a>
-            <button type="button" id="open-sign-in-modal-button" aria-controls="signin-modal">Sign In</button>
-            <button type="button" id="sign-out-button">Sign Out</button>
-        </nav>
-    </header>
-    <section class="message-wrapper" id="main-message"></section>
-    <main id="maincontent">
-        <section class="button-row left">
-            <a href="inventory.html" class="secondary">
-                <span class="material-symbols-outlined">arrow_back</span> Back to inventory</a>
-        </section>
-        <section class="error-message" id="mainError"></section>
-        <form class="card" id="donatedForm">
-            <h2>Donating to Inventory</h2>
+        <header>
+            <picture>
+                <!--user's system is set to dark mode-->
+                <source srcset="src/images/logo-light.png" media="(prefers-color-scheme: light)" id="header-logo" />
+                <!--user's system is set to light mode-->
+                <source srcset="src/images/logo-dark.png" media="(prefers-color-scheme: dark)" id="header-logo" />
+                <!--no color preference found: use light mode-->
+                <img src="src/images/logo-light.png" alt="Days for Girls logo" id="header-logo" />
+            </picture>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="mailing-list.html">Mailing List</a>
+                <a href="events.html">Upcoming Events</a>
+                <a href="inventory.html" id="inventory-link" aria-current="page">inventory</a>
+                <a href="donate.html">Donate</a>
+                <button type="button" id="open-sign-in-modal-button" aria-controls="signin-modal">Sign In</button>
+                <button type="button" id="sign-out-button">Sign Out</button>
+            </nav>
+        </header>
+        <section class="message-wrapper" id="main-message"></section>
+        <main id="maincontent">
             <section class="form-row">
-                <label for="date">Date entered:</label>
-                <input type="date" id="date" name="date"/>
+                <a href="inventory.html" class="secondary">
+                    <span class="material-symbols-outlined">arrow_back</span> Back to inventory</a>
+                <button class="primary" type="button" id="add-inventory-button">
+                    <span class="material-symbols-outlined">add</span>Add to inventory</button>
             </section>
-            <section class="form-row">
-                <label for="componentType">What component:</label>
-                <select id="componentType" name="componentType">
-                    <option value="">Select...</option>
-                    <option value="Carry Pouches">Carry Pouches</option>
-                    <option value="Shields">Shields</option>
-                    <option value="Liners">Liners</option>
-                    <option value="Tote Bags">Tote Bags</option>
-                </select>
-            </section>
-            <section class="form-row">
-                <label for="quantity">How many of the component:</label>
-                <input type="number" id="quantity" name="quantity"/>
-            </section>
-            <section class="form-row">
-                <label for="whoDonated">Who donated the component(s):</label>
-                <input type="text" id="whoDonated" name="whoDonated"/>
-            </section>
-            <section class="button-row">
-                <button type="reset" class="secondary" id="clear">Clear Form</button>
-                <button type="submit" class="primary" id="submit">Submit</button>
-            </section>
-        </form>
-        <article class="card" id="previous-entries">
-            <h3>Previous Entries</h3>
-            <table id="previous-entries-table">
-                <thead>
-                    <th>Date</th>
-                    <th>Component</th>
-                    <th>Quantity</th>
-                    <th>Who Donated</th>
-                    <th>Delete</th>
-                </thead>
-            </table>
-        </article>
-    </main>
-    <footer>
-        <a href="https://www.facebook.com/days.for.girls.solon/">Follow us on Facebook</a>
-        <a href="#">Follow us on Instagram</a>
-        <a href="https://www.daysforgirls.org/">Days for Girls International</a>
-    </footer>
+            <article class="card" id="previous-entries">
+                <h3>Previous Entries</h3>
+                <table id="previous-entries-table">
+                    <thead>
+                        <th>Date</th>
+                        <th>Component</th>
+                        <th>Quantity</th>
+                        <th>Who Donated</th>
+                        <th>Delete</th>
+                    </thead>
+                </table>
+            </article>
+        </main>
+        <footer>
+            <a href="https://www.facebook.com/days.for.girls.solon/">Follow us on Facebook</a>
+            <a href="#">Follow us on Instagram</a>
+            <a href="https://www.daysforgirls.org/">Days for Girls International</a>
+        </footer>
     </div>
     <!--Sign In Modal-->
     <div class="backdrop" id="sign-in-backdrop">
@@ -118,6 +90,38 @@
     <!--Delete Modal-->
     <div class="backdrop" id="delete-item-backdrop">
         <form role="dialog" id="delete-item-modal" aria-modal="false" aria-labelledby="dialog-label" class="modal">
+        </form>
+    </div>
+    <!--Add to inventory modal-->
+    <div class="backdrop" id="add-inventory-backdrop">
+        <form role="dialog" id="add-inventory-modal" aria-modal="false" aria-labelledby="dialog-label" class="modal">
+            <h2>Donating to Inventory</h2>
+            <section class="form-row">
+                <label for="date">Date entered:</label>
+                <input type="date" id="date" name="date" />
+            </section>
+            <section class="form-row">
+                <label for="componentType">What component:</label>
+                <select id="componentType" name="componentType">
+                    <option value="">Select...</option>
+                    <option value="Carry Pouches">Carry Pouches</option>
+                    <option value="Shields">Shields</option>
+                    <option value="Liners">Liners</option>
+                    <option value="Tote Bags">Tote Bags</option>
+                </select>
+            </section>
+            <section class="form-row">
+                <label for="quantity">How many of the component:</label>
+                <input type="number" id="quantity" name="quantity" />
+            </section>
+            <section class="form-row">
+                <label for="whoDonated">Who donated the component(s):</label>
+                <input type="text" id="whoDonated" name="whoDonated" />
+            </section>
+            <section class="button-row">
+                <button type="button" class="secondary" id="cancel">cancel</button>
+                <button type="submit" class="primary" id="submit">Submit</button>
+            </section>
         </form>
     </div>
     <script type="module" src="dist/app.js"></script>

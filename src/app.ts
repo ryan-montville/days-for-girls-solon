@@ -72,6 +72,8 @@ document.addEventListener('keydown', (e) => {
     let deleteItemModalBackdrop = document.getElementById('delete-item-backdrop');
     let signInModalBackdrop = document.getElementById('sign-in-backdrop');
     let editEventModalBackdrop = document.getElementById('edit-event-backdrop');
+    let addInventoryModalBackdrop = document.getElementById('add-inventory-backdrop');
+    let distributeInventoryBackdrop = document.getElementById('distribute-inventory-backdrop');
     if (e.key === 'Escape') {
         e.preventDefault();
         if (deleteItemModalBackdrop && deleteItemModalBackdrop.style.display === 'flex') {
@@ -80,7 +82,12 @@ document.addEventListener('keydown', (e) => {
             closeModal("sign-in-backdrop");
         } else if (editEventModalBackdrop && editEventModalBackdrop.style.display === 'flex') {
             closeModal("edit-event-backdrop");
-        } else {
+        } else if(addInventoryModalBackdrop && addInventoryModalBackdrop.style.display === 'flex') {
+            closeModal('add-inventory-backdrop');
+        } else if (distributeInventoryBackdrop && distributeInventoryBackdrop.style.display === 'flex') {
+            closeModal('distribute-inventory-backdrop');
+        }
+        else {
             console.log("No modals are open");
         }
     }
@@ -105,6 +112,7 @@ document.addEventListener('keydown', (e) => {
         signInModalBackdrop.style.display = 'none';
         createMessage("Sign In Successful", "main-message", "check_circle");
         signIn();
+        window.location.reload();
     });
 
     //event listener to sign out

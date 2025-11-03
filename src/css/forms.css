@@ -19,10 +19,8 @@ button {
     justify-content: flex-start;
 }
 
-.button-row-right {
-    display: flex;
+.right {
     justify-content: flex-end;
-    align-items: center;
 }
 
 .form-row button, .form-row a, .button-row button, .button-row a {

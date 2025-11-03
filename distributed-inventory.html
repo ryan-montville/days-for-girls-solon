@@ -42,40 +42,12 @@
     </header>
     <section class="message-wrapper" id="main-message"></section>
     <main id="maincontent">
-        <section class="button-row left">
+        <section class="form-row">
             <a href="inventory.html" class="secondary">
                 <span class="material-symbols-outlined">arrow_back</span> Back to inventory</a>
+            <button type="button" class="primary" id="open-distribute-modal-button">
+                <span class="material-symbols-outlined">local_shipping</span> Distribute Inventory</button>
         </section>
-        <section class="error-message" id="mainError"></section>
-        <form class="card" id="distributedForm">
-            <h2>Distributed Inventory</h2>
-            <section class="form-row">
-                <label for="date">Date leaving:</label>
-                <input type="date" id="date" name="date"/>
-            </section>
-            <section class="form-row">
-                <label for="componentType">What component:</label>
-                <select id="componentType" name="componentType">
-                    <option value="">Select...</option>
-                    <option value="Carry Pouches">Carry Pouches</option>
-                    <option value="Shields">Shields</option>
-                    <option value="Liners">Liners</option>
-                    <option value="Tote Bags">Tote Bags</option>
-                </select>
-            </section>
-            <section class="form-row">
-                <label for="quantity">How many of the component:</label>
-                <input type="number" id="quantity" name="quantity"/>
-            </section>
-            <section class="form-row">
-                <label for="destination">Where is the component going:</label>
-                <input type="text" id="destination" name="destination"/>
-            </section>
-            <section class="button-row">
-                <button type="reset" class="secondary" id="clear">Clear Form</button>
-                <button type="submit" class="primary" id="submit">Submit</button>
-            </section>
-        </form>
         <article class="card" id="previous-entries">
             <h3>Previous Entries</h3>
             <table id="previous-entries-table">
@@ -117,6 +89,38 @@
     <!--Delete Modal-->
     <div class="backdrop" id="delete-item-backdrop">
         <form role="dialog" id="delete-item-modal" aria-modal="false" aria-labelledby="dialog-label" class="modal">
+        </form>
+    </div>
+    <!--Distribute Inventory Modal-->
+    <div class="backdrop" id="distribute-inventory-backdrop">
+        <form role="dialog" id="distribute-inventory-modal" aria-modal="false" aria-labelledby="dialog-label" class="modal">
+            <h2>Distributed Inventory</h2>
+            <section class="form-row">
+                <label for="date">Date leaving:</label>
+                <input type="date" id="date" name="date"/>
+            </section>
+            <section class="form-row">
+                <label for="componentType">What component:</label>
+                <select id="componentType" name="componentType">
+                    <option value="">Select...</option>
+                    <option value="Carry Pouches">Carry Pouches</option>
+                    <option value="Shields">Shields</option>
+                    <option value="Liners">Liners</option>
+                    <option value="Tote Bags">Tote Bags</option>
+                </select>
+            </section>
+            <section class="form-row">
+                <label for="quantity">How many of the component:</label>
+                <input type="number" id="quantity" name="quantity"/>
+            </section>
+            <section class="form-row">
+                <label for="destination">Where is the component going:</label>
+                <input type="text" id="destination" name="destination"/>
+            </section>
+            <section class="button-row">
+                <button type="button" class="secondary" id="cancel">Cancel</button>
+                <button type="submit" class="primary" id="submit">Submit</button>
+            </section>
         </form>
     </div>
     <script type="module" src="dist/app.js"></script>

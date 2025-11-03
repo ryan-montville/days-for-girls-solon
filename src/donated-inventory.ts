@@ -1,18 +1,15 @@
-import { addITemToTable, createMessage, clearMessages, updateItemTotal, updateLocalStorage } from "./utils.js";
+import { addITemToTable, createMessage, clearMessages, closeModal, trapFocus, updateItemTotal, updateLocalStorage } from "./utils.js";
 import { ComponentItem, InventoryEntry } from "./models.js";
 
 //Get data from local storage
-const currentInventoryLocalStorage = localStorage.getItem("currentInventory") as string;
-let currentInventoryData: ComponentItem[] = JSON.parse(currentInventoryLocalStorage);
 const donateInventoryLocalStorage = localStorage.getItem('donatedInventory') as string;
 let donateInventoryData: InventoryEntry[] = JSON.parse(donateInventoryLocalStorage);
-const DonatedForm = document.getElementById('donatedForm') as HTMLFormElement;
-let username = localStorage.getItem('username');
-let isUserSignedIn = false;
+const addInventoryModalBackdrop = document.getElementById('add-inventory-backdrop') as HTMLElement;
+const addInventoryModal = document.getElementById('add-inventory-modal') as HTMLFormElement;
 
 function submitData() {
     //Get the data from the form
-    const donatedFormData: FormData = new FormData(DonatedForm);
+    const donatedFormData: FormData = new FormData(addInventoryModal);
     //Create an object for the entry
     let newEntry = {
         entryId: 0,
@@ -67,12 +64,15 @@ function submitData() {
     updateItemTotal(newEntry, "updateCounts");
     //Update local storage. Will change 
     updateLocalStorage("donatedInventory", donateInventoryData);
+    //Close the modal
+    closeModal('add-inventory-backdrop');
+    //Clear the form
+    addInventoryModal.reset();
     createMessage("The inventory has successfully been updated", "main-message", "check_circle");
     loadPreviousEntries();
 }
 
 function loadPreviousEntries() {
-    clearMessages();
     const previousEntriesTable = document.getElementById('previous-entries-table') as HTMLElement;
     let previousEntriesTableBody = previousEntriesTable.querySelector('tbody');
     if (previousEntriesTableBody === null) {
@@ -94,10 +94,28 @@ function loadPreviousEntries() {
     }
 }
 
-DonatedForm.addEventListener('submit', (e) => {
+//Event listener for add inventory form submit
+addInventoryModal.addEventListener('submit', (e) => {
     e.preventDefault();
     clearMessages();
     submitData();
 });
+
+//Event listener to open the add inventory modal
+const addInventoryButton = document.getElementById('add-inventory-button') as HTMLElement;
+addInventoryButton.addEventListener('click', () => {
+    addInventoryModalBackdrop.style.display = 'flex';
+    addInventoryModal.setAttribute('aria-modal', 'true');
+    const dateInput = document.getElementById('date') as HTMLInputElement;
+    dateInput.focus();
+    trapFocus(addInventoryModal, addInventoryModalBackdrop);
+});
+
+//Event listener to close the add inventory modal
+const closeModalButton = document.getElementById('cancel') as HTMLElement;
+closeModalButton.addEventListener('click', () => {
+    closeModal('add-inventory-backdrop');
+});
+
 
 loadPreviousEntries();
