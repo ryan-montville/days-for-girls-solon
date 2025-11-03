@@ -109,7 +109,7 @@ function editEventInfo() {
     //Validate the event title input
     let TitleValue = formData.get('eventTitle');
     if (TitleValue === null || TitleValue.toString().trim() === '') {
-        createMessage("Please enter the title of the event", "main-message", "error");
+        createMessage("Please enter the title of the event", "edit-event-modal-message", "error");
         return;
     }
     else {
@@ -118,7 +118,7 @@ function editEventInfo() {
     //Validate the event date input
     const dateValue = formData.get('eventDate');
     if (dateValue === null || dateValue === '') {
-        createMessage("Please enter the date of the event", "main-message", "error");
+        createMessage("Please enter the date of the event", "edit-event-modal-message", "error");
         return;
     }
     else {
@@ -127,7 +127,7 @@ function editEventInfo() {
     //Validate event location input
     let locationValue = formData.get('eventLocation');
     if (locationValue === null || locationValue.toString().trim() === '') {
-        createMessage("Please enter the location of the event", "main-message", "error");
+        createMessage("Please enter the location of the event", "edit-event-modal-message", "error");
         return;
     }
     else {
@@ -136,7 +136,7 @@ function editEventInfo() {
     //Validate event time input
     let timeValue = formData.get('eventTime');
     if (timeValue === null || timeValue.toString().trim() === '') {
-        createMessage("Please enter the time of the event", "main-message", "error");
+        createMessage("Please enter the time of the event", "edit-event-modal-message", "error");
         return;
     }
     else {
@@ -145,7 +145,7 @@ function editEventInfo() {
     //Get the event description from the textarea, validate, and turn it into a string
     let eventDescriptionValue = formData.get('eventDescription');
     if (eventDescriptionValue === null || eventDescriptionValue.toString().trim() === '') {
-        createMessage("Please enter a description for the event", "main-message", "error");
+        createMessage("Please enter a description for the event", "edit-event-modal-message", "error");
         return;
     }
     else {

@@ -23,7 +23,7 @@ function submitData() {
     //Validate date input
     const dateValue = donatedFormData.get('date');
     if (dateValue === null || dateValue === '') {
-        createMessage("Please enter the date the components were donated", "main-message", "error");
+        createMessage("Please enter the date the components were donated", "donate-modal-message", "error");
         return;
     } else {
         newEntry['entryDate'] = new Date(dateValue.toString());
@@ -31,7 +31,7 @@ function submitData() {
     //Validate component type selected input
     const componentTypeValue = donatedFormData.get('componentType');
     if (componentTypeValue === null || componentTypeValue.toString().trim() === '') {
-        createMessage("Please select what component you are donating", "main-message", "error");
+        createMessage("Please select what component you are donating", "donate-modal-message", "error");
         return;
     } else {
         newEntry['componentType'] = componentTypeValue.toString()
@@ -39,12 +39,12 @@ function submitData() {
     //Validate quantity input
     const quantityValue = donatedFormData.get('quantity');
     if (quantityValue === null) {
-        createMessage("Please enter the quantity of the components being donated", "main-message", "error");
+        createMessage("Please enter the quantity of the components being donated", "donate-modal-message", "error");
         return;
     } else {
         const quantity: number = +quantityValue;
         if (quantity < 1) {
-            createMessage("Please enter a quantity greater that 0", "main-message", "error");
+            createMessage("Please enter a quantity greater that 0", "donate-modal-message", "error");
             return;
         } else {
             newEntry['quantity'] = quantity;
@@ -53,7 +53,7 @@ function submitData() {
     //Validate who donated input
     const whoDonatedValue = donatedFormData.get('whoDonated');
     if (whoDonatedValue === null || whoDonatedValue.toString().trim() === '') {
-        createMessage("Please enter who donated the components", "main-message", "error");
+        createMessage("Please enter who donated the components", "donate-modal-message", "error");
         return;
     } else {
         newEntry['whoDonated'] = whoDonatedValue.toString();
