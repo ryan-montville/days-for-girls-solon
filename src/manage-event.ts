@@ -5,7 +5,6 @@ const eventsLocalStorage = localStorage.getItem('events') as string;
 let eventsData: Event[] = JSON.parse(eventsLocalStorage);
 const SignUpEntriesLocalStorge = localStorage.getItem('SignUpEntries') as string;
 let signUpEntriesData: SignUpEntry[] = JSON.parse(SignUpEntriesLocalStorge);
-const resteEventInfoButton = document.getElementById('reset') as HTMLElement;
 const entriesCard = document.getElementById('sign-up-entires') as HTMLElement;
 const entriesTable = document.getElementById('entries-table') as HTMLElement;
 const signUpEntriesCard = document.getElementById('sign-up-entires') as HTMLElement;
@@ -32,7 +31,6 @@ const eventObject: Event | undefined = eventsData.find(eventObject => eventObjec
 //Get modal backdrop elements
 const editModalBackdrop = document.getElementById('edit-event-backdrop') as HTMLElement;
 const editEventModal = document.getElementById('edit-event-modal') as HTMLFormElement;
-const deleteEventModalBackdrop = document.getElementById('delete-item-backdrop') as HTMLElement;
 
 function displayEventInfo(eventObject: Event) {
     const eventInfoCard = document.getElementById('event-info') as HTMLElement;

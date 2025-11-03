@@ -287,6 +287,8 @@ export function deleteItem(dataTableName: string, idKeyName: string, itemId: num
         });
         buttonRow.appendChild(yesButton);
         deleteItemModal.appendChild(buttonRow);
+        noButton.focus();
+        trapFocus(deleteItemModal, deleteItemBackdrop);
     } else {
         createMessage("Item already removed from database. Try reloading the page", "main-message", "error");
     }

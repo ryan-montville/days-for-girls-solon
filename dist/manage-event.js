@@ -3,7 +3,6 @@ const eventsLocalStorage = localStorage.getItem('events');
 let eventsData = JSON.parse(eventsLocalStorage);
 const SignUpEntriesLocalStorge = localStorage.getItem('SignUpEntries');
 let signUpEntriesData = JSON.parse(SignUpEntriesLocalStorge);
-const resteEventInfoButton = document.getElementById('reset');
 const entriesCard = document.getElementById('sign-up-entires');
 const entriesTable = document.getElementById('entries-table');
 const signUpEntriesCard = document.getElementById('sign-up-entires');
@@ -31,7 +30,6 @@ const eventObject = eventsData.find(eventObject => eventObject['eventId'] === pa
 //Get modal backdrop elements
 const editModalBackdrop = document.getElementById('edit-event-backdrop');
 const editEventModal = document.getElementById('edit-event-modal');
-const deleteEventModalBackdrop = document.getElementById('delete-item-backdrop');
 function displayEventInfo(eventObject) {
     const eventInfoCard = document.getElementById('event-info');
     eventInfoCard.innerHTML = '';
