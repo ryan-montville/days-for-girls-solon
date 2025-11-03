@@ -1,4 +1,4 @@
-import { addITemToTable, createMessage, clearMessages, closeModal, trapFocus, updateItemTotal, updateLocalStorage } from "./utils.js";
+import { addITemToTable, createMessage, clearMessages, closeModal, CheckInventoryForDistribution, trapFocus, updateItemTotal, updateLocalStorage } from "./utils.js";
 import { ComponentItem, InventoryEntry } from "./models.js";
 
 //Get data from local storage
@@ -23,7 +23,7 @@ function submitData() {
     //Validate date input
     const dateValue = distributedFormData.get('date');
     if (dateValue === null || dateValue === '') {
-        createMessage("Please enter the date the components are leaving", "main-message", "error");
+        createMessage("Please enter the date the components are leaving", "distribute-modal-message", "error");
         return;
     } else {
         newEntry['entryDate'] = new Date(dateValue.toString());
@@ -31,7 +31,7 @@ function submitData() {
     //Validate component type selected input
     const componentTypeValue = distributedFormData.get('componentType');
     if (componentTypeValue === null || componentTypeValue.toString().trim() === '') {
-        createMessage("Please select what component you are distributing", "main-message", "error");
+        createMessage("Please select what component you are distributing", "distribute-modal-message", "error");
         return;
     } else {
         newEntry['componentType'] = componentTypeValue.toString()
@@ -40,12 +40,16 @@ function submitData() {
     //Validate quantity input
     const quantityValue = distributedFormData.get('quantity');
     if (quantityValue === null) {
-        createMessage("Please enter the quantity of the components being distributed", "main-message", "error");
+        createMessage("Please enter the quantity of the components being distributed", "distribute-modal-message", "error");
         return;
     } else {
         const quantity: number = +quantityValue;
+        const checkInventory = CheckInventoryForDistribution(newEntry['componentType'], quantity)
         if (quantity < 1) {
-            createMessage("Please enter a quantity greater that 0", "main-message", "error");
+            createMessage("Please enter a quantity greater that 0", "distribute-modal-message", "error");
+            return;
+        } else if(!checkInventory.hasEnough) {
+            createMessage(`Error: There are only ${checkInventory.quantity} ${newEntry['componentType']} currently in inventory`, "distribute-modal-message", "error");
             return;
         } else {
             newEntry['quantity'] = quantity;
@@ -54,7 +58,7 @@ function submitData() {
     //Validate destination input
     const destinationValue = distributedFormData.get('destination');
     if (destinationValue === null || destinationValue.toString().trim() === '') {
-        createMessage("Please enter the destination", "main-message", "error");
+        createMessage("Please enter the destination", "distribute-modal-message", "error");
         return;
     } else {
         newEntry['destination'] = destinationValue.toString();
