@@ -85,14 +85,17 @@ document.addEventListener('keydown', (e) => {
 //event listener to sign in
 signInModal.addEventListener('submit', (event) => {
     event.preventDefault();
-    const modalFormData = new FormData(signInModal);
-    const username = modalFormData.get('username');
-    if (typeof username === 'string' && username.trim() !== '') {
-        localStorage.setItem('username', username?.toString());
-    }
-    else {
+    const signInFormData = new FormData(signInModal);
+    const username = signInFormData.get('username');
+    const password = signInFormData.get('password');
+    if (username === null || username?.toString().trim() === '') {
         createMessage("Username must not be empty", "sign-in-message", "error");
+        return;
     }
+    if (password === null || password.toString().trim() === '') {
+        createMessage("PAssword must not be empty", "sign-in-message", "error");
+    }
+    localStorage.setItem('username', username?.toString());
     signInModalBackdrop.style.display = 'none';
     createMessage("Sign In Successful", "main-message", "check_circle");
     signIn();
