@@ -1,4 +1,4 @@
-import { addITemToTable, createMessage, clearMessages, closeModal, deleteItem, fixDate, updateLocalStorage } from "./utils.js";
+import { addITemToTable, createMessage, clearMessages, closeModal, deleteItem, fixDate, updateLocalStorage, trapFocus } from "./utils.js";
 import { SignUpEntry, Event } from "./models.js";
 
 const eventsLocalStorage = localStorage.getItem('events') as string;
@@ -71,6 +71,9 @@ function displayEventInfo(eventObject: Event) {
         //Open the edit event modal
         editModalBackdrop.style.display = 'flex';
         editEventModal.setAttribute('aria-modal', 'true');
+        const eventTitleInput = document.getElementById('eventTitle') as HTMLInputElement;
+        eventTitleInput.focus();
+        trapFocus(editEventModal, editModalBackdrop);
     });
     buttonRow.appendChild(editButton);
     eventInfoCard.appendChild(buttonRow);
