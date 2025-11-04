@@ -1,4 +1,4 @@
-import { addITemToTable, createMessage, clearMessages, closeModal, CheckInventoryForDistribution, trapFocus, updateItemTotal, updateLocalStorage } from "./utils.js";
+import { addITemToTable, createMessage, clearMessages, closeModal, CheckInventoryForDistribution, populateComponteTypeSelect, trapFocus, updateItemTotal, updateLocalStorage } from "./utils.js";
 //Get data from local storage
 const distributedInventoryLocalStorage = localStorage.getItem("distributedInventory");
 let distributedInventoryData = JSON.parse(distributedInventoryLocalStorage);
@@ -106,6 +106,7 @@ distributeInventoryModal.addEventListener('submit', (e) => {
 //Event listener to open the distribute inventory modal
 const openModalButton = document.getElementById('open-distribute-modal-button');
 openModalButton.addEventListener('click', () => {
+    populateComponteTypeSelect('componentType');
     distributeInventoryBackdrop.style.display = 'flex';
     distributeInventoryModal.setAttribute('aria-modal', 'true');
     const dateInput = document.getElementById('date');

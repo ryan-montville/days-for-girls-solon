@@ -255,6 +255,26 @@ export function fixDate(dateString, dateFormat) {
         });
     }
 }
+export function getComponentTypes() {
+    let currentInventoryLocalStorage = localStorage.getItem('currentInventory');
+    let currentInventoryArray = JSON.parse(currentInventoryLocalStorage);
+    let componentTypes = [];
+    currentInventoryArray.forEach(component => componentTypes.push(component['componentType']));
+    return componentTypes;
+}
+export function populateComponteTypeSelect(selctId) {
+    let selectElement = document.getElementById(selctId);
+    if (selectElement.options.length === 1) {
+        let componentTypes = getComponentTypes();
+        componentTypes.forEach(component => {
+            let newOption = document.createElement('option');
+            newOption.setAttribute('value', component);
+            let componentName = document.createTextNode(component);
+            newOption.appendChild(componentName);
+            selectElement.appendChild(newOption);
+        });
+    }
+}
 export function trapFocus(modal, backdrop) {
     const focusableElements = modal.querySelectorAll('button, [href], input, select, textarea');
     //Don't trap focus if the modal/backdrop isn't open

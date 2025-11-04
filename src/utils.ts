@@ -50,18 +50,18 @@ export function addITemToTable(item: TableItem, numCells: number, dataTableName?
     return newRow;
 }
 
-export function CheckInventoryForDistribution(componentTypeToCheck: string, quantityToDistribute: number): {hasEnough: boolean, quantity: number} {
+export function CheckInventoryForDistribution(componentTypeToCheck: string, quantityToDistribute: number): { hasEnough: boolean, quantity: number } {
     let currentInventoryLocalStorage = localStorage.getItem("currentInventory") as string;
-    let currentInventoryArray:ComponentItem[] = JSON.parse(currentInventoryLocalStorage);
+    let currentInventoryArray: ComponentItem[] = JSON.parse(currentInventoryLocalStorage);
     let itemToCheck: ComponentItem | undefined = currentInventoryArray.find(item => item['componentType'] === componentTypeToCheck);
     if (itemToCheck) {
         if (itemToCheck['quantity'] < quantityToDistribute) {
-            return {hasEnough: false, quantity: itemToCheck['quantity']};
+            return { hasEnough: false, quantity: itemToCheck['quantity'] };
         } else {
-            return {hasEnough: true, quantity: itemToCheck['quantity']};
+            return { hasEnough: true, quantity: itemToCheck['quantity'] };
         }
     } else {
-        return {hasEnough: false, quantity: 0};
+        return { hasEnough: false, quantity: 0 };
     }
 }
 export function createMessage(message: string, location: string, type: string) {
@@ -248,6 +248,28 @@ export function fixDate(dateString: string, dateFormat: string): string {
             month: 'long',
             day: '2-digit',
             year: 'numeric',
+        });
+    }
+}
+
+export function getComponentTypes(): string[] {
+    let currentInventoryLocalStorage = localStorage.getItem('currentInventory') as string;
+    let currentInventoryArray: ComponentItem[] = JSON.parse(currentInventoryLocalStorage);
+    let componentTypes: string[] = [];
+    currentInventoryArray.forEach(component => componentTypes.push(component['componentType']));
+    return componentTypes;
+}
+
+export function populateComponteTypeSelect(selctId: string) {
+    let selectElement = document.getElementById(selctId) as HTMLSelectElement;
+    if (selectElement.options.length === 1) {
+        let componentTypes: string[] = getComponentTypes();
+        componentTypes.forEach(component => {
+            let newOption = document.createElement('option');
+            newOption.setAttribute('value', component);
+            let componentName = document.createTextNode(component);
+            newOption.appendChild(componentName);
+            selectElement.appendChild(newOption);
         });
     }
 }

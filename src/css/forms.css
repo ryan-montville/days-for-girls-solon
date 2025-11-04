@@ -51,6 +51,16 @@ input, select {
     margin: 5px;
 }
 
+textarea {
+    width: calc(100% - 20px);
+    min-height: 100px;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid var(--main-text);
+    background-color: var(--main-background);
+    color: var(--main-text);
+}
+
 .full {
     flex-grow: 1;
 }

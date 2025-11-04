@@ -1,4 +1,4 @@
-import { addITemToTable, createMessage, clearMessages, closeModal, trapFocus, updateItemTotal, updateLocalStorage } from "./utils.js";
+import { addITemToTable, createMessage, clearMessages, closeModal, populateComponteTypeSelect, trapFocus, updateItemTotal, updateLocalStorage } from "./utils.js";
 //Get data from local storage
 const donateInventoryLocalStorage = localStorage.getItem('donatedInventory');
 let donateInventoryData = JSON.parse(donateInventoryLocalStorage);
@@ -104,6 +104,7 @@ addInventoryModal.addEventListener('submit', (e) => {
 //Event listener to open the add inventory modal
 const addInventoryButton = document.getElementById('add-inventory-button');
 addInventoryButton.addEventListener('click', () => {
+    populateComponteTypeSelect('componentType');
     addInventoryModalBackdrop.style.display = 'flex';
     addInventoryModal.setAttribute('aria-modal', 'true');
     const dateInput = document.getElementById('date');

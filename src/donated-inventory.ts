@@ -1,4 +1,4 @@
-import { addITemToTable, createMessage, clearMessages, closeModal, trapFocus, updateItemTotal, updateLocalStorage } from "./utils.js";
+import { addITemToTable, createMessage, clearMessages, closeModal, populateComponteTypeSelect, trapFocus, updateItemTotal, updateLocalStorage } from "./utils.js";
 import { ComponentItem, InventoryEntry } from "./models.js";
 
 //Get data from local storage
@@ -104,6 +104,7 @@ addInventoryModal.addEventListener('submit', (e) => {
 //Event listener to open the add inventory modal
 const addInventoryButton = document.getElementById('add-inventory-button') as HTMLElement;
 addInventoryButton.addEventListener('click', () => {
+    populateComponteTypeSelect('componentType');
     addInventoryModalBackdrop.style.display = 'flex';
     addInventoryModal.setAttribute('aria-modal', 'true');
     const dateInput = document.getElementById('date') as HTMLInputElement;
