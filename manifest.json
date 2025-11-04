@@ -1,0 +1,21 @@
+{
+  "name": "Days for Girls Solon OH",
+  "short_name": "DFG SO",
+  "description": "",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#e7e9f1",
+  "theme_color": "#ff9f00",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
