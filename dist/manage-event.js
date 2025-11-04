@@ -60,7 +60,7 @@ function displayEventInfo(eventObject) {
     editButton.setAttribute('type', 'button');
     const editIcon = document.createElement('span');
     editIcon.setAttribute('class', 'material-symbols-outlined');
-    const editIconName = document.createTextNode('edit');
+    const editIconName = document.createTextNode('edit_calendar');
     editIcon.appendChild(editIconName);
     editButton.appendChild(editIcon);
     const editButtonText = document.createTextNode('Edit Event Info');

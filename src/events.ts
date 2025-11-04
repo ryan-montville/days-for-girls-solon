@@ -72,7 +72,13 @@ function checkIfSignedIn() {
         let createNewEventButton = document.createElement('a');
         createNewEventButton.setAttribute('href', 'create-new-event.html');
         createNewEventButton.setAttribute('class', 'secondary');
-        createNewEventButton.textContent = "Create New Event";
+        let createEventIcon = document.createElement('span');
+        createEventIcon.setAttribute('class', 'material-symbols-outlined');
+        let iconName = document.createTextNode('calendar_add_on');
+        createEventIcon.appendChild(iconName);
+        createNewEventButton.appendChild(createEventIcon);
+        let createEventButtonText = document.createTextNode('Create New Event')
+        createNewEventButton.appendChild(createEventButtonText);
         let eventsHeader = document.getElementById('events-header') as HTMLElement;
         eventsHeader.appendChild(createNewEventButton);
     }
