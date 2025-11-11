@@ -25,13 +25,23 @@
     <div id="page-wrapper">
     <header>
         <picture>
-            <!--user's system is set to dark mode-->
-            <source srcset="images/logo-light.png" media="(prefers-color-scheme: light)" id="header-logo" />
-            <!--user's system is set to light mode-->
-            <source srcset="images/logo-dark.png" media="(prefers-color-scheme: dark)" id="header-logo" />
-            <!--no color preference found: use light mode-->
-            <img src="images/logo-light.png" alt="Days for Girls logo" id="header-logo" />
-        </picture>
+                <!--user's system is set to dark mode-->
+                <source srcset="images/logo-light.png" media="(prefers-color-scheme: light)" id="desktop-header-logo" />
+                <!--user's system is set to light mode-->
+                <source srcset="images/logo-dark.png" media="(prefers-color-scheme: dark)" id="desktop-header-logo" />
+                <!--no color preference found: use light mode-->
+                <img src="images/logo-light.png" alt="Days for Girls logo" id="desktop-header-logo" />
+            </picture>
+            <picture>
+                <!--user's system is set to dark mode-->
+                <source srcset="images/mobile-logo-light.svg" media="(prefers-color-scheme: light)"
+                    id="mobile-header-logo" />
+                <!--user's system is set to light mode-->
+                <source srcset="images/mobile-logo-dark.svg" media="(prefers-color-scheme: dark)"
+                    id="mobile-header-logo" />
+                <!--no color preference found: use light mode-->
+                <img src="images/mobile-logo-light.svg" alt="Days for Girls logo" id="mobile-header-logo" />
+            </picture>
         <nav>
             <a href="index.html">Home</a>
             <a href="mailing-list.html">Mailing List</a>

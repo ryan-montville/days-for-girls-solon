@@ -127,13 +127,8 @@ header {
     margin: 20px;
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 5px;
     align-items: center;
-}
-
-#header-logo {
-    height: 100px;
-    width: auto;
 }
 
 /* Nav */
@@ -201,13 +196,14 @@ nav a:hover {
     animation-duration: 0.5s;
     animation-name: fade-in;
     animation-timing-function: ease-in;
-    
+
 }
 
 @keyframes fade-in {
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -215,9 +211,6 @@ nav a:hover {
 
 /* main */
 main {
-    width: 100%;
-    max-width: 900px;
-    margin: 20px 0;
     color: var(--main-text);
     font-size: 20px;
 }
@@ -275,4 +268,52 @@ footer a {
 
 footer a:hover {
     text-decoration: underline;
+}
+
+/* Media breakpoints */
+/*Screens 1045 and larger*/
+@media (min-width: 1045px) {
+    #desktop-header-logo {
+        display: inline-block;
+        height: 100px;
+    }
+
+    #mobile-header-logo {
+        display: none;
+    }
+
+    main {
+        width: 100%;
+        margin: 20px 0;
+        max-width: 900px;
+    }
+}
+
+/*Screens smaller than 1045px*/
+@media (max-width: 1044px) {
+    #desktop-header-logo {
+        display: none;
+    }
+
+    #mobile-header-logo {
+        display: inline-block;
+        height: 50px;
+    }
+
+    header {
+        flex-direction: column;
+    }
+
+    main {
+        margin: 20px 0;
+        width: calc(99vw - 60px);
+    }
+}
+
+/* Screens smaller than 850 */
+@media (max-width: 850px) {
+    nav {
+        flex-direction: column;
+        display: none;
+    }
 }

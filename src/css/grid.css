@@ -2,7 +2,7 @@
 #page-wrapper {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 100px 30px auto 50px;
+    grid-template-rows: 140px 30px auto 50px;
     grid-template-areas: 
         "header"
         "message-area"
@@ -58,3 +58,17 @@ footer {
 /* form page grid layout */
 
 /* Inventory page grid layout */
+
+/*Screens smaller than 1045px*/
+@media (max-width: 1044px) {
+    #page-wrapper {
+        grid-template-rows: 150px 30px auto 50px;
+    }
+}
+
+/* Screens smaller than 850 */
+@media (max-width: 850px) {
+    #page-wrapper {
+        grid-template-rows: 100px 30px auto 50px;
+    }
+}
