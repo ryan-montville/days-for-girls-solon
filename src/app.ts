@@ -82,7 +82,7 @@ document.addEventListener('keydown', (e) => {
             closeModal("sign-in-backdrop");
         } else if (editEventModalBackdrop && editEventModalBackdrop.style.display === 'flex') {
             closeModal("edit-event-backdrop");
-        } else if(addInventoryModalBackdrop && addInventoryModalBackdrop.style.display === 'flex') {
+        } else if (addInventoryModalBackdrop && addInventoryModalBackdrop.style.display === 'flex') {
             closeModal('add-inventory-backdrop');
         } else if (distributeInventoryBackdrop && distributeInventoryBackdrop.style.display === 'flex') {
             closeModal('distribute-inventory-backdrop');
@@ -92,58 +92,77 @@ document.addEventListener('keydown', (e) => {
         }
     }
 
-        
+
 });
 
-   //event listener to sign in
-    signInModal.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const signInFormData = new FormData(signInModal);
-        const username = signInFormData.get('username');
-        const password = signInFormData.get('password')
-        if (username === null || username?.toString().trim() === '') {
-            createMessage("Username must not be empty", "sign-in-message", "error");
-            return;
-        }
-        if (password === null || password.toString().trim() === '') {
-            createMessage("PAssword must not be empty", "sign-in-message", "error");
-        }
-        localStorage.setItem('username', username?.toString());
-        signInModalBackdrop.style.display = 'none';
-        createMessage("Sign In Successful", "main-message", "check_circle");
+//event listener to sign in
+signInModal.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const signInFormData = new FormData(signInModal);
+    const username = signInFormData.get('username');
+    const password = signInFormData.get('password')
+    if (username === null || username?.toString().trim() === '') {
+        createMessage("Username must not be empty", "sign-in-message", "error");
+        return;
+    }
+    if (password === null || password.toString().trim() === '') {
+        createMessage("PAssword must not be empty", "sign-in-message", "error");
+    }
+    localStorage.setItem('username', username?.toString());
+    signInModalBackdrop.style.display = 'none';
+    createMessage("Sign In Successful", "main-message", "check_circle");
+    signIn();
+    window.location.reload();
+});
+
+//event listener to sign out
+navSignOutButton.addEventListener('click', () => {
+    signOut();
+    window.location.reload();
+});
+
+function signIn() {
+    inventoryLink.style.display = 'block';
+    openSignInModal.style.display = 'none';
+    navSignOutButton.style.display = 'block';
+    console.log('Found username in local storage. Sign in successful');
+}
+
+function signOut() {
+    console.log("Removing username from local storage");
+    localStorage.removeItem("username");
+    inventoryLink.style.display = 'none';
+    navSignOutButton.style.display = 'none';
+    openSignInModal.style.display = 'block';
+}
+
+//check if signed in
+function checkIfSignedIn() {
+    let username = localStorage.getItem("username");
+    if (username) {
         signIn();
-        window.location.reload();
-    });
-
-    //event listener to sign out
-    navSignOutButton.addEventListener('click', () => {
-        signOut();
-        window.location.reload();
-    });
-
-    function signIn() {
-        inventoryLink.style.display = 'block';
-        openSignInModal.style.display = 'none';
-        navSignOutButton.style.display = 'block';
-        console.log('Found username in local storage. Sign in successful');
+        isUserSignedIn = true;
     }
+}
 
-    function signOut() {
-        console.log("Removing username from local storage");
-        localStorage.removeItem("username");
-        inventoryLink.style.display = 'none';
-        navSignOutButton.style.display = 'none';
-        openSignInModal.style.display = 'block';
-    }
+//Mobile Nav toggle
+let mobileNavToggle = document.getElementById('mobile-nav-toggle') as HTMLElement;
+const nav = document.querySelector('nav') as HTMLElement;
 
-    //check if signed in
-    function checkIfSignedIn() {
-        let username = localStorage.getItem("username");
-        if (username) {
-            signIn();
-            isUserSignedIn = true;
-        }
+mobileNavToggle.addEventListener('click', () => {
+    console.log("toggling nav menu")
+    //Toggle to class 'open' on nav's classList
+    nav.classList.toggle('open');
+    //Check if 'open' is in nav's classList
+    const isNowOpen = nav.classList.contains('open');
+    console.log(`nav has open class: ${isNowOpen}`);
+    //Display proper icon in nav toggle button
+    if (isNowOpen) {
+        mobileNavToggle.innerText = 'close';
+    } else {
+        mobileNavToggle.innerText = 'menu';
     }
+});
 
 checkForLocalStorageData();
 checkIfSignedIn();

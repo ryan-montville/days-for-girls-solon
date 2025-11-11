@@ -135,5 +135,23 @@ function checkIfSignedIn() {
         isUserSignedIn = true;
     }
 }
+//Mobile Nav toggle
+let mobileNavToggle = document.getElementById('mobile-nav-toggle');
+const nav = document.querySelector('nav');
+mobileNavToggle.addEventListener('click', () => {
+    console.log("toggling nav menu");
+    //Toggle to class 'open' on nav's classList
+    nav.classList.toggle('open');
+    //Check if 'open' is in nav's classList
+    const isNowOpen = nav.classList.contains('open');
+    console.log(`nav has open class: ${isNowOpen}`);
+    //Display proper icon in nav toggle button
+    if (isNowOpen) {
+        mobileNavToggle.innerText = 'close';
+    }
+    else {
+        mobileNavToggle.innerText = 'menu';
+    }
+});
 checkForLocalStorageData();
 checkIfSignedIn();

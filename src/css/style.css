@@ -63,6 +63,7 @@
 body {
     background-color: var(--body-background);
     position: relative;
+    z-index: 1;
 }
 
 .material-symbols-outlined {
@@ -136,6 +137,7 @@ nav {
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 1;
 }
 
 nav a,
@@ -171,6 +173,10 @@ nav a:hover {
 }
 
 #sign-out-button {
+    display: none;
+}
+
+#mobile-nav-toggle {
     display: none;
 }
 
@@ -312,8 +318,30 @@ footer a:hover {
 
 /* Screens smaller than 850 */
 @media (max-width: 850px) {
+    #mobile-nav-toggle {
+        display: block;
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        font-size: 50px;
+        background-color: transparent;
+        border: 0;
+        color: var(--main-text);
+        z-index: 2;
+    }
+
     nav {
+        padding-top: 110px;
         flex-direction: column;
+        justify-content: flex-start;
         display: none;
+        background-color: var(--main-background);
+    }
+    nav.open {
+        display: flex;
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
     }
 }
