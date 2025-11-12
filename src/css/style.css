@@ -64,6 +64,7 @@ body {
     background-color: var(--body-background);
     position: relative;
     z-index: 1;
+    overscroll-behavior: none;
 }
 
 .material-symbols-outlined {
@@ -235,7 +236,7 @@ h2 {
 .card {
     background-color: var(--main-background);
     border-top: 5px solid var(--primary-accent);
-    margin: 10px 0;
+    margin: 10px auto;
     padding: 20px;
 }
 
@@ -293,6 +294,10 @@ footer a:hover {
         margin: 20px 0;
         max-width: 900px;
     }
+
+    .card {
+        max-width: 900px;
+    }
 }
 
 /*Screens smaller than 1045px*/
@@ -312,7 +317,11 @@ footer a:hover {
 
     main {
         margin: 20px 0;
-        width: calc(99vw - 60px);
+        width: 100vw;
+        
+    }
+    .card {
+        max-width: 900px;
     }
 }
 
@@ -343,5 +352,9 @@ footer a:hover {
         top: 0;
         right: 0;
         bottom: 0;
+    }
+
+    .card {
+        width: calc(99vw - 60px);
     }
 }

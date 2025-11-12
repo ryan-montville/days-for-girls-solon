@@ -3,7 +3,7 @@
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 140px 30px auto 50px;
-    grid-template-areas: 
+    grid-template-areas:
         "header"
         "message-area"
         "main"
@@ -44,12 +44,9 @@ footer {
 #donate {
     grid-area: donate;
 }
+
 .homepage-layout {
     display: grid;
-    grid-template-columns:  1fr 1fr 1fr;
-    grid-template-areas: 
-        "about about about"
-        "events mailing donate";
     gap: 5px;
 }
 
@@ -60,9 +57,24 @@ footer {
 /* Inventory page grid layout */
 
 /*Screens smaller than 1045px*/
+@media (min-width: 1045px) {
+    .homepage-layout {
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-areas:
+            "about about about"
+            "events mailing donate";
+    }
+}
 @media (max-width: 1044px) {
     #page-wrapper {
         grid-template-rows: 150px 30px auto 50px;
+    }
+
+    .homepage-layout {
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-areas:
+            "about about about"
+            "events mailing donate";
     }
 }
 
@@ -70,5 +82,13 @@ footer {
 @media (max-width: 850px) {
     #page-wrapper {
         grid-template-rows: 100px 30px auto 50px;
+    }
+    .homepage-layout {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "about"
+            "events"
+            "mailing"
+            "donate";
     }
 }
