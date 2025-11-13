@@ -71,7 +71,7 @@ function submitData() {
         return;
     } else {
         const quantity: number = +quantityValue;
-        const checkInventory = CheckInventoryForDistribution(newEntry['componentType'], quantity)
+        const checkInventory = CheckInventoryForDistribution(newEntry['componentType'], quantity);
         if (quantity < 1) {
             createMessage("Please enter a quantity greater that 0", "distribute-modal-message", "error");
             return;

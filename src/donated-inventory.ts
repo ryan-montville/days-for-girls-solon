@@ -1,4 +1,4 @@
-import { addITemToTable, createMessage, clearMessages, closeModal, populateComponteTypeSelect, trapFocus, updateItemTotal, updateLocalStorage } from "./utils.js";
+import { addITemToTable, createTable, createMessage, clearMessages, closeModal, populateComponteTypeSelect, trapFocus, updateItemTotal, updateLocalStorage } from "./utils.js";
 import { ComponentItem, InventoryEntry } from "./models.js";
 
 //Get data from local storage
@@ -6,6 +6,33 @@ const donateInventoryLocalStorage = localStorage.getItem('donatedInventory') as 
 let donateInventoryData: InventoryEntry[] = JSON.parse(donateInventoryLocalStorage);
 const addInventoryModalBackdrop = document.getElementById('add-inventory-backdrop') as HTMLElement;
 const addInventoryModal = document.getElementById('add-inventory-modal') as HTMLFormElement;
+const previousEntriesCard = document.getElementById('previous-entries-card') as HTMLElement;
+
+function loadPreviousEntries() {
+    /*Temporary solution to clear the card when form submit. Will update submitData() to 
+    add the row to the table instead of calling this function ad recreating the entire table */
+    const noEntriesP = previousEntriesCard.querySelector('p');
+    if (noEntriesP) noEntriesP.remove();
+    const previousTable = document.getElementById('previous-entries-table');
+    if (previousTable) previousTable.remove();
+    /* End of temporary solution */
+    if (donateInventoryData.length === 0) {
+        let noEntriesP = document.createElement('p');
+        let noEntries = document.createTextNode("No previous entries");
+        noEntriesP.appendChild(noEntries);
+        previousEntriesCard.appendChild(noEntriesP);
+    } else {
+        const tableColumnHeaders: string[] = ['Date', 'Component', 'Quantity', 'Destination', 'Delete']
+        const previousEntriesTable = createTable('previous-entries-table', tableColumnHeaders);
+        let tableBody = donateInventoryData.reduceRight((acc: HTMLElement, currentItem: InventoryEntry) => {
+            const newRow = addITemToTable(currentItem, 5, "distributedInventory", 'shortDate');
+            acc.appendChild(newRow);
+            return acc;
+        }, document.createElement('tbody'));
+        previousEntriesTable.appendChild(tableBody);
+        previousEntriesCard.appendChild(previousEntriesTable);
+    }
+}
 
 function submitData() {
     //Get the data from the form
@@ -70,28 +97,6 @@ function submitData() {
     addInventoryModal.reset();
     createMessage("The inventory has successfully been updated", "main-message", "check_circle");
     loadPreviousEntries();
-}
-
-function loadPreviousEntries() {
-    const previousEntriesTable = document.getElementById('previous-entries-table') as HTMLElement;
-    let previousEntriesTableBody = previousEntriesTable.querySelector('tbody');
-    if (previousEntriesTableBody === null) {
-        previousEntriesTableBody = document.createElement('tbody');
-    }
-    if (previousEntriesTableBody) {
-        previousEntriesTableBody.innerHTML = '';
-        previousEntriesTable.appendChild(previousEntriesTableBody);
-        let distributedInventoryLength = donateInventoryData.length;
-        if (distributedInventoryLength === 0) {
-            let noEntriesRow = addITemToTable({}, 5);
-            previousEntriesTableBody.appendChild(noEntriesRow);
-        } else {
-            for (let i = distributedInventoryLength - 1; i >= 0; i--) {
-                let newRow = addITemToTable(donateInventoryData[i], 5, "donatedInventory", 'shortDate');
-                previousEntriesTableBody.appendChild(newRow);
-            }
-        }
-    }
 }
 
 //Event listener for add inventory form submit
