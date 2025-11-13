@@ -1,11 +1,9 @@
-import { addITemToTable, createMessage, clearMessages, closeModal, deleteItem, fixDate, updateLocalStorage, trapFocus } from "./utils.js";
+import { addITemToTable, createMessage, clearMessages, createTable, closeModal, deleteItem, fixDate, updateLocalStorage, trapFocus } from "./utils.js";
 const eventsLocalStorage = localStorage.getItem('events');
 let eventsData = JSON.parse(eventsLocalStorage);
 const SignUpEntriesLocalStorge = localStorage.getItem('SignUpEntries');
 let signUpEntriesData = JSON.parse(SignUpEntriesLocalStorge);
-const entriesCard = document.getElementById('sign-up-entires');
-const entriesTable = document.getElementById('entries-table');
-const signUpEntriesCard = document.getElementById('sign-up-entires');
+const signUpEntriesCard = document.getElementById('sign-up-entires-card');
 const deleteEventCard = document.getElementById('deleteEventCard');
 const deleteEventButton = document.getElementById('delete-button');
 //Get event id from url
@@ -164,20 +162,22 @@ function populateEntriesTable(eventObject) {
     //Get signup entries for the event
     let eventSignUpEntries = signUpEntriesData.filter(entry => entry['eventId'] === paramEventId);
     if (eventSignUpEntries.length === 0) {
-        entriesTable.remove();
         let noEntriesP = document.createElement('p');
         let noEntriesText = document.createTextNode(`No one has signed up for ${eventObject['eventTitle']} yet`);
         noEntriesP.appendChild(noEntriesText);
-        entriesCard.appendChild(noEntriesP);
+        signUpEntriesCard.appendChild(noEntriesP);
     }
     else {
-        //Create the table body and add the entries
-        let tableBody = document.createElement('tbody');
-        eventSignUpEntries.forEach(entry => {
-            let newRow = addITemToTable(entry, 4, "SignUpEntries");
-            tableBody.appendChild(newRow);
-        });
-        entriesTable.appendChild(tableBody);
+        //Create the table
+        const tableColumnHeaders = ['Name', 'Email', 'Comments', 'Delete'];
+        const signUpTable = createTable('sign-up-table', tableColumnHeaders);
+        let tableBody = eventSignUpEntries.reduce((acc, currentEntry) => {
+            const newRow = addITemToTable(currentEntry, 4, "SignUpEntries");
+            acc.appendChild(newRow);
+            return acc;
+        }, document.createElement('tbody'));
+        signUpTable.appendChild(tableBody);
+        signUpEntriesCard.appendChild(signUpTable);
     }
 }
 function deleteEvent() {

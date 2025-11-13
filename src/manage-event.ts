@@ -1,13 +1,11 @@
-import { addITemToTable, createMessage, clearMessages, closeModal, deleteItem, fixDate, updateLocalStorage, trapFocus } from "./utils.js";
+import { addITemToTable, createMessage, clearMessages, createTable, closeModal, deleteItem, fixDate, updateLocalStorage, trapFocus } from "./utils.js";
 import { SignUpEntry, Event } from "./models.js";
 
 const eventsLocalStorage = localStorage.getItem('events') as string;
 let eventsData: Event[] = JSON.parse(eventsLocalStorage);
 const SignUpEntriesLocalStorge = localStorage.getItem('SignUpEntries') as string;
 let signUpEntriesData: SignUpEntry[] = JSON.parse(SignUpEntriesLocalStorge);
-const entriesCard = document.getElementById('sign-up-entires') as HTMLElement;
-const entriesTable = document.getElementById('entries-table') as HTMLElement;
-const signUpEntriesCard = document.getElementById('sign-up-entires') as HTMLElement;
+const signUpEntriesCard = document.getElementById('sign-up-entires-card') as HTMLElement;
 const deleteEventCard = document.getElementById('deleteEventCard') as HTMLElement;
 const deleteEventButton = document.getElementById('delete-button') as HTMLElement;
 
@@ -77,7 +75,6 @@ function displayEventInfo(eventObject: Event) {
     });
     buttonRow.appendChild(editButton);
     eventInfoCard.appendChild(buttonRow);
-
 }
 
 function resetInfo(eventObject: Event) {
@@ -166,19 +163,21 @@ function populateEntriesTable(eventObject: Event) {
     //Get signup entries for the event
     let eventSignUpEntries: SignUpEntry[] = signUpEntriesData.filter(entry => entry['eventId'] === paramEventId);
     if (eventSignUpEntries.length === 0) {
-        entriesTable.remove();
         let noEntriesP = document.createElement('p');
         let noEntriesText = document.createTextNode(`No one has signed up for ${eventObject['eventTitle']} yet`);
         noEntriesP.appendChild(noEntriesText);
-        entriesCard.appendChild(noEntriesP);
+        signUpEntriesCard.appendChild(noEntriesP);
     } else {
-        //Create the table body and add the entries
-        let tableBody = document.createElement('tbody');
-        eventSignUpEntries.forEach(entry => {
-            let newRow = addITemToTable(entry, 4, "SignUpEntries");
-            tableBody.appendChild(newRow);
-        });
-        entriesTable.appendChild(tableBody);
+        //Create the table
+        const tableColumnHeaders: string[] = ['Name', 'Email', 'Comments', 'Delete'];
+        const signUpTable = createTable('sign-up-table', tableColumnHeaders);
+        let tableBody = eventSignUpEntries.reduce((acc: HTMLElement, currentEntry: SignUpEntry) => {
+            const newRow = addITemToTable(currentEntry, 4, "SignUpEntries");
+            acc.appendChild(newRow);
+            return acc;
+        }, document.createElement('tbody'));
+        signUpTable.appendChild(tableBody);
+        signUpEntriesCard.appendChild(signUpTable);
     }
 }
 

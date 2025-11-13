@@ -17,11 +17,13 @@ function loadPreviousEntries() {
     if (previousTable) previousTable.remove();
     /* End of temporary solution */
     if (distributedInventoryData.length === 0) {
+        //Display no previous entries message
         let noEntriesP = document.createElement('p');
         let noEntries = document.createTextNode("No previous entries");
         noEntriesP.appendChild(noEntries);
         previousEntriesCard.appendChild(noEntriesP);
     } else {
+        //Create the previous entries table
         const tableColumnHeaders: string[] = ['Date', 'Component', 'Quantity', 'Destination', 'Delete']
         const previousEntriesTable = createTable('previous-entries-table', tableColumnHeaders);
         let tableBody = distributedInventoryData.reduceRight((acc: HTMLElement, currentItem: InventoryEntry) => {
