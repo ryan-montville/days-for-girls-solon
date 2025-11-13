@@ -2,6 +2,7 @@ import { createMessage, fixDate, updateLocalStorage } from "./utils.js";
 import { Event } from "./models.js";
 
 let isUserSignedIn: boolean = false;
+let main = document.getElementById('maincontent') as HTMLElement;
 
 function addEventToPage(eventData: Event) {
     let newEvent: HTMLElement = document.createElement('article');
@@ -35,7 +36,6 @@ function addEventToPage(eventData: Event) {
         //Add manage event button
         button.setAttribute('href', `manage-event.html?id=${eventData['eventId']}`);
         button.textContent = 'Manage Event';
-
     } else {
         //Add sign up button
         button.setAttribute('href', `event-sign-up.html?id=${eventData['eventId']}`);
@@ -44,24 +44,38 @@ function addEventToPage(eventData: Event) {
     }
     buttonRow.appendChild(button);
     newEvent.appendChild(buttonRow);
-    let main = document.getElementById('maincontent') as HTMLElement;
-    main.appendChild(newEvent);
+    return newEvent;
 }
 
 function loadEvents() {
-    const eventsData = localStorage.getItem("events");
-    let eventsList: Event[] = []
-    if (eventsData) {
-        eventsList = JSON.parse(eventsData);
-    }
+    //Get events from local storage, will be updated when proper data storage is implemented
+    const eventsData = localStorage.getItem("events") as string;
+    let eventsList: Event[] = JSON.parse(eventsData);
+    //Sort the events by date
     const sortedEvents = eventsList.sort((a, b) => {
         const dateA = new Date(a['eventDate']).getTime();
         const dateB = new Date(b['eventDate']).getTime();
         return dateA - dateB;
     });
-    const eventsListLength = sortedEvents.length;
-    for (let i=0; i<eventsListLength; i++) {
-        addEventToPage(sortedEvents[i]);
+    if (eventsList.length === 0) {
+        //Display no events message
+        const noEventsCard = document.createElement('section');
+        noEventsCard.setAttribute('id', 'no-events-card');
+        noEventsCard.setAttribute('class', 'card');
+        const noEventsP = document.createElement('p');
+        const noEvents = document.createTextNode("There are currently no upcoming events. Please check back later.");
+        noEventsP.appendChild(noEvents);
+        noEventsCard.appendChild(noEventsP);
+        main.appendChild(noEventsCard);
+    } else {
+        //Display all upcoming events
+        const events = eventsList.reduce((acc: HTMLElement, currentEvent: Event) => {
+            const newEvent = addEventToPage(currentEvent);
+            acc.appendChild(newEvent);
+            return acc;
+        }, document.createElement('section'));
+        events.setAttribute('id', 'events-list');
+        main.appendChild(events);
     }
 }
 

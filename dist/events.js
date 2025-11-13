@@ -1,5 +1,6 @@
 import { fixDate } from "./utils.js";
 let isUserSignedIn = false;
+let main = document.getElementById('maincontent');
 function addEventToPage(eventData) {
     let newEvent = document.createElement('article');
     newEvent.setAttribute('id', eventData['eventId'].toString());
@@ -40,23 +41,38 @@ function addEventToPage(eventData) {
     }
     buttonRow.appendChild(button);
     newEvent.appendChild(buttonRow);
-    let main = document.getElementById('maincontent');
-    main.appendChild(newEvent);
+    return newEvent;
 }
 function loadEvents() {
+    //Get events from local storage, will be updated when proper data storage is implemented
     const eventsData = localStorage.getItem("events");
-    let eventsList = [];
-    if (eventsData) {
-        eventsList = JSON.parse(eventsData);
-    }
+    let eventsList = JSON.parse(eventsData);
+    //Sort the events by date
     const sortedEvents = eventsList.sort((a, b) => {
         const dateA = new Date(a['eventDate']).getTime();
         const dateB = new Date(b['eventDate']).getTime();
         return dateA - dateB;
     });
-    const eventsListLength = sortedEvents.length;
-    for (let i = 0; i < eventsListLength; i++) {
-        addEventToPage(sortedEvents[i]);
+    if (eventsList.length === 0) {
+        //Display no events message
+        const noEventsCard = document.createElement('section');
+        noEventsCard.setAttribute('id', 'no-events-card');
+        noEventsCard.setAttribute('class', 'card');
+        const noEventsP = document.createElement('p');
+        const noEvents = document.createTextNode("There are currently no upcoming events. Please check back later.");
+        noEventsP.appendChild(noEvents);
+        noEventsCard.appendChild(noEventsP);
+        main.appendChild(noEventsCard);
+    }
+    else {
+        //Display all upcoming events
+        const events = eventsList.reduce((acc, currentEvent) => {
+            const newEvent = addEventToPage(currentEvent);
+            acc.appendChild(newEvent);
+            return acc;
+        }, document.createElement('section'));
+        events.setAttribute('id', 'events-list');
+        main.appendChild(events);
     }
 }
 function checkIfSignedIn() {

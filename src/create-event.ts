@@ -19,7 +19,12 @@ function submitData() {
         numberAttending: 0
     }
     //This shouldn't be needed when proper data storage is implemented
-    newEvent['eventId'] = eventsData[eventsData.length -1]['eventId'] + 1;
+    if (eventsData.length === 0) {
+        newEvent['eventId'] = 1;
+    } else {
+        newEvent['eventId'] = eventsData[eventsData.length -1]['eventId'] + 1;
+    }
+   
     //Validate the event title input
     let TitleValue = formData.get('eventTitle');
     if (TitleValue === null || TitleValue.toString().trim() === '') {
