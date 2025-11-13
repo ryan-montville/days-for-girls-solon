@@ -1,35 +1,34 @@
 import { createMessage, closeModal, trapFocus, updateLocalStorage } from "./utils.js";
 
-async function loadData() {
-    //This will change when proper data storage is implemented
-    console.log("Fetching data from JSON and putting in local storage");
-    try {
-        //Fetch inventory data from inventory.json
-        let response = await fetch('src/inventory.json');
-        if (!response.ok) {
-            createMessage(`Error loading the data. Status: ${response.status}`, 'main-message', 'error');
-        }
-        let data = await response.json();
-        console.log(`Fetched inventory data`);
-        //Adding current inventory data to local storage
-        updateLocalStorage("currentInventory", data['currentInventory']);
-        //Adding incoming inventory data to local storage
-        updateLocalStorage("donatedInventory", data['donatedInventory']);
-        //Adding outgoing inventory data to local storage
-        updateLocalStorage("distributedInventory", data['distributedInventory'])
-        //fetch events data from events.json
-        response = await fetch('src/events.json');
-        if (!response.ok) {
-            createMessage(`Error loading the data. Status: ${response.status}`, 'main-message', 'error');
-        }
-        data = await response.json();
-        console.log(`Fetched events data`);
-        //Adding events and sign up data to local storage
-        updateLocalStorage("events", data['upcomingEvents']);
-        updateLocalStorage("SignUpEntries", data['SignUpEntries'])
-    } catch (error: any) {
-        createMessage(error, 'main-message', 'error');
-    }
+function loadData() {
+    //Get inventory data from json file and put into local storage
+    fetch('src/inventory.json')
+        .then(data => data.json())
+        .then(jsonData => {
+            //Adding current inventory data to local storage
+            updateLocalStorage("currentInventory", jsonData['currentInventory']);
+            //Adding incoming inventory data to local storage
+            updateLocalStorage("donatedInventory", jsonData['donatedInventory']);
+            //Adding outgoing inventory data to local storage
+            updateLocalStorage("distributedInventory", jsonData['distributedInventory'])
+        })
+        .catch((error) => {
+            createMessage("Error loading inventory data. Please try reloading the page", 'main-message', 'error');
+            console.error(`Error loading inventory data: ${error}`);
+        });
+    //Get events data from json file and put into local storage
+    fetch('src/events.json')
+        .then(data => data.json())
+        .then(jsonData => {
+            //Adding events data to local storage
+            updateLocalStorage("events", jsonData['upcomingEvents']);
+            //Adding event sign ups to local storage
+            updateLocalStorage("SignUpEntries", jsonData['SignUpEntries'])
+        })
+        .catch((error) => {
+            createMessage("Error loading events data. Please try reloading the page", 'main-message', 'error');
+            console.error(`Error loading events data: ${error}`);
+        })
 }
 
 function checkForLocalStorageData() {

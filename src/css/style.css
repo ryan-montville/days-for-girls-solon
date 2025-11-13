@@ -327,6 +327,9 @@ footer a:hover {
 
 /* Screens smaller than 850 */
 @media (max-width: 850px) {
+    header {
+        align-items: flex-start;
+    }
     #mobile-nav-toggle {
         display: block;
         position: absolute;
