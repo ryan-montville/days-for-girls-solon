@@ -1,4 +1,4 @@
-import { addITemToTable, createMessage, clearMessages, fixDate } from "./utils.js";
+import { addITemToTable, createTable, createMessage, clearMessages, fixDate } from "./utils.js";
 import { InventoryEntry, ComponentItem, ComponentSummary } from "./models.js";
 
 const currentInventoryLocalStorage = localStorage.getItem("currentInventory") as string;
@@ -8,8 +8,9 @@ let donatedInventoryData: InventoryEntry[] = JSON.parse(donatedInventoryLocalSto
 const distributedInventoryLocalStorage = localStorage.getItem("distributedInventory") as string;
 let distributedInventoryData: InventoryEntry[] = JSON.parse(distributedInventoryLocalStorage);
 //Page elements
-let generateForm = document.getElementById('generateForm') as HTMLFormElement;
-let mainContent = document.getElementById('maincontent') as HTMLElement;
+const generateForm = document.getElementById('generateForm') as HTMLFormElement;
+const mainContent = document.getElementById('maincontent') as HTMLElement;
+const currentInventoryCard = document.getElementById('current-inventory-card') as HTMLElement;
 
 //Maybe modify addToTable in utils.ts to include the current inventory table
 function addComponentToTable(component: ComponentItem): HTMLElement {
@@ -28,17 +29,32 @@ function addComponentToTable(component: ComponentItem): HTMLElement {
 }
 
 function loadCurrentInventory() {
-    let currentInventoryTable = document.getElementById('current-inventory-table') as HTMLElement;
-    let tableBody = document.createElement('tbody');
-    currentInventoryTable.appendChild(tableBody);
     if (currentInventoryData.length === 0) {
-        let noInventoryRow = addITemToTable({}, 2);
-        tableBody.appendChild(noInventoryRow);
+        //Display no inventory message
+        const noInventoryP = document.createElement('p');
+        const noInventory = document.createTextNode("There are not items currently in the inventory.")
+        noInventoryP.appendChild(noInventory);
+        currentInventoryCard.appendChild(noInventoryP);
+    } else {
+        //Temporary message about deleting items
+        const comingSoonP = document.createElement('p');
+        const comingSoon = document.createTextNode('*NOTE: The ability to delete comonent items from the inventory is coming soon.*');
+        comingSoonP.appendChild(comingSoon);
+        currentInventoryCard.appendChild(comingSoonP);
+        //Create the current inventory table
+        const tableColumnHeaders: string[] = ['Component', 'Quantity', 'Delete'];
+        const currentInventoryTable = createTable('current-inventory-table', tableColumnHeaders);
+        const tableBody = currentInventoryData.reduce((acc: HTMLElement, currentComponent: ComponentItem) => {
+            //Ability to delete Components from inventory coming soon
+            /* This function will turn into the addITemToTable() once the logic is updated to remove components and 
+            all their log entries */
+            const newComponent = addComponentToTable(currentComponent);
+            acc.appendChild(newComponent);
+            return acc;
+        }, document.createElement('tbody'));
+        currentInventoryTable.appendChild(tableBody);
+        currentInventoryCard.appendChild(currentInventoryTable);
     }
-    currentInventoryData.forEach(item => {
-        let componentRow = addComponentToTable(item);
-        tableBody.appendChild(componentRow);
-    });
 }
 
 function filterDateRange(startDate: Date, endDate: Date) {
