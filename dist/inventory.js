@@ -66,6 +66,7 @@ function filterDateRange(startDate, endDate) {
     });
     return filteredEntriesSorted;
 }
+//Takes an array of inventory log entries and summarizes the array
 function calculateInventoryTotals(filteredArray) {
     const uniqueComponents = currentInventoryData.reduce((acc, currentComponent) => {
         const newComponent = {
@@ -85,25 +86,6 @@ function calculateInventoryTotals(filteredArray) {
         acc.push(newComponent);
         return acc;
     }, []);
-    // let uniqueComponentsr: ComponentSummary[] = [];
-    // for (let i = 0; i < currentInventoryData.length; i++) {
-    //     let currentComponent: ComponentSummary = {
-    //         "componentType": currentInventoryData[i]['componentType'],
-    //         "quantityDonated": 0,
-    //         "quantityDistributed": 0
-    //     }
-    //     for (let i = 0; i < filteredArray.length; i++) {
-    //         let currentEntry = filteredArray[i];
-    //         if (currentEntry['componentType'] === currentComponent['componentType']) {
-    //             if (currentEntry['whoDonated']) {
-    //                 currentComponent['quantityDonated'] += currentEntry['quantity'];
-    //             } else {
-    //                 currentComponent['quantityDistributed'] += (currentEntry['quantity']);
-    //             }
-    //         }
-    //     }
-    //     uniqueComponents.push(currentComponent);
-    // }
     return uniqueComponents;
 }
 function createSummaryTable(entriesSummary) {
@@ -127,41 +109,48 @@ function createSummaryTable(entriesSummary) {
     return summaryTable;
 }
 function createEntriesTable(filteredResults) {
-    const entriesTable = document.createElement('table');
-    //table header
-    const entriesThead = document.createElement('thead');
-    const entiresHeaderRow = document.createElement('tr');
-    const dateHeader = document.createElement('th');
-    const dateHeaderText = document.createTextNode("Date");
-    dateHeader.appendChild(dateHeaderText);
-    entiresHeaderRow.appendChild(dateHeader);
-    const entryHeader = document.createElement('th');
-    const entryHeaderText = document.createTextNode("Entry");
-    entryHeader.appendChild(entryHeaderText);
-    entiresHeaderRow.appendChild(entryHeader);
-    entriesThead.appendChild(entiresHeaderRow);
-    entriesTable.appendChild(entriesThead);
+    //Create the table
+    const entriesTable = createTable('entries-table', ['Date', 'Entry']);
     //table body
-    const entiresBody = document.createElement('tbody');
-    filteredResults.forEach(entryItem => {
+    const entiresBody = filteredResults.reduce((acc, currentEntry) => {
         const entryRow = document.createElement('tr');
         const dateCell = document.createElement('td');
-        const date = document.createTextNode(fixDate(entryItem['entryDate'].toString(), 'shortDate'));
+        const date = document.createTextNode(fixDate(currentEntry['entryDate'].toString(), 'shortDate'));
         dateCell.appendChild(date);
         entryRow.appendChild(dateCell);
         const entryCell = document.createElement('td');
-        if (entryItem['whoDonated']) {
-            const entryText = document.createTextNode(`${entryItem['quantity']} ${entryItem['componentType']} donated by ${entryItem['whoDonated']}`);
+        if (currentEntry['whoDonated']) {
+            const entryText = document.createTextNode(`${currentEntry['quantity']} ${currentEntry['componentType']} donated by ${currentEntry['whoDonated']}`);
             entryCell.appendChild(entryText);
         }
         else {
-            const entryText = document.createTextNode(`${entryItem['quantity']} ${entryItem['componentType']} distributed to ${entryItem['destination']}`);
+            const entryText = document.createTextNode(`${currentEntry['quantity']} ${currentEntry['componentType']} distributed to ${currentEntry['destination']}`);
             entryCell.appendChild(entryText);
         }
         entryRow.appendChild(entryCell);
-        entiresBody.appendChild(entryRow);
-    });
+        acc.appendChild(entryRow);
+        return acc;
+    }, document.createElement('tbody'));
     entriesTable.appendChild(entiresBody);
+    // = document.createElement('tbody');
+    // filteredResults.forEach(entryItem => {
+    //     const entryRow = document.createElement('tr');
+    //     const dateCell = document.createElement('td');
+    //     const date = document.createTextNode(fixDate(entryItem['entryDate'].toString(), 'shortDate'));
+    //     dateCell.appendChild(date);
+    //     entryRow.appendChild(dateCell);
+    //     const entryCell = document.createElement('td');
+    //     if (entryItem['whoDonated']) {
+    //         const entryText = document.createTextNode(`${entryItem['quantity']} ${entryItem['componentType']} donated by ${entryItem['whoDonated']}`);
+    //         entryCell.appendChild(entryText);
+    //     } else {
+    //         const entryText = document.createTextNode(`${entryItem['quantity']} ${entryItem['componentType']} distributed to ${entryItem['destination']}`);
+    //         entryCell.appendChild(entryText);
+    //     }
+    //     entryRow.appendChild(entryCell);
+    //     entiresBody.appendChild(entryRow);
+    // });
+    // entriesTable.appendChild(entiresBody);
     return entriesTable;
 }
 function generateReport() {
