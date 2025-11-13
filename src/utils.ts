@@ -64,6 +64,24 @@ export function CheckInventoryForDistribution(componentTypeToCheck: string, quan
         return { hasEnough: false, quantity: 0 };
     }
 }
+
+export function clearMessages() {
+    const messageWrappers = document.getElementsByClassName('message-wrapper');
+    console.log(messageWrappers.length);
+    for (const messageWrapper of messageWrappers) {
+        messageWrapper.innerHTML = '';
+    }
+}
+
+export function closeModal(modalBackdropId: string) {
+    let modalBackdrop = document.getElementById(modalBackdropId) as HTMLElement;
+    let modal = modalBackdrop.getElementsByClassName('modal');
+    if (modal) {
+        modal[0].setAttribute('aria-modal', 'false');
+    }
+    modalBackdrop.style.display = 'none';
+}
+
 export function createMessage(message: string, location: string, type: string) {
     let messageWrapper = document.getElementById(location) as HTMLElement;
     messageWrapper.innerHTML = '';
@@ -102,21 +120,18 @@ export function createMessage(message: string, location: string, type: string) {
     messageWrapper.appendChild(messageDiv);
 }
 
-export function closeModal(modalBackdropId: string) {
-    let modalBackdrop = document.getElementById(modalBackdropId) as HTMLElement;
-    let modal = modalBackdrop.getElementsByClassName('modal');
-    if (modal) {
-        modal[0].setAttribute('aria-modal', 'false');
-    }
-    modalBackdrop.style.display = 'none';
-}
-
-export function clearMessages() {
-    const messageWrappers = document.getElementsByClassName('message-wrapper');
-    console.log(messageWrappers.length);
-    for (const messageWrapper of messageWrappers) {
-        messageWrapper.innerHTML = '';
-    }
+export function createTable(tableId: string, columnHeaders: string[]) {
+    const newTable = document.createElement('table');
+    newTable.setAttribute('id', tableId);
+    const tableHead = document.createElement('thead');
+    columnHeaders.forEach(columnHeader => {
+        const newColumnHeader = document.createElement('th');
+        const columnHeaderName = document.createTextNode(columnHeader);
+        newColumnHeader.appendChild(columnHeaderName);
+        tableHead.appendChild(newColumnHeader);
+    });
+    newTable.appendChild(tableHead);
+    return newTable;
 }
 
 export function deleteItem(dataTableName: string, idKeyName: string, itemId: number) {

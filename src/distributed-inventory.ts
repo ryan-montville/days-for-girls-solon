@@ -1,4 +1,4 @@
-import { addITemToTable, createMessage, clearMessages, closeModal, CheckInventoryForDistribution, populateComponteTypeSelect, trapFocus, updateItemTotal, updateLocalStorage } from "./utils.js";
+import { addITemToTable, createTable, createMessage, clearMessages, closeModal, CheckInventoryForDistribution, populateComponteTypeSelect, trapFocus, updateItemTotal, updateLocalStorage } from "./utils.js";
 import { ComponentItem, InventoryEntry } from "./models.js";
 
 //Get data from local storage
@@ -6,6 +6,33 @@ const distributedInventoryLocalStorage = localStorage.getItem("distributedInvent
 let distributedInventoryData: InventoryEntry[] = JSON.parse(distributedInventoryLocalStorage);
 const distributeInventoryModal = document.getElementById('distribute-inventory-modal') as HTMLFormElement;
 const distributeInventoryBackdrop = document.getElementById('distribute-inventory-backdrop') as HTMLElement;
+const previousEntriesCard = document.getElementById('previous-entries-card') as HTMLElement;
+
+function loadPreviousEntries() {
+    /*Temporary solution to clear the card when form submit. Will update submitData() to 
+    add the row to the table instead of calling this function ad recreating the entire table */
+    const noEntriesP = previousEntriesCard.querySelector('p');
+    if (noEntriesP) noEntriesP.remove();
+    const previousTable = document.getElementById('previous-entries-table');
+    if (previousTable) previousTable.remove();
+    /* End of temporary solution */
+    if (distributedInventoryData.length === 0) {
+        let noEntriesP = document.createElement('p');
+        let noEntries = document.createTextNode("No previous entries");
+        noEntriesP.appendChild(noEntries);
+        previousEntriesCard.appendChild(noEntriesP);
+    } else {
+        const tableColumnHeaders: string[] = ['Date', 'Component', 'Quantity', 'Destination', 'Delete']
+        const previousEntriesTable = createTable('previous-entries-table', tableColumnHeaders);
+        let tableBody = distributedInventoryData.reduceRight((acc: HTMLElement, currentItem: InventoryEntry) => {
+            const newRow = addITemToTable(currentItem, 5, "distributedInventory", 'shortDate');
+            acc.appendChild(newRow);
+            return acc;
+        }, document.createElement('tbody'));
+        previousEntriesTable.appendChild(tableBody);
+        previousEntriesCard.appendChild(previousEntriesTable);
+    }
+}
 
 function submitData() {
     //Get the data from the form
@@ -73,28 +100,6 @@ function submitData() {
     createMessage("The inventory has successfully been updated", "main-message", "check_circle");
     loadPreviousEntries();
 
-}
-
-function loadPreviousEntries() {
-    const previousEntriesTable = document.getElementById('previous-entries-table') as HTMLElement;
-    let previousEntriesTableBody = previousEntriesTable.querySelector('tbody');
-    if (previousEntriesTableBody === null) {
-        previousEntriesTableBody = document.createElement('tbody');
-    }
-    if (previousEntriesTableBody) {
-        previousEntriesTableBody.innerHTML = '';
-        previousEntriesTable.appendChild(previousEntriesTableBody);
-        let distributedInventoryLength = distributedInventoryData.length;
-        if (distributedInventoryLength === 0) {
-            let noEntriesRow = addITemToTable({}, 5);
-            previousEntriesTableBody.appendChild(noEntriesRow);
-        } else {
-            for (let i = distributedInventoryLength - 1; i >= 0; i--) {
-                let newRow = addITemToTable(distributedInventoryData[i], 5, "distributedInventory", 'shortDate');
-                previousEntriesTableBody.appendChild(newRow);
-            }
-        }
-    }
 }
 
 //Event listener for distribute inventory form submit

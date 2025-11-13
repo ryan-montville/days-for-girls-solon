@@ -63,6 +63,21 @@ export function CheckInventoryForDistribution(componentTypeToCheck, quantityToDi
         return { hasEnough: false, quantity: 0 };
     }
 }
+export function clearMessages() {
+    const messageWrappers = document.getElementsByClassName('message-wrapper');
+    console.log(messageWrappers.length);
+    for (const messageWrapper of messageWrappers) {
+        messageWrapper.innerHTML = '';
+    }
+}
+export function closeModal(modalBackdropId) {
+    let modalBackdrop = document.getElementById(modalBackdropId);
+    let modal = modalBackdrop.getElementsByClassName('modal');
+    if (modal) {
+        modal[0].setAttribute('aria-modal', 'false');
+    }
+    modalBackdrop.style.display = 'none';
+}
 export function createMessage(message, location, type) {
     let messageWrapper = document.getElementById(location);
     messageWrapper.innerHTML = '';
@@ -103,20 +118,18 @@ export function createMessage(message, location, type) {
     messageDiv.appendChild(closeButton);
     messageWrapper.appendChild(messageDiv);
 }
-export function closeModal(modalBackdropId) {
-    let modalBackdrop = document.getElementById(modalBackdropId);
-    let modal = modalBackdrop.getElementsByClassName('modal');
-    if (modal) {
-        modal[0].setAttribute('aria-modal', 'false');
-    }
-    modalBackdrop.style.display = 'none';
-}
-export function clearMessages() {
-    const messageWrappers = document.getElementsByClassName('message-wrapper');
-    console.log(messageWrappers.length);
-    for (const messageWrapper of messageWrappers) {
-        messageWrapper.innerHTML = '';
-    }
+export function createTable(tableId, columnHeaders) {
+    const newTable = document.createElement('table');
+    newTable.setAttribute('id', tableId);
+    const tableHead = document.createElement('thead');
+    columnHeaders.forEach(columnHeader => {
+        const newColumnHeader = document.createElement('th');
+        const columnHeaderName = document.createTextNode(columnHeader);
+        newColumnHeader.appendChild(columnHeaderName);
+        tableHead.appendChild(newColumnHeader);
+    });
+    newTable.appendChild(tableHead);
+    return newTable;
 }
 export function deleteItem(dataTableName, idKeyName, itemId) {
     //This function will be updated once data storage is resolved. Currently just updates local storage
