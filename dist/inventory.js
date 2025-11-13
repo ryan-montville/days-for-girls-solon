@@ -132,25 +132,6 @@ function createEntriesTable(filteredResults) {
         return acc;
     }, document.createElement('tbody'));
     entriesTable.appendChild(entiresBody);
-    // = document.createElement('tbody');
-    // filteredResults.forEach(entryItem => {
-    //     const entryRow = document.createElement('tr');
-    //     const dateCell = document.createElement('td');
-    //     const date = document.createTextNode(fixDate(entryItem['entryDate'].toString(), 'shortDate'));
-    //     dateCell.appendChild(date);
-    //     entryRow.appendChild(dateCell);
-    //     const entryCell = document.createElement('td');
-    //     if (entryItem['whoDonated']) {
-    //         const entryText = document.createTextNode(`${entryItem['quantity']} ${entryItem['componentType']} donated by ${entryItem['whoDonated']}`);
-    //         entryCell.appendChild(entryText);
-    //     } else {
-    //         const entryText = document.createTextNode(`${entryItem['quantity']} ${entryItem['componentType']} distributed to ${entryItem['destination']}`);
-    //         entryCell.appendChild(entryText);
-    //     }
-    //     entryRow.appendChild(entryCell);
-    //     entiresBody.appendChild(entryRow);
-    // });
-    // entriesTable.appendChild(entiresBody);
     return entriesTable;
 }
 function generateReport() {
