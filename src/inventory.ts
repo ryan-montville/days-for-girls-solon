@@ -72,57 +72,63 @@ function filterDateRange(startDate: Date, endDate: Date) {
 }
 
 function calculateInventoryTotals(filteredArray: InventoryEntry[]) {
-    let uniqueComponents: ComponentSummary[] = [];
-    for (let i = 0; i < currentInventoryData.length; i++) {
-        let currentComponent: ComponentSummary = {
-            "componentType": currentInventoryData[i]['componentType'],
+    const uniqueComponents: ComponentSummary[] = currentInventoryData.reduce((acc: ComponentSummary[], currentComponent: ComponentItem) => {
+        const newComponent: ComponentSummary = {
+            "componentType": currentComponent['componentType'],
             "quantityDonated": 0,
             "quantityDistributed": 0
         }
-        for (let i = 0; i < filteredArray.length; i++) {
-            let currentEntry = filteredArray[i];
-            if (currentEntry['componentType'] === currentComponent['componentType']) {
-                if (currentEntry['whoDonated']) {
-                    currentComponent['quantityDonated'] += currentEntry['quantity'];
-                } else {
-                    currentComponent['quantityDistributed'] += (currentEntry['quantity']);
-                }
+        const currentComponentEntries = filteredArray.filter(item => item['componentType'] === newComponent['componentType']);
+        currentComponentEntries.forEach(entry => {
+            if (entry['whoDonated']) {
+                newComponent['quantityDonated'] += entry['quantity'];
+            } else {
+                newComponent['quantityDistributed'] += entry['quantity'];
             }
-        }
-        uniqueComponents.push(currentComponent);
-    }
+        });
+        acc.push(newComponent);
+        return acc;
+    }, []);
+
+    // let uniqueComponentsr: ComponentSummary[] = [];
+    // for (let i = 0; i < currentInventoryData.length; i++) {
+    //     let currentComponent: ComponentSummary = {
+    //         "componentType": currentInventoryData[i]['componentType'],
+    //         "quantityDonated": 0,
+    //         "quantityDistributed": 0
+    //     }
+    //     for (let i = 0; i < filteredArray.length; i++) {
+    //         let currentEntry = filteredArray[i];
+    //         if (currentEntry['componentType'] === currentComponent['componentType']) {
+    //             if (currentEntry['whoDonated']) {
+    //                 currentComponent['quantityDonated'] += currentEntry['quantity'];
+    //             } else {
+    //                 currentComponent['quantityDistributed'] += (currentEntry['quantity']);
+    //             }
+    //         }
+    //     }
+    //     uniqueComponents.push(currentComponent);
+    // }
     return uniqueComponents;
 }
 
 function createSummaryTable(entriesSummary: any) {
-    const summaryTable = document.createElement('table');
-    //table header
-    const summaryThead = document.createElement('thead');
-    const summaryHeaderRow = document.createElement('tr');
-    const donatedHeader = document.createElement('th');
-    const donatedHeaderText = document.createTextNode("Total Donated");
-    donatedHeader.appendChild(donatedHeaderText);
-    summaryHeaderRow.appendChild(donatedHeader);
-    const distributedHeader = document.createElement('th');
-    const distributedHeaderText = document.createTextNode("Total Distributed")
-    distributedHeader.appendChild(distributedHeaderText);
-    summaryHeaderRow.appendChild(distributedHeader);
-    summaryThead.appendChild(summaryHeaderRow)
-    summaryTable.appendChild(summaryThead);
+    //Create the table
+    const summaryTable = createTable('summary-table', ['Total Donated', 'Total Distributed'])
     //table body
-    const summaryBody = document.createElement('tbody');
-    entriesSummary.forEach((summary: ComponentSummary) => {
+    const summaryBody = entriesSummary.reduce((acc: HTMLElement, currentItem: ComponentSummary) => {
         let newRow = document.createElement('tr');
         let donatedCell = document.createElement('td');
-        let donated = document.createTextNode(`${summary['componentType']}: ${summary['quantityDonated']}`);
+        let donated = document.createTextNode(`${currentItem['componentType']}: ${currentItem['quantityDonated']}`);
         donatedCell.appendChild(donated);
         newRow.appendChild(donatedCell);
         let distributedCell = document.createElement('td');
-        let distributed = document.createTextNode(`${summary['componentType']}: ${summary['quantityDistributed']}`);
+        let distributed = document.createTextNode(`${currentItem['componentType']}: ${currentItem['quantityDistributed']}`);
         distributedCell.appendChild(distributed);
         newRow.appendChild(distributedCell);
-        summaryBody.appendChild(newRow);
-    });
+        acc.appendChild(newRow);
+        return acc;
+    }, document.createElement('tbody'));
     summaryTable.appendChild(summaryBody);
     return summaryTable;
 }
@@ -223,7 +229,6 @@ function generateReport() {
             const entriesTable = createEntriesTable(filteredResults);
             reportCard.appendChild(entriesTable);
         }
-
         //Create button to generate new inventory report
         const formRow = document.createElement('div');
         formRow.setAttribute('class', 'form-row');
