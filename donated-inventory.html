@@ -25,6 +25,7 @@
     <button id="mobile-nav-toggle" class="material-symbols-outlined">menu</button>
     <div id="page-wrapper">
         <header>
+            <!--Logo for desktop/larger screens-->
             <picture>
                 <!--user's system is set to dark mode-->
                 <source srcset="images/logo-light.png" media="(prefers-color-scheme: light)" id="desktop-header-logo" />
@@ -33,21 +34,23 @@
                 <!--no color preference found: use light mode-->
                 <img src="images/logo-light.png" alt="Days for Girls logo" id="desktop-header-logo" />
             </picture>
+            <!--Logo for mobile/smaller screens-->
             <picture>
                 <!--user's system is set to dark mode-->
                 <source srcset="images/mobile-logo-light.svg" media="(prefers-color-scheme: light)"
-                    id="mobile-header-logo" />
+                    id="mobile-header-logo" class="light" />
                 <!--user's system is set to light mode-->
                 <source srcset="images/mobile-logo-dark.svg" media="(prefers-color-scheme: dark)"
-                    id="mobile-header-logo" />
+                    id="mobile-header-logo" class="dark" />
                 <!--no color preference found: use light mode-->
-                <img src="images/mobile-logo-light.svg" alt="Days for Girls logo" id="mobile-header-logo" />
+                <img src="images/mobile-logo-light.svg" alt="Days for Girls logo" id="mobile-header-logo"
+                    class="unknown" />
             </picture>
             <nav>
-                <a href="index.html">Home</a>
+                <a href="index.html" aria-current="page">Home</a>
                 <a href="mailing-list.html">Mailing List</a>
                 <a href="events.html">Upcoming Events</a>
-                <a href="inventory.html" id="inventory-link" aria-current="page">inventory</a>
+                <a href="inventory.html" id="inventory-link">inventory</a>
                 <a href="donate.html">Donate</a>
                 <button type="button" id="open-sign-in-modal-button" aria-controls="signin-modal">Sign In</button>
                 <button type="button" id="sign-out-button">Sign Out</button>

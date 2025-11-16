@@ -16,7 +16,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Solway:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="icon" href="assets/images/icon.png" sizes="192x192" />
 </head>
 
@@ -24,62 +24,73 @@
     <a href="#maincontent" class="skip-link">Skip to main content</a>
     <button id="mobile-nav-toggle" class="material-symbols-outlined">menu</button>
     <div id="page-wrapper">
-    <header>
+        <header>
+            <!--Logo for desktop/larger screens-->
+            <picture>
+                <!--user's system is set to dark mode-->
+                <source srcset="images/logo-light.png" media="(prefers-color-scheme: light)" id="desktop-header-logo" />
+                <!--user's system is set to light mode-->
+                <source srcset="images/logo-dark.png" media="(prefers-color-scheme: dark)" id="desktop-header-logo" />
+                <!--no color preference found: use light mode-->
+                <img src="images/logo-light.png" alt="Days for Girls logo" id="desktop-header-logo" />
+            </picture>
+            <!--Logo for mobile/smaller screens-->
             <picture>
                 <!--user's system is set to dark mode-->
                 <source srcset="images/mobile-logo-light.svg" media="(prefers-color-scheme: light)"
-                    id="mobile-header-logo" />
+                    id="mobile-header-logo" class="light" />
                 <!--user's system is set to light mode-->
                 <source srcset="images/mobile-logo-dark.svg" media="(prefers-color-scheme: dark)"
-                    id="mobile-header-logo" />
+                    id="mobile-header-logo" class="dark" />
                 <!--no color preference found: use light mode-->
-                <img src="images/mobile-logo-light.svg" alt="Days for Girls logo" id="mobile-header-logo" />
+                <img src="images/mobile-logo-light.svg" alt="Days for Girls logo" id="mobile-header-logo"
+                    class="unknown" />
             </picture>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="mailing-list.html">Mailing List</a>
-            <a href="events.html">Upcoming Events</a>
-            <a href="inventory.html" id="inventory-link"  aria-current="page">inventory</a>
-            <a href="donate.html">Donate</a>
-            <button type="button" id="open-sign-in-modal-button" aria-controls="signin-modal">Sign In</button>
-            <button type="button" id="sign-out-button">Sign Out</button>
-        </nav>
-    </header>
-    <section class="message-wrapper" id="main-message"></section>
-    <main id="maincontent">
-        <section class="button-row" id="manage-inventory">
-            <a href="donated-inventory.html" class="secondary">Donated Inventory</a>
-            <a href="distributed-inventory.html" class="secondary">Distributed inventory</a>
-        </section>
-        <article class="card" id="current-inventory-card">
-            <h2>Current Inventory</h2>
-            <!-- <table id="current-inventory-table">
+            <nav>
+                <a href="index.html" aria-current="page">Home</a>
+                <a href="mailing-list.html">Mailing List</a>
+                <a href="events.html">Upcoming Events</a>
+                <a href="inventory.html" id="inventory-link">inventory</a>
+                <a href="donate.html">Donate</a>
+                <button type="button" id="open-sign-in-modal-button" aria-controls="signin-modal">Sign In</button>
+                <button type="button" id="sign-out-button">Sign Out</button>
+            </nav>
+        </header>
+        <section class="message-wrapper" id="main-message"></section>
+        <main id="maincontent">
+            <section class="button-row" id="manage-inventory">
+                <a href="donated-inventory.html" class="secondary">Donated Inventory</a>
+                <a href="distributed-inventory.html" class="secondary">Distributed inventory</a>
+            </section>
+            <article class="card" id="current-inventory-card">
+                <h2>Current Inventory</h2>
+                <!-- <table id="current-inventory-table">
                 <thead>
                     <th>Component</th>
                     <th>Quantity</th>
                 </thead>
             </table> -->
-        </article>
-        <section class="message-wrapper" id="report-message"></section>
+            </article>
+            <section class="message-wrapper" id="report-message"></section>
             <form id="generateForm" class="card">
                 <div class="form-row">
-                <span>
-                    <label for="startDate">Start Date:</label>
-                    <input type="date" id="startDate" name="startDate" />
-                </span>
-                <span>
-                    <label for="endDate">End Date:</label>
-                    <input type="date" id="endDate" name="endDate" />
-                </span>
-                <button type="submit" id="generate-button" class="primary">Generate Report</button>
-            </div>
+                    <span>
+                        <label for="startDate">Start Date:</label>
+                        <input type="date" id="startDate" name="startDate" />
+                    </span>
+                    <span>
+                        <label for="endDate">End Date:</label>
+                        <input type="date" id="endDate" name="endDate" />
+                    </span>
+                    <button type="submit" id="generate-button" class="primary">Generate Report</button>
+                </div>
             </form>
-    </main>
-    <footer>
-        <a href="https://www.facebook.com/days.for.girls.solon/">Follow us on Facebook</a>
-        <a href="#">Follow us on Instagram</a>
-        <a href="https://www.daysforgirls.org/">Days for Girls International</a>
-    </footer>
+        </main>
+        <footer>
+            <a href="https://www.facebook.com/days.for.girls.solon/">Follow us on Facebook</a>
+            <a href="#">Follow us on Instagram</a>
+            <a href="https://www.daysforgirls.org/">Days for Girls International</a>
+        </footer>
     </div>
     <!--Sign In Modal-->
     <div class="backdrop" id="sign-in-backdrop">

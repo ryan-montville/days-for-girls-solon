@@ -15,16 +15,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Solway:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-   <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 
 <body>
     <button id="mobile-nav-toggle" class="material-symbols-outlined">menu</button>
     <a href="#maincontent" class="skip-link">Skip to main content</a>
     <div id="page-wrapper">
-    <header>
-        <picture>
+        <header>
+            <!--Logo for desktop/larger screens-->
+            <picture>
                 <!--user's system is set to dark mode-->
                 <source srcset="images/logo-light.png" media="(prefers-color-scheme: light)" id="desktop-header-logo" />
                 <!--user's system is set to light mode-->
@@ -32,47 +33,56 @@
                 <!--no color preference found: use light mode-->
                 <img src="images/logo-light.png" alt="Days for Girls logo" id="desktop-header-logo" />
             </picture>
+            <!--Logo for mobile/smaller screens-->
             <picture>
                 <!--user's system is set to dark mode-->
                 <source srcset="images/mobile-logo-light.svg" media="(prefers-color-scheme: light)"
-                    id="mobile-header-logo" />
+                    id="mobile-header-logo" class="light" />
                 <!--user's system is set to light mode-->
                 <source srcset="images/mobile-logo-dark.svg" media="(prefers-color-scheme: dark)"
-                    id="mobile-header-logo" />
+                    id="mobile-header-logo" class="dark" />
                 <!--no color preference found: use light mode-->
-                <img src="images/mobile-logo-light.svg" alt="Days for Girls logo" id="mobile-header-logo" />
+                <img src="images/mobile-logo-light.svg" alt="Days for Girls logo" id="mobile-header-logo"
+                    class="unknown" />
             </picture>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="mailing-list.html">Mailing List</a>
-            <a href="events.html">Upcoming Events</a>
-            <a href="inventory.html" id="inventory-link">inventory</a>
-            <a href="donate.html" aria-current="page">Donate</a>
-            <button type="button" id="open-sign-in-modal-button" aria-controls="signin-modal">Sign In</button>
-            <button type="button" id="sign-out-button">Sign Out</button>
-        </nav>
-    </header>
-    <section class="message-wrapper" id="main-message"></section>
-    <main id="maincontent">
-        <article class="card">
-        <h2>Days for Girls Guatemala Initiative - December 2025</h2>
-        <p>Our Days for Girls team is building something lasting in Puerto Barrios, Guatemala — a partnership that goes beyond delivering menstrual kits. Together with local leaders, we're helping communities gain the knowledge, confidence, and tools to manage menstrual health with dignity.</p>
-        <p>In December 2025, we'll return to Guatemala to host educational sessions for both girls and boys, distribute 100 reusable menstrual kits, and continue training local men and women to lead these programs themselves. This next step is part of our long-term vision: a locally led education and distribution network that reaches villages year after year.</p>
-        <h3>Your support makes this possible.</h3>
-        <p>Every donation helps provide kits, materials, and education that change lives — keeping girls in school, breaking taboos, and strengthening entire communities.</p>
-        <p><b>Goal: $3,570</b>
-            <br/>(to cover 100 kits, travel, translation, educational materials, and local event costs)</p>
-        <p>Give today — and help build a future where every girl can learn, thrive, and lead with dignity.</p>
-        <div class="form-row">
-            <a href="#" class="secondary" target="_blank">Donate Now</a>
-        </div>
-        </article>
-    </main>
-    <footer>
-        <a href="https://www.facebook.com/days.for.girls.solon/">Follow us on Facebook</a>
-        <a href="#">Follow us on Instagram</a>
-        <a href="https://www.daysforgirls.org/">Days for Girls International</a>
-    </footer>
+            <nav>
+                <a href="index.html" aria-current="page">Home</a>
+                <a href="mailing-list.html">Mailing List</a>
+                <a href="events.html">Upcoming Events</a>
+                <a href="inventory.html" id="inventory-link">inventory</a>
+                <a href="donate.html">Donate</a>
+                <button type="button" id="open-sign-in-modal-button" aria-controls="signin-modal">Sign In</button>
+                <button type="button" id="sign-out-button">Sign Out</button>
+            </nav>
+        </header>
+        <section class="message-wrapper" id="main-message"></section>
+        <main id="maincontent">
+            <article class="card">
+                <h2>Days for Girls Guatemala Initiative - December 2025</h2>
+                <p>Our Days for Girls team is building something lasting in Puerto Barrios, Guatemala — a partnership
+                    that goes beyond delivering menstrual kits. Together with local leaders, we're helping communities
+                    gain the knowledge, confidence, and tools to manage menstrual health with dignity.</p>
+                <p>In December 2025, we'll return to Guatemala to host educational sessions for both girls and boys,
+                    distribute 100 reusable menstrual kits, and continue training local men and women to lead these
+                    programs themselves. This next step is part of our long-term vision: a locally led education and
+                    distribution network that reaches villages year after year.</p>
+                <h3>Your support makes this possible.</h3>
+                <p>Every donation helps provide kits, materials, and education that change lives — keeping girls in
+                    school, breaking taboos, and strengthening entire communities.</p>
+                <p><b>Goal: $3,570</b>
+                    <br />(to cover 100 kits, travel, translation, educational materials, and local event costs)
+                </p>
+                <p>Give today — and help build a future where every girl can learn, thrive, and lead with dignity.</p>
+                <div class="form-row">
+                    <a href="#" class="secondary" target="_blank">Donate Now</a>
+                </div>
+            </article>
+        </main>
+        <footer>
+            <a href="https://www.facebook.com/days.for.girls.solon/">Follow us on Facebook</a>
+            <a href="#">Follow us on Instagram</a>
+            <a href="https://www.daysforgirls.org/">Days for Girls International</a>
+        </footer>
     </div>
     <!--Sign In Modal-->
     <div class="backdrop" id="sign-in-backdrop">

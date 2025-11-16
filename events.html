@@ -16,15 +16,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Solway:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 
 <body>
     <a href="#maincontent" class="skip-link">Skip to main content</a>
     <button id="mobile-nav-toggle" class="material-symbols-outlined">menu</button>
     <div id="page-wrapper">
-    <header>
-        <picture>
+        <header>
+            <!--Logo for desktop/larger screens-->
+            <picture>
                 <!--user's system is set to dark mode-->
                 <source srcset="images/logo-light.png" media="(prefers-color-scheme: light)" id="desktop-header-logo" />
                 <!--user's system is set to light mode-->
@@ -32,37 +33,39 @@
                 <!--no color preference found: use light mode-->
                 <img src="images/logo-light.png" alt="Days for Girls logo" id="desktop-header-logo" />
             </picture>
+            <!--Logo for mobile/smaller screens-->
             <picture>
                 <!--user's system is set to dark mode-->
                 <source srcset="images/mobile-logo-light.svg" media="(prefers-color-scheme: light)"
-                    id="mobile-header-logo" />
+                    id="mobile-header-logo" class="light" />
                 <!--user's system is set to light mode-->
                 <source srcset="images/mobile-logo-dark.svg" media="(prefers-color-scheme: dark)"
-                    id="mobile-header-logo" />
+                    id="mobile-header-logo" class="dark" />
                 <!--no color preference found: use light mode-->
-                <img src="images/mobile-logo-light.svg" alt="Days for Girls logo" id="mobile-header-logo" />
+                <img src="images/mobile-logo-light.svg" alt="Days for Girls logo" id="mobile-header-logo"
+                    class="unknown" />
             </picture>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="mailing-list.html">Mailing List</a>
-            <a href="events.html" aria-current="page">Upcoming Events</a>
-            <a href="inventory.html" id="inventory-link">inventory</a>
-            <a href="donate.html">Donate</a>
-            <button type="button" id="open-sign-in-modal-button" aria-controls="signin-modal">Sign In</button>
-            <button type="button" id="sign-out-button">Sign Out</button>
-        </nav>
-    </header>
-    <section class="message-wrapper" id="main-message"></section>
-    <main id="maincontent">
-        <section id="events-header" class="form-row">
-            <h2>Upcoming Events</h2>
-        </section>
-    </main>
-    <footer>
-        <a href="https://www.facebook.com/days.for.girls.solon/">Follow us on Facebook</a>
-        <a href="#">Follow us on Instagram</a>
-        <a href="https://www.daysforgirls.org/">Days for Girls International</a>
-    </footer>
+            <nav>
+                <a href="index.html" aria-current="page">Home</a>
+                <a href="mailing-list.html">Mailing List</a>
+                <a href="events.html">Upcoming Events</a>
+                <a href="inventory.html" id="inventory-link">inventory</a>
+                <a href="donate.html">Donate</a>
+                <button type="button" id="open-sign-in-modal-button" aria-controls="signin-modal">Sign In</button>
+                <button type="button" id="sign-out-button">Sign Out</button>
+            </nav>
+        </header>
+        <section class="message-wrapper" id="main-message"></section>
+        <main id="maincontent">
+            <section id="events-header" class="form-row">
+                <h2>Upcoming Events</h2>
+            </section>
+        </main>
+        <footer>
+            <a href="https://www.facebook.com/days.for.girls.solon/">Follow us on Facebook</a>
+            <a href="#">Follow us on Instagram</a>
+            <a href="https://www.daysforgirls.org/">Days for Girls International</a>
+        </footer>
     </div>
     <!--Sign In Modal-->
     <div class="backdrop" id="sign-in-backdrop">
@@ -91,4 +94,5 @@
     <script type="module" src="dist/app.js"></script>
     <script type="module" src="dist/events.js"></script>
 </body>
+
 </html>
