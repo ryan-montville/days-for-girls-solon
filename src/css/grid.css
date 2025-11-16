@@ -55,7 +55,6 @@ footer {
 @media (max-width: 850px) {
     #page-wrapper {
         grid-template-rows: 100px 30px auto 50px;
-        background-color: red;
     }
     .homepage-layout {
         grid-template-columns: 1fr;
