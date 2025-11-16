@@ -235,8 +235,34 @@ h4 {
     padding: 20px;
 }
 
-/* footer */
+.card p {
+    padding: 10px 0;
+}
 
+.small a {
+    text-align: center;
+}
+
+/* footer */
+footer {
+    background-color: var(--footer-background);
+    color: var(--footer-text);
+    padding: 20px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: calc(99vw - 20px);
+}
+
+footer a {
+    color: var(--footer-text);
+    text-decoration: none;
+    font-size: 20px;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
 
 /* Media breakpoints */
 /*Screens 1045 and larger*/

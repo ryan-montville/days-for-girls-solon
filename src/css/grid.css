@@ -23,6 +23,27 @@ main {
     grid-area: main;
 }
 
+#about-us {
+    grid-area: about;
+}
+
+#upcoming-events {
+    grid-area: events;
+}
+
+#mailing-list {
+    grid-area: mailing;
+}
+
+#donate {
+    grid-area: donate;
+}
+
+.homepage-layout {
+    display: grid;
+    gap: 5px;
+}
+
 footer {
     grid-area: footer;
 }
