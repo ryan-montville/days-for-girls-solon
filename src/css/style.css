@@ -305,11 +305,15 @@ footer a:hover {
     }
 
     h2 {
-    font-size: 36px;
-}
+        font-size: 36px;
+    }
 
     .card {
         max-width: 900px;
+    }
+
+    footer {
+        width: calc(99vw - 20px);
     }
 }
 
@@ -352,11 +356,15 @@ footer a:hover {
     }
 
     h2 {
-    font-size: 36px;
-}
+        font-size: 36px;
+    }
 
     .card {
         max-width: 900px;
+    }
+
+    footer {
+        width: calc(99vw - 20px);
     }
 }
 
@@ -428,6 +436,5 @@ footer a:hover {
 
     footer {
         flex-direction: column;
-        background-color: red;
     }
 }
