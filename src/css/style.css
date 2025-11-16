@@ -86,13 +86,28 @@ body {
     - The logo as a picture tag (to change image based on dark mode preference)
     - The nav menu (On desktop, its inline with the logo. On mobile, its postion absolute)
 */
-    /*
+/*
 header {
 }
  Not sure if needed here. All rules are currently in the medai breakpoints */
 
 
 /* navbar */
+nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+}
+
+nav a,
+nav button {
+    font-weight: 200;
+    background-color: var(--main-background);
+    color: var(--nav-text);
+    text-decoration: none;
+    font-family: Arial, Helvetica, sans-serif;
+}
 
 /* mobile nav menu */
 
@@ -173,6 +188,12 @@ header {
         align-items: center;
     }
 
+    nav a,
+    nav button {
+        padding: 10px;
+        font-size: 25px;
+    }
+
     main {
         width: 100%;
         margin: 20px 0;
@@ -184,10 +205,17 @@ header {
     }
 }
 
-/*Screens smaller than 1045px*/
-@media (max-width: 1044px) {
+/* Screens between 851px and 1044px */
+@media (min-width: 851px) and (max-width: 1044px) {
     #mobile-nav-toggle {
         display: none;
+    }
+
+    header {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
 
     #desktop-header-logo {
@@ -195,8 +223,15 @@ header {
     }
 
     #mobile-header-logo {
-        display: inline-block;
+        display: block;
         width: 275px;
+        margin-bottom: 10px;
+    }
+
+    nav a,
+    nav button {
+        padding: 10px;
+        font-size: 25px;
     }
 
     main {
@@ -214,7 +249,18 @@ header {
 @media (max-width: 850px) {
     header {
         display: block;
-        margin: 0 10px;
+        padding: 25px 10px 0 10px;
+        background-color: blue;
+    }
+
+        #desktop-header-logo {
+        display: none;
+    }
+
+    #mobile-header-logo {
+        display: block;
+        width: 275px;
+        margin-bottom: 10px;
     }
 
     #mobile-nav-toggle {
@@ -230,15 +276,11 @@ header {
     }
 
     nav {
+        display: none;
         padding-top: 110px;
         flex-direction: column;
         justify-content: flex-start;
         background-color: var(--main-background);
-        /* Animation */
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-        /* End of Animation */
     }
 
     nav.open {
@@ -247,10 +289,6 @@ header {
         top: 0;
         right: 0;
         bottom: 0;
-        /* Animation */
-        opacity: 1;
-        visibility: visible;
-        /* End of Animation */
     }
 
     .card {
