@@ -1,3 +1,4 @@
+/* Color variables for dark and light mode */
 @media (prefers-color-scheme: light) {
     :root {
         --body-background: #e7e9f1;
@@ -33,11 +34,31 @@
     }
 }
 
+/* CSS reset to remove default padding and margin */
 * {
     padding: 0;
     margin: 0;
 }
 
+body {
+    overscroll-behavior: none;
+    position: relative;
+    z-index: 1;
+    width: 100vw;
+    background-color: var(--body-background);
+}
+
+/* Google material icons */
+.material-symbols-outlined {
+    vertical-align: middle;
+    font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24
+}
+
+/* Screen reader */
 .skip-link {
     position: absolute;
     left: -10000px;
@@ -60,23 +81,23 @@
     border: 3px solid white;
 }
 
-body {
-    background-color: var(--body-background);
-    position: relative;
-    z-index: 1;
-    overscroll-behavior: none;
+/* header
+    The header contains two elements: 
+    - The logo as a picture tag (to change image based on dark mode preference)
+    - The nav menu (On desktop, its inline with the logo. On mobile, its postion absolute)
+*/
+header {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    align-items: center;
 }
 
-.material-symbols-outlined {
-    vertical-align: middle;
-    font-variation-settings:
-        'FILL' 0,
-        'wght' 400,
-        'GRAD' 0,
-        'opsz' 24
-}
+/* navbar */
 
-/* message toasts */
+/* mobile nav menu */
+
+/* messages */
 .message-wrapper {
     display: flex;
     justify-content: center;
@@ -124,162 +145,17 @@ body {
     color: var(--message-text);
 }
 
-/* header */
-header {
-    margin: 20px;
-    display: flex;
-    justify-content: center;
-    gap: 5px;
-    align-items: center;
-}
-
-/* Nav */
-nav {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1;
-}
-
-nav a,
-nav button {
-    padding: 10px;
-    font-weight: 200;
-    background-color: var(--main-background);
-    color: var(--nav-text);
-    text-decoration: none;
-    font-size: 25px;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-nav a:hover {
-    text-decoration: underline;
-}
-
-[aria-current]:not([aria-current="false"]) {
-    background-color: var(--secondary-accent);
-    color: white;
-    font-weight: 900;
-}
-
-#inventory-link {
-    display: none;
-}
-
-#open-sign-in-modal-button,
-#sign-out-button {
-    background-color: var(--primary-accent);
-    color: white;
-    font-weight: 900;
-}
-
-#sign-out-button {
-    display: none;
-}
-
-#mobile-nav-toggle {
-    display: none;
-}
-
-/* modals */
-.backdrop {
-    display: none;
-    background-color: rgba(0, 0, 0, 0.80);
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal {
-    position: relative;
-    background-color: var(--main-background);
-    color: var(--main-text);
-    padding: 20px;
-    animation-duration: 0.5s;
-    animation-name: fade-in;
-    animation-timing-function: ease-in;
-
-}
-
-@keyframes fade-in {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
 /* main */
-main {
-    color: var(--main-text);
-    font-size: 20px;
-}
 
-h1,
-h2,
-h3,
-h4 {
-    font-family: "Solway", serif;
-}
+/* footer */
 
-h2 {
-    font-size: 36px;
-}
-
-.card {
-    background-color: var(--main-background);
-    border-top: 5px solid var(--primary-accent);
-    margin: 10px auto;
-    padding: 20px;
-}
-
-.small {
-    display: flex;
-    flex-direction: column;
-}
-
-.small p {
-    flex-grow: 1;
-}
-
-.small a {
-    text-align: center;
-}
-
-.card p {
-    padding: 10px 0;
-}
-
-footer {
-    background-color: var(--footer-background);
-    color: var(--footer-text);
-    padding: 20px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    width: calc(99vw - 20px);
-}
-
-footer a {
-    color: var(--footer-text);
-    text-decoration: none;
-    font-size: 20px;
-}
-
-footer a:hover {
-    text-decoration: underline;
-}
 
 /* Media breakpoints */
 /*Screens 1045 and larger*/
 @media (min-width: 1045px) {
+    #mobile-nav-toggle {
+    display: none;
+}
     #desktop-header-logo {
         display: inline-block;
         height: 100px;
@@ -287,6 +163,10 @@ footer a:hover {
 
     #mobile-header-logo {
         display: none;
+    }
+
+    header {
+        margin: 20px;
     }
 
     main {
@@ -302,24 +182,29 @@ footer a:hover {
 
 /*Screens smaller than 1045px*/
 @media (max-width: 1044px) {
+    #mobile-nav-toggle {
+    display: none;
+}
     #desktop-header-logo {
         display: none;
     }
 
     #mobile-header-logo {
         display: inline-block;
-        height: 50px;
+        width: 275px;
     }
 
     header {
         flex-direction: column;
+        background-color: red;
     }
 
     main {
         margin: 20px 0;
         width: 100vw;
-        
+
     }
+
     .card {
         max-width: 900px;
     }
@@ -330,6 +215,7 @@ footer a:hover {
     header {
         align-items: flex-start;
     }
+
     #mobile-nav-toggle {
         display: block;
         position: absolute;
@@ -346,15 +232,24 @@ footer a:hover {
         padding-top: 110px;
         flex-direction: column;
         justify-content: flex-start;
-        display: none;
         background-color: var(--main-background);
+        /* Animation */
+        opacity: 0; 
+        visibility: hidden;
+        transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        /* End of Animation */
     }
+
     nav.open {
         display: flex;
         position: fixed;
         top: 0;
         right: 0;
         bottom: 0;
+        /* Animation */
+        opacity: 1;
+        visibility: visible;
+        /* End of Animation */
     }
 
     .card {

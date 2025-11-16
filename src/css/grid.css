@@ -28,35 +28,8 @@ footer {
     grid-area: footer;
 }
 
-/* Homepage grid layout */
-#about-us {
-    grid-area: about;
-}
-
-#upcoming-events {
-    grid-area: events;
-}
-
-#mailing-list {
-    grid-area: mailing;
-}
-
-#donate {
-    grid-area: donate;
-}
-
-.homepage-layout {
-    display: grid;
-    gap: 5px;
-}
-
-/* Events page grid layout */
-
-/* form page grid layout */
-
-/* Inventory page grid layout */
-
-/*Screens smaller than 1045px*/
+/* Medai breakpoints */
+/* Screens larger than 1044px*/
 @media (min-width: 1045px) {
     .homepage-layout {
         grid-template-columns: 1fr 1fr 1fr;
@@ -65,6 +38,7 @@ footer {
             "events mailing donate";
     }
 }
+/* Screens smaller than 1045px */
 @media (max-width: 1044px) {
     #page-wrapper {
         grid-template-rows: 150px 30px auto 50px;
