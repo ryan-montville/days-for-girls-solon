@@ -86,12 +86,11 @@ body {
     - The logo as a picture tag (to change image based on dark mode preference)
     - The nav menu (On desktop, its inline with the logo. On mobile, its postion absolute)
 */
+    /*
 header {
-    display: flex;
-    justify-content: center;
-    gap: 5px;
-    align-items: center;
 }
+ Not sure if needed here. All rules are currently in the medai breakpoints */
+
 
 /* navbar */
 
@@ -154,8 +153,9 @@ header {
 /*Screens 1045 and larger*/
 @media (min-width: 1045px) {
     #mobile-nav-toggle {
-    display: none;
-}
+        display: none;
+    }
+
     #desktop-header-logo {
         display: inline-block;
         height: 100px;
@@ -167,6 +167,10 @@ header {
 
     header {
         margin: 20px;
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        align-items: center;
     }
 
     main {
@@ -183,8 +187,9 @@ header {
 /*Screens smaller than 1045px*/
 @media (max-width: 1044px) {
     #mobile-nav-toggle {
-    display: none;
-}
+        display: none;
+    }
+
     #desktop-header-logo {
         display: none;
     }
@@ -195,7 +200,6 @@ header {
     }
 
     header {
-        flex-direction: column;
         background-color: red;
     }
 
@@ -213,14 +217,14 @@ header {
 /* Screens smaller than 850 */
 @media (max-width: 850px) {
     header {
-        align-items: flex-start;
+        display: block;
     }
 
     #mobile-nav-toggle {
         display: block;
         position: absolute;
         right: 20px;
-        top: 20px;
+        top: 25px;
         font-size: 50px;
         background-color: transparent;
         border: 0;
@@ -234,7 +238,7 @@ header {
         justify-content: flex-start;
         background-color: var(--main-background);
         /* Animation */
-        opacity: 0; 
+        opacity: 0;
         visibility: hidden;
         transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
         /* End of Animation */
