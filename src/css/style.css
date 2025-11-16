@@ -199,10 +199,6 @@ header {
         width: 275px;
     }
 
-    header {
-        background-color: red;
-    }
-
     main {
         margin: 20px 0;
         width: 100vw;
@@ -218,6 +214,7 @@ header {
 @media (max-width: 850px) {
     header {
         display: block;
+        margin: 0 10px;
     }
 
     #mobile-nav-toggle {
