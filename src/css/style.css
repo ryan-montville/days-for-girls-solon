@@ -143,7 +143,6 @@ nav a:hover {
     top: 0;
     bottom: 0;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
 }
 
@@ -251,6 +250,10 @@ nav a:hover {
         font-size: 25px;
     }
 
+    .backdrop {
+        justify-content: center;
+    }
+
     main {
         width: 100%;
         margin: 20px 0;
@@ -289,6 +292,10 @@ nav a:hover {
     nav button {
         padding: 10px;
         font-size: 25px;
+    }
+
+    .backdrop {
+        justify-content: center;
     }
 
     main {
@@ -354,7 +361,13 @@ nav a:hover {
         bottom: 0;
     }
 
+    .backdrop {
+        justify-content: flex-start;
+        z-index: 3;
+    }
+
     .modal {
+        margin-top: 10px;
         width: calc(85vw);
     }
 
