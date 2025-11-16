@@ -49,7 +49,7 @@ function checkForLocalStorageData() {
 openSignInModal.addEventListener('click', (e) => {
     e.preventDefault();
     if (nav.classList.contains('open')) {
-        mobileNavToggle.innerText = 'close';
+        mobileNavToggle.innerText = 'menu';
         nav.classList.remove('open');
     }
     signInModalBackdrop.style.display = 'flex';

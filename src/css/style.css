@@ -216,6 +216,24 @@ nav a:hover {
 }
 
 /* main */
+main {
+    color: var(--main-text);
+    font-size: 20px;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    font-family: "Solway", serif;
+}
+
+.card {
+    background-color: var(--main-background);
+    border-top: 5px solid var(--primary-accent);
+    margin: 10px auto;
+    padding: 20px;
+}
 
 /* footer */
 
@@ -260,6 +278,10 @@ nav a:hover {
         max-width: 900px;
     }
 
+    h2 {
+    font-size: 36px;
+}
+
     .card {
         max-width: 900px;
     }
@@ -301,8 +323,11 @@ nav a:hover {
     main {
         margin: 20px 0;
         width: 100vw;
-
     }
+
+    h2 {
+    font-size: 36px;
+}
 
     .card {
         max-width: 900px;

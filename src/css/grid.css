@@ -30,6 +30,10 @@ footer {
 /* Medai breakpoints */
 /* Screens larger than 1044px*/
 @media (min-width: 1045px) {
+    #page-wrapper {
+        justify-items: center;
+    }
+
     .homepage-layout {
         grid-template-columns: 1fr 1fr 1fr;
         grid-template-areas:
