@@ -1,4 +1,13 @@
 import { createMessage, closeModal, trapFocus, updateLocalStorage } from "./utils.js";
+const inventoryLink = document.getElementById('inventory-link');
+const openSignInModal = document.getElementById('open-sign-in-modal-button');
+const navSignOutButton = document.getElementById('sign-out-button');
+let mobileNavToggle = document.getElementById('mobile-nav-toggle');
+const nav = document.querySelector('nav');
+const signInModalBackdrop = document.getElementById('sign-in-backdrop');
+const signInModal = document.getElementById('sign-in-modal');
+const closeModalButton = document.getElementById('close-modal-button');
+let isUserSignedIn = false;
 function loadData() {
     //Get inventory data from json file and put into local storage
     fetch('src/inventory.json')
@@ -36,16 +45,13 @@ function checkForLocalStorageData() {
         loadData();
     }
 }
-const inventoryLink = document.getElementById('inventory-link');
-const openSignInModal = document.getElementById('open-sign-in-modal-button');
-const navSignOutButton = document.getElementById('sign-out-button');
-const signInModalBackdrop = document.getElementById('sign-in-backdrop');
-const signInModal = document.getElementById('sign-in-modal');
-const closeModalButton = document.getElementById('close-modal-button');
-let isUserSignedIn = false;
 //event listener for sign in button to open sign in modal
 openSignInModal.addEventListener('click', (e) => {
     e.preventDefault();
+    if (nav.classList.contains('open')) {
+        mobileNavToggle.innerText = 'close';
+        nav.classList.remove('open');
+    }
     signInModalBackdrop.style.display = 'flex';
     signInModal.classList.add('opening');
     signInModal.setAttribute('aria-modal', 'true');
@@ -134,17 +140,14 @@ function checkIfSignedIn() {
     }
 }
 //Mobile Nav toggle
-let mobileNavToggle = document.getElementById('mobile-nav-toggle');
-const nav = document.querySelector('nav');
 mobileNavToggle.addEventListener('click', () => {
     console.log("toggling nav menu");
     //Toggle to class 'open' on nav's classList
     nav.classList.toggle('open');
     //Check if 'open' is in nav's classList
-    const isNowOpen = nav.classList.contains('open');
-    console.log(`nav has open class: ${isNowOpen}`);
+    const isOpen = nav.classList.contains('open');
     //Display proper icon in nav toggle button
-    if (isNowOpen) {
+    if (isOpen) {
         mobileNavToggle.innerText = 'close';
     }
     else {

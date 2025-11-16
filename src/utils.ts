@@ -275,6 +275,16 @@ export function getComponentTypes(): string[] {
     return componentTypes;
 }
 
+export function displayLoadingMessage() {
+    const loadingDiv = document.createElement('div');
+    const loadingP = document.createElement('p');
+    const loading = document.createTextNode('Loading...');
+    loadingP.appendChild(loading);
+    loadingDiv.appendChild(loadingP);
+    return loadingDiv;
+
+}
+
 export function populateComponteTypeSelect(selctId: string) {
     let selectElement = document.getElementById(selctId) as HTMLSelectElement;
     if (selectElement.options.length === 1) {

@@ -1,4 +1,4 @@
-import { addITemToTable, createTable, createMessage, clearMessages, closeModal, CheckInventoryForDistribution, populateComponteTypeSelect, trapFocus, updateItemTotal, updateLocalStorage } from "./utils.js";
+import { addITemToTable, createTable, createMessage, clearMessages, closeModal, CheckInventoryForDistribution, displayLoadingMessage, populateComponteTypeSelect, trapFocus, updateItemTotal, updateLocalStorage } from "./utils.js";
 //Get data from local storage
 const distributedInventoryLocalStorage = localStorage.getItem("distributedInventory");
 let distributedInventoryData = JSON.parse(distributedInventoryLocalStorage);
@@ -15,11 +15,15 @@ function loadPreviousEntries() {
     if (previousTable)
         previousTable.remove();
     /* End of temporary solution */
+    //Display loading message
+    const loadingDiv = displayLoadingMessage();
+    previousEntriesCard.appendChild(loadingDiv);
     if (distributedInventoryData.length === 0) {
         //Display no previous entries message
         let noEntriesP = document.createElement('p');
         let noEntries = document.createTextNode("No previous entries");
         noEntriesP.appendChild(noEntries);
+        loadingDiv.remove();
         previousEntriesCard.appendChild(noEntriesP);
     }
     else {
@@ -32,6 +36,7 @@ function loadPreviousEntries() {
             return acc;
         }, document.createElement('tbody'));
         previousEntriesTable.appendChild(tableBody);
+        loadingDiv.remove();
         previousEntriesCard.appendChild(previousEntriesTable);
     }
 }

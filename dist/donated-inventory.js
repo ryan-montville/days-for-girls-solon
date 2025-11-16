@@ -1,4 +1,4 @@
-import { addITemToTable, createTable, createMessage, clearMessages, closeModal, populateComponteTypeSelect, trapFocus, updateItemTotal, updateLocalStorage } from "./utils.js";
+import { addITemToTable, createTable, createMessage, clearMessages, closeModal, displayLoadingMessage, populateComponteTypeSelect, trapFocus, updateItemTotal, updateLocalStorage } from "./utils.js";
 //Get data from local storage
 const donateInventoryLocalStorage = localStorage.getItem('donatedInventory');
 let donateInventoryData = JSON.parse(donateInventoryLocalStorage);
@@ -15,10 +15,13 @@ function loadPreviousEntries() {
     if (previousTable)
         previousTable.remove();
     /* End of temporary solution */
+    //Display loading message
+    const loadingDiv = displayLoadingMessage();
     if (donateInventoryData.length === 0) {
         let noEntriesP = document.createElement('p');
         let noEntries = document.createTextNode("No previous entries");
         noEntriesP.appendChild(noEntries);
+        loadingDiv.remove();
         previousEntriesCard.appendChild(noEntriesP);
     }
     else {
@@ -30,6 +33,7 @@ function loadPreviousEntries() {
             return acc;
         }, document.createElement('tbody'));
         previousEntriesTable.appendChild(tableBody);
+        loadingDiv.remove();
         previousEntriesCard.appendChild(previousEntriesTable);
     }
 }

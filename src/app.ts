@@ -1,5 +1,15 @@
 import { createMessage, closeModal, trapFocus, updateLocalStorage } from "./utils.js";
 
+const inventoryLink = document.getElementById('inventory-link') as HTMLElement;
+const openSignInModal = document.getElementById('open-sign-in-modal-button') as HTMLElement;
+const navSignOutButton = document.getElementById('sign-out-button') as HTMLElement;
+let mobileNavToggle = document.getElementById('mobile-nav-toggle') as HTMLElement;
+const nav = document.querySelector('nav') as HTMLElement;
+const signInModalBackdrop = document.getElementById('sign-in-backdrop') as HTMLElement;
+const signInModal = document.getElementById('sign-in-modal') as HTMLFormElement;
+const closeModalButton = document.getElementById('close-modal-button') as HTMLElement;
+let isUserSignedIn: boolean = false;
+
 function loadData() {
     //Get inventory data from json file and put into local storage
     fetch('src/inventory.json')
@@ -39,17 +49,13 @@ function checkForLocalStorageData() {
     }
 }
 
-const inventoryLink = document.getElementById('inventory-link') as HTMLElement;
-const openSignInModal = document.getElementById('open-sign-in-modal-button') as HTMLElement;
-const navSignOutButton = document.getElementById('sign-out-button') as HTMLElement;
-const signInModalBackdrop = document.getElementById('sign-in-backdrop') as HTMLElement;
-const signInModal = document.getElementById('sign-in-modal') as HTMLFormElement;
-const closeModalButton = document.getElementById('close-modal-button') as HTMLElement;
-let isUserSignedIn: boolean = false;
-
 //event listener for sign in button to open sign in modal
 openSignInModal.addEventListener('click', (e) => {
     e.preventDefault();
+    if (nav.classList.contains('open')) {
+        mobileNavToggle.innerText = 'close';
+        nav.classList.remove('open');
+    }
     signInModalBackdrop.style.display = 'flex';
     signInModal.classList.add('opening');
     signInModal.setAttribute('aria-modal', 'true');
@@ -90,8 +96,6 @@ document.addEventListener('keydown', (e) => {
             console.log("No modals are open");
         }
     }
-
-
 });
 
 //event listener to sign in
@@ -145,18 +149,14 @@ function checkIfSignedIn() {
 }
 
 //Mobile Nav toggle
-let mobileNavToggle = document.getElementById('mobile-nav-toggle') as HTMLElement;
-const nav = document.querySelector('nav') as HTMLElement;
-
 mobileNavToggle.addEventListener('click', () => {
     console.log("toggling nav menu")
     //Toggle to class 'open' on nav's classList
     nav.classList.toggle('open');
     //Check if 'open' is in nav's classList
-    const isNowOpen = nav.classList.contains('open');
-    console.log(`nav has open class: ${isNowOpen}`);
+    const isOpen = nav.classList.contains('open');
     //Display proper icon in nav toggle button
-    if (isNowOpen) {
+    if (isOpen) {
         mobileNavToggle.innerText = 'close';
     } else {
         mobileNavToggle.innerText = 'menu';

@@ -275,6 +275,14 @@ export function getComponentTypes() {
     currentInventoryArray.forEach(component => componentTypes.push(component['componentType']));
     return componentTypes;
 }
+export function displayLoadingMessage() {
+    const loadingDiv = document.createElement('div');
+    const loadingP = document.createElement('p');
+    const loading = document.createTextNode('Loading...');
+    loadingP.appendChild(loading);
+    loadingDiv.appendChild(loadingP);
+    return loadingDiv;
+}
 export function populateComponteTypeSelect(selctId) {
     let selectElement = document.getElementById(selctId);
     if (selectElement.options.length === 1) {
