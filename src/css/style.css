@@ -425,4 +425,9 @@ footer a:hover {
     .card {
         width: calc(99vw - 60px);
     }
+
+    footer {
+        flex-direction: column;
+        background-color: red;
+    }
 }
