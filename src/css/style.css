@@ -251,7 +251,7 @@ footer {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    width: calc(99vw - 20px);
+    /* width: calc(99vw - 20px); */
 }
 
 footer a {
