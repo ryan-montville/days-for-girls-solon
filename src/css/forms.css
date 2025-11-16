@@ -1,0 +1,75 @@
+button {
+    cursor: pointer;
+    border: 0;
+}
+
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+}
+
+.button-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 5px;
+}
+
+.left {
+    justify-content: flex-start;
+}
+
+.right {
+    justify-content: flex-end;
+}
+
+.form-row button, .form-row a, .button-row button, .button-row a {
+    border: 0;
+    padding: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 900;
+    text-decoration: none;
+}
+
+.primary {
+    background-color: var(--primary-accent);
+    color: white;
+}
+
+.secondary {
+    background-color: var(--secondary-accent);
+    color: white;
+}
+
+input, select {
+    border: 1px solid var(--main-text);
+    background-color: var(--main-background);
+    color: var(--main-text);
+    padding: 5px;
+    margin: 5px;
+}
+
+textarea {
+    width: calc(100% - 20px);
+    min-height: 100px;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid var(--main-text);
+    background-color: var(--main-background);
+    color: var(--main-text);
+}
+
+.full {
+    flex-grow: 1;
+}
+
+.delete-button {
+    background-color: var(--error-background);
+    color: var(--error-text);
+    border: 0;
+    padding: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 900;
+}
