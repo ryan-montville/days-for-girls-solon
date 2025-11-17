@@ -263,7 +263,6 @@ export function deleteItem(itemId: number, itemType: string) {
                     createMessage("Error deleting item. Try reloading the page", "main-message", "error");
                 }
             }
-// ------------------------------------------------------------------------updateItemTotal(itemToDelete, 'delete');------------------------------------------------
             //Close the delete modal
             deleteItemBackdrop.style.display = 'none';
             //Create a message after the item is deleted
@@ -361,81 +360,6 @@ export function trapFocus(modal: HTMLElement, backdrop: HTMLElement) {
         }
     });
 }
-
-// export function updateItemTotal(itemForUpdate: Event | InventoryEntry | ComponentItem | SignUpEntry, reasonForUpdate: string) {
-//     let currentInventoryLocalStorage = localStorage.getItem("currentInventory") as string;
-//     let currentInventoryArray: ComponentItem[] = JSON.parse(currentInventoryLocalStorage);
-//     let eventsLocalStorage = localStorage.getItem("events") as string;
-//     let eventsArray: Event[] = JSON.parse(eventsLocalStorage);
-//     let SignUpEntriesLocalStorge = localStorage.getItem("SignUpEntries") as string;
-//     let SignUpEntriesArray: SignUpEntry[] = JSON.parse(SignUpEntriesLocalStorge);
-//     if (reasonForUpdate === 'delete') {
-//         //update counts to remove item value
-//         if ("whoDonated" in itemForUpdate) {
-//             //When removing an entry from donated inventory - subtact component quantity from current inventory
-//             //Get the component from current inventory
-//             const currentInventoryComponent: ComponentItem | undefined = currentInventoryArray.find(item => item['componentType'] === itemForUpdate['componentType']);
-//             //If the component is found, update the quantity count
-//             if (currentInventoryComponent !== undefined) {
-//                 currentInventoryComponent['quantity'] -= itemForUpdate['quantity'];
-//                 //Update the current inventory array in local storage
-//                 updateLocalStorage("currentInventory", currentInventoryArray);
-//             }
-//         } else if ("destination" in itemForUpdate) {
-//             //When removing an entry from distributed inventory - add component quantity back to current inventory
-//             //Get the component from current inventory
-//             const currentInventoryComponent: ComponentItem | undefined = currentInventoryArray.find(item => item['componentType'] === itemForUpdate['componentType']);
-//             //If the component is found, update the quantity count
-//             if (currentInventoryComponent !== undefined) {
-//                 currentInventoryComponent['quantity'] += itemForUpdate['quantity'];
-//                 //Update the current inventory array in local storage
-//                 updateLocalStorage("currentInventory", currentInventoryArray);
-//             }
-//         } else if ("comments" in itemForUpdate) {
-//             //When deleting a sign up entry - subtract from num attending
-//             const eventIndex = eventsArray.findIndex(item => item['eventId'] === itemForUpdate['eventId'])
-//             eventsArray[eventIndex]['numberAttending'] -= 1;
-//             updateLocalStorage("events", eventsArray);
-//         } else if ("eventTitle" in itemForUpdate) {
-//             //When deleting an evetn - remove all sign up entries tied to the event
-//             let filteredSignUpEntries: SignUpEntry[] = SignUpEntriesArray.filter(entry => {
-//                 return entry['eventId'] !== itemForUpdate['eventId'];
-//             });
-//             updateLocalStorage("SignUpEntries", filteredSignUpEntries);
-//         }
-//         //Component - remove compontent type from donate/distribut forms
-//         //Should these last two be in a different function?
-
-//     } else if (reasonForUpdate === 'updateCounts') {
-//         //update the counts to include new quantity
-//         if ("whoDonated" in itemForUpdate) {
-//             //Components donated - add to current inventory
-//             //Get the component from current inventory
-//             const currentInventoryComponent: ComponentItem | undefined = currentInventoryArray.find(item => item['componentType'] === itemForUpdate['componentType']);
-//             //If the component is found, update the quantity count
-//             if (currentInventoryComponent !== undefined) {
-//                 currentInventoryComponent['quantity'] += itemForUpdate['quantity'];
-//                 //Update the current inventory array in local storage
-//                 updateLocalStorage("currentInventory", currentInventoryArray);
-//             }
-//         } else if ("destination" in itemForUpdate) {
-//             //Components distributed - subtract from currrent inventory
-//             //Get the component from current inventory
-//             const currentInventoryComponent: ComponentItem | undefined = currentInventoryArray.find(item => item['componentType'] === itemForUpdate['componentType']);
-//             //If the component is found, update the quantity count
-//             if (currentInventoryComponent !== undefined) {
-//                 currentInventoryComponent['quantity'] -= itemForUpdate['quantity'];
-//                 //Update the current inventory array in local storage
-//                 updateLocalStorage("currentInventory", currentInventoryArray);
-//             }
-//         } else if ("comments" in itemForUpdate) {
-//             // New sign up - add to num attending
-//             const eventIndex = eventsArray.findIndex(item => item['eventId'] === itemForUpdate['eventId'])
-//             eventsArray[eventIndex]['numberAttending'] += 1;
-//             updateLocalStorage("events", eventsArray);
-//         }
-//     }
-// }
 
 export function updateLocalStorage(itemName: string, data: Event[] | SignUpEntry[] | ComponentItem[] | InventoryEntry[] | string) {
     const dataString: string = JSON.stringify(data);

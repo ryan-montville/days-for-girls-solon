@@ -1,16 +1,13 @@
-import { addITemToTable, createTable, createMessage, clearMessages, fixDate } from "./utils.js";
+import { addITemToTable, createTable, createMessage, clearMessages, closeModal, fixDate, trapFocus } from "./utils.js";
 import { InventoryEntry, ComponentItem, ComponentSummary } from "./models.js";
+import { addComponentTypeToInventory, getCurrentInventory, getDistributedInventoryLog, getDoantedInventoryLog, getNextCurrentInventoryId } from "./controller.js";
 
-const currentInventoryLocalStorage = localStorage.getItem("currentInventory") as string;
-let currentInventoryData: ComponentItem[] = JSON.parse(currentInventoryLocalStorage);
-const donatedInventoryLocalStorage = localStorage.getItem("donatedInventory") as string;
-let donatedInventoryData: InventoryEntry[] = JSON.parse(donatedInventoryLocalStorage);
-const distributedInventoryLocalStorage = localStorage.getItem("distributedInventory") as string;
-let distributedInventoryData: InventoryEntry[] = JSON.parse(distributedInventoryLocalStorage);
 //Page elements
 const generateForm = document.getElementById('generateForm') as HTMLFormElement;
 const mainContent = document.getElementById('maincontent') as HTMLElement;
 const currentInventoryCard = document.getElementById('current-inventory-card') as HTMLElement;
+const manageInventoryBackdrop = document.getElementById('manage-inventory-backdrop') as HTMLElement;
+const manageInventoryModal = document.getElementById('manage-inventory-modal') as HTMLElement;
 
 //Maybe modify addToTable in utils.ts to include the current inventory table
 function addComponentToTable(component: ComponentItem): HTMLElement {
@@ -29,7 +26,8 @@ function addComponentToTable(component: ComponentItem): HTMLElement {
 }
 
 function loadCurrentInventory() {
-    if (currentInventoryData.length === 0) {
+    const currrentInventoryArray: ComponentItem[] = getCurrentInventory();
+    if (currrentInventoryArray.length === 0) {
         //Display no inventory message
         const noInventoryP = document.createElement('p');
         const noInventory = document.createTextNode("There are not items currently in the inventory.")
@@ -44,7 +42,7 @@ function loadCurrentInventory() {
         //Create the current inventory table
         const tableColumnHeaders: string[] = ['Component', 'Quantity', 'Delete'];
         const currentInventoryTable = createTable('current-inventory-table', tableColumnHeaders);
-        const tableBody = currentInventoryData.reduce((acc: HTMLElement, currentComponent: ComponentItem) => {
+        const tableBody = currrentInventoryArray.reduce((acc: HTMLElement, currentComponent: ComponentItem) => {
             //Ability to delete Components from inventory coming soon
             /* This function will turn into the addITemToTable() once the logic is updated to remove components and 
             all their log entries */
@@ -58,8 +56,10 @@ function loadCurrentInventory() {
 }
 
 function filterDateRange(startDate: Date, endDate: Date) {
+    const donatedEntryLog: InventoryEntry[] = getDoantedInventoryLog();
+    const distribtedInventoryLog: InventoryEntry[] = getDistributedInventoryLog();
     //Combine all donated and distributed entries into a single array
-    let allEntries: InventoryEntry[] = donatedInventoryData.concat(distributedInventoryData);
+    let allEntries: InventoryEntry[] = donatedEntryLog.concat(distribtedInventoryLog);
     //Filter allEntries array for entries within date range
     let filteredEntries: InventoryEntry[] = allEntries.filter(item => {
         return new Date(item['entryDate']) >= startDate && new Date(item['entryDate']) <= endDate;
@@ -73,7 +73,8 @@ function filterDateRange(startDate: Date, endDate: Date) {
 
 //Takes an array of inventory log entries and summarizes the array
 function calculateInventoryTotals(filteredArray: InventoryEntry[]) {
-    const uniqueComponents: ComponentSummary[] = currentInventoryData.reduce((acc: ComponentSummary[], currentComponent: ComponentItem) => {
+    const currrentInventoryArray: ComponentItem[] = getCurrentInventory();
+    const uniqueComponents: ComponentSummary[] = currrentInventoryArray.reduce((acc: ComponentSummary[], currentComponent: ComponentItem) => {
         const newComponent: ComponentSummary = {
             "componentType": currentComponent['componentType'],
             "quantityDonated": 0,
@@ -212,7 +213,6 @@ function generateReport() {
         reportCard.appendChild(formRow);
         mainContent.appendChild(reportCard);
     }
-
 }
 
 //Maybe add check if logged in, else remove report card
@@ -221,4 +221,81 @@ generateForm.addEventListener('submit', (e) => {
     e.preventDefault();
     clearMessages();
     generateReport();
+});
+
+function addNewComponentType(formData: FormData) {
+    const newComponentName = formData.get('nameInput');
+    if (newComponentName === null || newComponentName.toString().trim() === '') {
+        createMessage("Please enter the name of the new component type", "manage-inventory-message", "error");
+        return;
+    } else {
+        const newComponent: ComponentItem = {
+            componentId: getNextCurrentInventoryId(),
+            componentType: newComponentName.toString().trim(),
+            quantity: 0
+        }
+        addComponentTypeToInventory(newComponent);
+        createMessage(`Added '${newComponent['componentType']}' to inventory`, "main-message", "check_circle");
+        //Update current inventory table
+        closeModal('manage-inventory-backdrop');
+    }
+}
+
+//Event listener for button to open Manage Inventory Modal
+const openMangeInventoryButton = document.getElementById('add-new-type') as HTMLElement;
+openMangeInventoryButton.addEventListener('click', () => {
+    manageInventoryModal.innerHTML = '';
+    //Create the form to add a new component type
+    const addNewComponentTypeForm = document.createElement('form');
+    const formHeaderH2 = document.createElement('h2');
+    const formHeader = document.createTextNode("Add a New Component Type");
+    formHeaderH2.appendChild(formHeader);
+    addNewComponentTypeForm.appendChild(formHeaderH2);
+    const nameInputRow = document.createElement('section');
+    nameInputRow.setAttribute('class', 'form-row');
+    const nameLabel = document.createElement('label');
+    nameLabel.setAttribute('for', 'nameInput');
+    const nameText = document.createTextNode("Name of new component type:");
+    nameLabel.appendChild(nameText);
+    nameInputRow.appendChild(nameLabel);
+    const nameInput = document.createElement("input");
+    nameInput.setAttribute('type', 'text');
+    nameInput.setAttribute('id', 'nameInput');
+    nameInput.setAttribute('name', 'nameInput');
+    nameInputRow.appendChild(nameInput);
+    addNewComponentTypeForm.appendChild(nameInputRow);
+    const buttonRow = document.createElement('section');
+    buttonRow.setAttribute('class', 'form-row');
+    const cancelButton = document.createElement('button');
+    cancelButton.setAttribute('type', 'button');
+    cancelButton.setAttribute('class', 'secondary');
+    const cancelText = document.createTextNode("Cancel");
+    cancelButton.appendChild(cancelText);
+    cancelButton.addEventListener('click', () => {
+        //Close the modal
+        closeModal('manage-inventory-backdrop')
+    });
+    buttonRow.appendChild(cancelButton);
+    const submitButton = document.createElement('button');
+    submitButton.setAttribute('type', 'submit');
+    submitButton.setAttribute('class', 'primary');
+    const submitText = document.createTextNode("Submit");
+    submitButton.appendChild(submitText);
+    buttonRow.appendChild(submitButton);
+    addNewComponentTypeForm.appendChild(buttonRow);
+    addNewComponentTypeForm.addEventListener('submit', (e) => {
+        clearMessages();
+        e.preventDefault();
+        const data = new FormData(addNewComponentTypeForm);
+        addNewComponentType(data);
+    })
+    //Add the form to the modal
+    manageInventoryModal.appendChild(addNewComponentTypeForm);
+    //Open the modal
+    manageInventoryBackdrop.style.display = 'flex';
+    manageInventoryModal.classList.add('opening');
+    manageInventoryModal.setAttribute('aria-modal', 'true');
+    //Trap keyboard focus to modal form
+    nameInput.focus();
+    trapFocus(addNewComponentTypeForm, manageInventoryBackdrop);
 });

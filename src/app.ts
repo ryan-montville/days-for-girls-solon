@@ -64,8 +64,6 @@ openSignInModal.addEventListener('click', (e) => {
     trapFocus(signInModal, signInModalBackdrop);
 });
 
-
-
 //event listener for the sign in modal close button
 closeModalButton.addEventListener('click', (e) => {
     e.preventDefault();
@@ -79,6 +77,7 @@ document.addEventListener('keydown', (e) => {
     let editEventModalBackdrop = document.getElementById('edit-event-backdrop');
     let addInventoryModalBackdrop = document.getElementById('add-inventory-backdrop');
     let distributeInventoryBackdrop = document.getElementById('distribute-inventory-backdrop');
+    let manageInventoryBackdrop = document.getElementById("manage-inventory-backdrop");
     if (e.key === 'Escape') {
         e.preventDefault();
         if (deleteItemModalBackdrop && deleteItemModalBackdrop.style.display === 'flex') {
@@ -91,6 +90,8 @@ document.addEventListener('keydown', (e) => {
             closeModal('add-inventory-backdrop');
         } else if (distributeInventoryBackdrop && distributeInventoryBackdrop.style.display === 'flex') {
             closeModal('distribute-inventory-backdrop');
+        } else if (manageInventoryBackdrop && manageInventoryBackdrop.style.display === 'flex') {
+            closeModal('manage-inventory-backdrop');
         }
         else {
             console.log("No modals are open");
