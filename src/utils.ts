@@ -1,5 +1,5 @@
 import { Event, SignUpEntry, ComponentItem, InventoryEntry } from "./models";
-import { deleteDistributedEntry, deleteDonatedEntry, deleteEvent, deleteSignUpEntry, getEvent, getDistributedLogEnry, getDonatedLogEntry, getSignUpEntry } from "./controller.js";
+import { deleteComponentType, deleteDistributedEntry, deleteDonatedEntry, deleteEvent, deleteSignUpEntry, getEvent, getComponent, getDistributedLogEnry, getDonatedLogEntry, getSignUpEntry } from "./controller.js";
 
 type TableItem = SignUpEntry | ComponentItem | InventoryEntry | {};
 
@@ -141,7 +141,11 @@ export function deleteItem(itemId: number, itemType: string) {
     //Get item based on its key name and key ID
     switch (itemType) {
         case "componentItem": {
-            //W.I.P.
+            itemToDelete = getComponent(itemId) as ComponentItem;
+            //Create the title for the delete modal
+            deleteModalTitle = `Are you sure you want to delete  '${itemToDelete['componentType']}' from the inventory and logs?`;
+            //Create the message for successful delete
+            deletedMessage = `Deleted '${itemToDelete['componentType']}' from the inventory and logs`;
             break;
         }
         case "contactEntry": {
@@ -165,7 +169,7 @@ export function deleteItem(itemId: number, itemType: string) {
             break;
         }
         case "distributedEntry": {
-            itemToDelete = getDonatedLogEntry(itemId) as InventoryEntry;
+            itemToDelete = getDistributedLogEnry(itemId) as InventoryEntry;
             //Create the title for the delete modal
             deleteModalTitle = `Are you sure you want to delete these distributed ${itemToDelete['componentType']}?`;
             //Create the message for successful delete
@@ -235,7 +239,7 @@ export function deleteItem(itemId: number, itemType: string) {
         yesButton.addEventListener('click', () => {
             switch (itemType) {
                 case "componentItem": {
-                    //W.I.P.
+                    deleteComponentType(itemId);
                     break;
                 }
                 case "contactEntry": {

@@ -221,7 +221,32 @@ export function addComponentTypeToInventory(newComponent: ComponentItem) {
     updateLocalStorage("currentInventory", currentInventoryList);
 }
 
-//Delete component Type
+//Returns component matching id
+export function getComponent(componentId: number): ComponentItem | null {
+    const currentInventoryList: ComponentItem[] = getArrayFromLocalStorgae("currentInventory");
+    let component = currentInventoryList.find(item => item['componentId'] === componentId);
+    if (component) {
+        return component;
+    }
+    return null;
+}
+
+//Delete component Type matching id and entry logs
+export function deleteComponentType(componentId: number) {
+    const componentToDelete: ComponentItem | null = getComponent(componentId);
+    if (componentToDelete) {
+        let distribtedInventoryLog = getDistributedInventoryLog();
+        let donatedInventoryLog = getDoantedInventoryLog();
+        let currentInventoryArray = getCurrentInventory();
+        const updatedDistributedLog = distribtedInventoryLog.filter(entry => entry['componentType'] !== componentToDelete['componentType']);
+        const updatedDonatedLog = donatedInventoryLog.filter(entry => entry['componentType'] !== componentToDelete['componentType']);
+        const updateCurrentInventory = currentInventoryArray.filter(component => component['componentId'] !== componentId);
+        updateLocalStorage("donatedInventory", updatedDonatedLog);
+        updateLocalStorage("distributedInventory", updatedDistributedLog);
+        updateLocalStorage("currentInventory", updateCurrentInventory);
+    }
+
+}
 
 //Update component quantity in inventory
 function updateComponentInventoryQuantity(componentType: string, reason: string, quantity: number) {

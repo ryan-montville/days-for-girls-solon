@@ -1,4 +1,4 @@
-import { createTable, createMessage, clearMessages, closeModal, fixDate, trapFocus } from "./utils.js";
+import { addITemToTable, createTable, createMessage, clearMessages, closeModal, fixDate, trapFocus } from "./utils.js";
 import { addComponentTypeToInventory, getCurrentInventory, getDistributedInventoryLog, getDoantedInventoryLog, getNextCurrentInventoryId } from "./controller.js";
 //Page elements
 const generateForm = document.getElementById('generateForm');
@@ -6,21 +6,6 @@ const mainContent = document.getElementById('maincontent');
 const currentInventoryCard = document.getElementById('current-inventory-card');
 const manageInventoryBackdrop = document.getElementById('manage-inventory-backdrop');
 const manageInventoryModal = document.getElementById('manage-inventory-modal');
-//Maybe modify addToTable in utils.ts to include the current inventory table
-function addComponentToTable(component) {
-    let newRow = document.createElement('tr');
-    //Component Type
-    let componentNameCell = document.createElement('td');
-    let componentName = document.createTextNode(component['componentType']);
-    componentNameCell.appendChild(componentName);
-    newRow.appendChild(componentNameCell);
-    //Component quantity in inventory
-    let componentQuantityCell = document.createElement('td');
-    let componentQuantity = document.createTextNode(component['quantity'].toString());
-    componentQuantityCell.appendChild(componentQuantity);
-    newRow.appendChild(componentQuantityCell);
-    return newRow;
-}
 function loadCurrentInventory() {
     const currrentInventoryArray = getCurrentInventory();
     if (currrentInventoryArray.length === 0) {
@@ -31,19 +16,11 @@ function loadCurrentInventory() {
         currentInventoryCard.appendChild(noInventoryP);
     }
     else {
-        //Temporary message about deleting items
-        const comingSoonP = document.createElement('p');
-        const comingSoon = document.createTextNode('*NOTE: The ability to delete comonent items from the inventory is coming soon.*');
-        comingSoonP.appendChild(comingSoon);
-        currentInventoryCard.appendChild(comingSoonP);
         //Create the current inventory table
         const tableColumnHeaders = ['Component', 'Quantity', 'Delete'];
         const currentInventoryTable = createTable('current-inventory-table', tableColumnHeaders);
         const tableBody = currrentInventoryArray.reduce((acc, currentComponent) => {
-            //Ability to delete Components from inventory coming soon
-            /* This function will turn into the addITemToTable() once the logic is updated to remove components and
-            all their log entries */
-            const newComponent = addComponentToTable(currentComponent);
+            const newComponent = addITemToTable(currentComponent, 3, "componentItem");
             acc.appendChild(newComponent);
             return acc;
         }, document.createElement('tbody'));

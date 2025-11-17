@@ -1,4 +1,4 @@
-import { deleteDistributedEntry, deleteDonatedEntry, deleteEvent, deleteSignUpEntry, getEvent, getDonatedLogEntry, getSignUpEntry } from "./controller.js";
+import { deleteComponentType, deleteDistributedEntry, deleteDonatedEntry, deleteEvent, deleteSignUpEntry, getEvent, getComponent, getDistributedLogEnry, getDonatedLogEntry, getSignUpEntry } from "./controller.js";
 export function addITemToTable(item, numCells, itemType, dateFormat) {
     //Turn the item into arrays of its keys and values
     const itemKeys = Object.keys(item);
@@ -137,7 +137,11 @@ export function deleteItem(itemId, itemType) {
     //Get item based on its key name and key ID
     switch (itemType) {
         case "componentItem": {
-            //W.I.P.
+            itemToDelete = getComponent(itemId);
+            //Create the title for the delete modal
+            deleteModalTitle = `Are you sure you want to delete  '${itemToDelete['componentType']}' from the inventory and logs?`;
+            //Create the message for successful delete
+            deletedMessage = `Deleted '${itemToDelete['componentType']}' from the inventory and logs`;
             break;
         }
         case "contactEntry": {
@@ -161,7 +165,7 @@ export function deleteItem(itemId, itemType) {
             break;
         }
         case "distributedEntry": {
-            itemToDelete = getDonatedLogEntry(itemId);
+            itemToDelete = getDistributedLogEnry(itemId);
             //Create the title for the delete modal
             deleteModalTitle = `Are you sure you want to delete these distributed ${itemToDelete['componentType']}?`;
             //Create the message for successful delete
@@ -230,7 +234,7 @@ export function deleteItem(itemId, itemType) {
         yesButton.addEventListener('click', () => {
             switch (itemType) {
                 case "componentItem": {
-                    //W.I.P.
+                    deleteComponentType(itemId);
                     break;
                 }
                 case "contactEntry": {
