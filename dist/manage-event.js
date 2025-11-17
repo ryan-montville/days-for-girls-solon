@@ -1,8 +1,6 @@
-import { addITemToTable, createMessage, clearMessages, createTable, closeModal, deleteItem, fixDate, updateLocalStorage, trapFocus } from "./utils.js";
-const eventsLocalStorage = localStorage.getItem('events');
-let eventsData = JSON.parse(eventsLocalStorage);
-const SignUpEntriesLocalStorge = localStorage.getItem('SignUpEntries');
-let signUpEntriesData = JSON.parse(SignUpEntriesLocalStorge);
+import { addITemToTable, createMessage, createTable, closeModal, deleteItem, fixDate, trapFocus } from "./utils.js";
+import { getEvent, getSignUpsForEventId, updateEvent } from "./controller.js";
+//Page Elements
 const signUpEntriesCard = document.getElementById('sign-up-entires-card');
 const deleteEventCard = document.getElementById('deleteEventCard');
 const deleteEventButton = document.getElementById('delete-button');
@@ -24,7 +22,7 @@ else {
     createMessage("Could not find event", "main-message", "error");
 }
 //Get event matching eventId
-const eventObject = eventsData.find(eventObject => eventObject['eventId'] === paramEventId);
+const eventObject = getEvent(paramEventId);
 //Get modal backdrop elements
 const editModalBackdrop = document.getElementById('edit-event-backdrop');
 const editEventModal = document.getElementById('edit-event-modal');
@@ -149,18 +147,14 @@ function editEventInfo() {
     else {
         updatedEvent['eventDescription'] = eventDescriptionValue.toString();
     }
-    //Get index of event object in array for local storage
-    //This will probably change with proper data storage
-    let eventObjIndex = eventsData.findIndex(item => item['eventId'] === paramEventId);
-    eventsData[eventObjIndex] = updatedEvent;
-    updateLocalStorage("events", eventsData);
+    updateEvent(updatedEvent);
     displayEventInfo(updatedEvent);
     closeModal("edit-event-backdrop");
     createMessage("The event was successfully updated", "main-message", "check_circle");
 }
 function populateEntriesTable(eventObject) {
     //Get signup entries for the event
-    let eventSignUpEntries = signUpEntriesData.filter(entry => entry['eventId'] === paramEventId);
+    let eventSignUpEntries = getSignUpsForEventId(paramEventId);
     if (eventSignUpEntries.length === 0) {
         let noEntriesP = document.createElement('p');
         let noEntriesText = document.createTextNode(`No one has signed up for ${eventObject['eventTitle']} yet`);
@@ -172,7 +166,7 @@ function populateEntriesTable(eventObject) {
         const tableColumnHeaders = ['Name', 'Email', 'Comments', 'Delete'];
         const signUpTable = createTable('sign-up-table', tableColumnHeaders);
         let tableBody = eventSignUpEntries.reduce((acc, currentEntry) => {
-            const newRow = addITemToTable(currentEntry, 4, "SignUpEntries");
+            const newRow = addITemToTable(currentEntry, 4, "signUpEntry");
             acc.appendChild(newRow);
             return acc;
         }, document.createElement('tbody'));
@@ -180,18 +174,8 @@ function populateEntriesTable(eventObject) {
         signUpEntriesCard.appendChild(signUpTable);
     }
 }
-function deleteEvent() {
-    clearMessages();
-    if (eventObject) {
-        deleteItem("events", "eventId", eventObject['eventId']);
-    }
-    else {
-        createMessage(`The was an error deleting the event. Please go back to the events page and try again`, "main-message", "error");
-        deleteEventCard.remove();
-    }
-}
 //If the event doesn't exist, remove cards from page and add an error card
-if (!eventObject) {
+if (eventObject === null) {
     createMessage("Could not find event", "main-message", "error");
     editEventModal.remove();
     signUpEntriesCard.remove();
@@ -217,8 +201,8 @@ else {
     displayEventInfo(eventObject);
     //Event listener for the delete button
     deleteEventButton.addEventListener('click', () => {
-        //Need a way to see if deleteItem() in utils closes the modal, change boolean back to false
-        deleteEvent();
+        //Need a way for the controller to tell the page to redirect and display message
+        deleteItem(paramEventId, "event");
     });
     //Event listener to reset the form to the event data
     let resetFormButton = document.getElementById('reset');

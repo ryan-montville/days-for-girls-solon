@@ -1,7 +1,6 @@
-import { clearMessages, createMessage, updateLocalStorage } from "./utils.js";
+import { clearMessages, createMessage } from "./utils.js";
+import { createNewEvent, getNextEventId } from "./controller.js";
 const createForm = document.getElementById('create-event');
-const eventsLocalStorage = localStorage.getItem('events');
-let eventsData = JSON.parse(eventsLocalStorage);
 function submitData() {
     //Get the data from the form
     let formData = new FormData(createForm);
@@ -16,12 +15,7 @@ function submitData() {
         numberAttending: 0
     };
     //This shouldn't be needed when proper data storage is implemented
-    if (eventsData.length === 0) {
-        newEvent['eventId'] = 1;
-    }
-    else {
-        newEvent['eventId'] = eventsData[eventsData.length - 1]['eventId'] + 1;
-    }
+    newEvent['eventId'] = getNextEventId();
     //Validate the event title input
     let TitleValue = formData.get('eventTitle');
     if (TitleValue === null || TitleValue.toString().trim() === '') {
@@ -68,8 +62,7 @@ function submitData() {
     else {
         newEvent['eventDescription'] = eventDescriptionValue.toString();
     }
-    eventsData.push(newEvent);
-    updateLocalStorage("events", eventsData);
+    createNewEvent(newEvent);
     //Create a message saying event was sucessfully created
     window.location.href = 'events.html';
 }

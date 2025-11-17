@@ -1,4 +1,5 @@
 import { createMessage, fixDate, updateLocalStorage } from "./utils.js";
+import { getEventsList } from "./controller.js";
 import { Event } from "./models.js";
 
 let isUserSignedIn: boolean = false;
@@ -48,15 +49,8 @@ function addEventToPage(eventData: Event) {
 }
 
 function loadEvents() {
-    //Get events from local storage, will be updated when proper data storage is implemented
-    const eventsData = localStorage.getItem("events") as string;
-    let eventsList: Event[] = JSON.parse(eventsData);
-    //Sort the events by date
-    const sortedEvents = eventsList.sort((a, b) => {
-        const dateA = new Date(a['eventDate']).getTime();
-        const dateB = new Date(b['eventDate']).getTime();
-        return dateA - dateB;
-    });
+    //Get events list
+    let eventsList: Event[] = getEventsList();
     if (eventsList.length === 0) {
         //Display no events message
         const noEventsCard = document.createElement('section');

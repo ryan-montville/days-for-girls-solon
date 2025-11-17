@@ -1,10 +1,9 @@
-import { createMessage, clearMessages, fixDate, updateItemTotal, updateLocalStorage } from "./utils.js";
+import { createMessage, clearMessages, fixDate } from "./utils.js";
+import { addSignUpEntry, getEvent, getNextSignUpId } from "./controller.js";
 import { SignUpEntry, Event } from "./models.js";
 
-const eventsLocalStorage = localStorage.getItem('events') as string;
-let eventsData: Event[] = JSON.parse(eventsLocalStorage);
-const SignUpEntriesLocalStorge = localStorage.getItem('SignUpEntries') as string;
-let signUpEntriesData: SignUpEntry[] = JSON.parse(SignUpEntriesLocalStorge);
+
+//Page Elements
 const signUpForm = document.getElementById('sign-up-form') as HTMLFormElement;
 
 //Get event id from url
@@ -23,7 +22,7 @@ if (idString) {
     createMessage("Could not find event", "main-message", "error");
 }
 //Get event matching eventId
-const eventObject = eventsData.find(eventObject => eventObject['eventId'] === paramEventId);
+const eventObject: Event | null = getEvent(paramEventId);
 
 function setEventInfo(eventInfo: Event) {
     let signUpHeader = document.getElementById('sign-up-header') as HTMLElement;
@@ -52,7 +51,7 @@ function submitData() {
         email: ""
     }
     //Get the next entryId. This shouldn't be needed when proper data storage is implemented
-    newSignUp['entryId'] = signUpEntriesData[signUpEntriesData.length - 1]['entryId'] + 1;
+    newSignUp['entryId'] = getNextSignUpId();
     //Validate full name input
     let fullNameValue = signUpFormData.get('fullName');
     if (fullNameValue === null || fullNameValue.toString().trim() === '') {
@@ -81,10 +80,8 @@ function submitData() {
     if (commentsValue) {
         newSignUp['comments'] = commentsValue.toString();
     }
-    //Update the number attending for the event
-    updateItemTotal(newSignUp, "updateCounts");
-    signUpEntriesData.push(newSignUp);
-    updateLocalStorage("SignUpEntries", signUpEntriesData)
+    //Submit the sign up entry
+    addSignUpEntry(newSignUp);
     //window.location.href = 'events.html';
     //Find a way to pass this message to the events page after the redirect
     createMessage("You have sucessfully signed up for the event", "main-message", "check_circle");

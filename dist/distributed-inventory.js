@@ -1,11 +1,12 @@
-import { addITemToTable, createTable, createMessage, clearMessages, closeModal, CheckInventoryForDistribution, displayLoadingMessage, populateComponteTypeSelect, trapFocus, updateItemTotal, updateLocalStorage } from "./utils.js";
-//Get data from local storage
-const distributedInventoryLocalStorage = localStorage.getItem("distributedInventory");
-let distributedInventoryData = JSON.parse(distributedInventoryLocalStorage);
+import { addITemToTable, createTable, createMessage, clearMessages, closeModal, CheckInventoryForDistribution, displayLoadingMessage, populateComponteTypeSelect, trapFocus } from "./utils.js";
+import { addDistributedEntryLog, getNextDistributedEntryId, getDistributedInventoryLog } from "./controller.js";
+//Page Elements
 const distributeInventoryModal = document.getElementById('distribute-inventory-modal');
 const distributeInventoryBackdrop = document.getElementById('distribute-inventory-backdrop');
 const previousEntriesCard = document.getElementById('previous-entries-card');
 function loadPreviousEntries() {
+    const distributedInventoryData = getDistributedInventoryLog();
+    console.log(distributedInventoryData.length);
     /*Temporary solution to clear the card when form submit. Will update submitData() to
     add the row to the table instead of calling this function ad recreating the entire table */
     const noEntriesP = previousEntriesCard.querySelector('p');
@@ -31,7 +32,7 @@ function loadPreviousEntries() {
         const tableColumnHeaders = ['Date', 'Component', 'Quantity', 'Destination', 'Delete'];
         const previousEntriesTable = createTable('previous-entries-table', tableColumnHeaders);
         let tableBody = distributedInventoryData.reduceRight((acc, currentItem) => {
-            const newRow = addITemToTable(currentItem, 5, "distributedInventory", 'shortDate');
+            const newRow = addITemToTable(currentItem, 5, "distributedEntry", 'shortDate');
             acc.appendChild(newRow);
             return acc;
         }, document.createElement('tbody'));
@@ -52,7 +53,7 @@ function submitData() {
         destination: ""
     };
     //Get the next entryId. This shouldn't be needed when proper data storage is implemented
-    newEntry['entryId'] = distributedInventoryData[distributedInventoryData.length - 1]['entryId'] + 1;
+    newEntry['entryId'] = getNextDistributedEntryId();
     //Validate date input
     const dateValue = distributedFormData.get('date');
     if (dateValue === null || dateValue === '') {
@@ -101,12 +102,8 @@ function submitData() {
     else {
         newEntry['destination'] = destinationValue.toString();
     }
-    //Add the new entry to the array
-    distributedInventoryData.push(newEntry);
-    //Update current inventory count for component
-    updateItemTotal(newEntry, "updateCounts");
-    //Update local storage. Will change 
-    updateLocalStorage("distributedInventory", distributedInventoryData);
+    //Submit the entry
+    addDistributedEntryLog(newEntry);
     closeModal('distribute-inventory-backdrop');
     createMessage("The inventory has successfully been updated", "main-message", "check_circle");
     loadPreviousEntries();

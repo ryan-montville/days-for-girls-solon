@@ -1,4 +1,5 @@
 import { fixDate } from "./utils.js";
+import { getEventsList } from "./controller.js";
 let isUserSignedIn = false;
 let main = document.getElementById('maincontent');
 function addEventToPage(eventData) {
@@ -44,15 +45,8 @@ function addEventToPage(eventData) {
     return newEvent;
 }
 function loadEvents() {
-    //Get events from local storage, will be updated when proper data storage is implemented
-    const eventsData = localStorage.getItem("events");
-    let eventsList = JSON.parse(eventsData);
-    //Sort the events by date
-    const sortedEvents = eventsList.sort((a, b) => {
-        const dateA = new Date(a['eventDate']).getTime();
-        const dateB = new Date(b['eventDate']).getTime();
-        return dateA - dateB;
-    });
+    //Get events list
+    let eventsList = getEventsList();
     if (eventsList.length === 0) {
         //Display no events message
         const noEventsCard = document.createElement('section');

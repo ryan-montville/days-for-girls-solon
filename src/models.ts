@@ -1,3 +1,23 @@
+export interface ComponentItem {
+    componentId: number;
+    componentType: string;
+    quantity: number;
+}
+
+export interface ComponentSummary {
+    componentType: string;
+    quantityDonated: number;
+    quantityDistributed: number;
+}
+
+export interface ContactEntry {
+    contactId: number;
+    fullName: string;
+    email: string;
+    volunteerType: string;
+    phone?: number;
+}
+
 export interface Event {
     eventId: number;
     eventTitle: string;
@@ -6,20 +26,6 @@ export interface Event {
     eventTime: string;
     eventDescription: string;
     numberAttending: number;
-}
-
-export interface SignUpEntry {
-    entryId: number;
-    eventId: number;
-    fullName: string;
-    email: string;
-    comments?: string;
-}
-
-export interface ComponentItem {
-    componentId: number;
-    componentType: string;
-    quantity: number;
 }
 
 export interface InventoryEntry {
@@ -31,16 +37,10 @@ export interface InventoryEntry {
     destination?: string;
 }
 
-export interface ContactEntry {
-    contactId: number;
+export interface SignUpEntry {
+    entryId: number;
+    eventId: number;
     fullName: string;
     email: string;
-    volunteerType: string;
-    phone?: number;
-}
-
-export interface ComponentSummary {
-    componentType: string;
-    quantityDonated: number;
-    quantityDistributed: number;
+    comments?: string;
 }

@@ -1,11 +1,11 @@
-import { addITemToTable, createTable, createMessage, clearMessages, closeModal, displayLoadingMessage, populateComponteTypeSelect, trapFocus, updateItemTotal, updateLocalStorage } from "./utils.js";
-//Get data from local storage
-const donateInventoryLocalStorage = localStorage.getItem('donatedInventory');
-let donateInventoryData = JSON.parse(donateInventoryLocalStorage);
+import { addITemToTable, createTable, createMessage, clearMessages, closeModal, displayLoadingMessage, populateComponteTypeSelect, trapFocus } from "./utils.js";
+import { addDonatedEntryLog, getDoantedInventoryLog, getNextDonatedEntryId } from "./controller.js";
+//Page Elements
 const addInventoryModalBackdrop = document.getElementById('add-inventory-backdrop');
 const addInventoryModal = document.getElementById('add-inventory-modal');
 const previousEntriesCard = document.getElementById('previous-entries-card');
 function loadPreviousEntries() {
+    const donateInventoryData = getDoantedInventoryLog();
     /*Temporary solution to clear the card when form submit. Will update submitData() to
     add the row to the table instead of calling this function ad recreating the entire table */
     const noEntriesP = previousEntriesCard.querySelector('p');
@@ -28,7 +28,7 @@ function loadPreviousEntries() {
         const tableColumnHeaders = ['Date', 'Component', 'Quantity', 'Destination', 'Delete'];
         const previousEntriesTable = createTable('previous-entries-table', tableColumnHeaders);
         let tableBody = donateInventoryData.reduceRight((acc, currentItem) => {
-            const newRow = addITemToTable(currentItem, 5, "distributedInventory", 'shortDate');
+            const newRow = addITemToTable(currentItem, 5, "donatedEntry", 'shortDate');
             acc.appendChild(newRow);
             return acc;
         }, document.createElement('tbody'));
@@ -49,7 +49,7 @@ function submitData() {
         whoDonated: ""
     };
     //Get the next entryId. This shouldn't be needed when proper data storage is implemented
-    newEntry['entryId'] = donateInventoryData[donateInventoryData.length - 1]['entryId'] + 1;
+    newEntry['entryId'] = getNextDonatedEntryId();
     //Validate date input
     const dateValue = donatedFormData.get('date');
     if (dateValue === null || dateValue === '') {
@@ -93,12 +93,8 @@ function submitData() {
     else {
         newEntry['whoDonated'] = whoDonatedValue.toString();
     }
-    //Add the new entry to the array
-    donateInventoryData.push(newEntry);
-    //Update current inventory count for component
-    updateItemTotal(newEntry, "updateCounts");
-    //Update local storage. Will change 
-    updateLocalStorage("donatedInventory", donateInventoryData);
+    //Submit the entry
+    addDonatedEntryLog(newEntry);
     //Close the modal
     closeModal('add-inventory-backdrop');
     //Clear the form
