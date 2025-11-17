@@ -150,6 +150,24 @@ export function getNextDistributedEntryId() {
     }
     return distribtedInventoryLog[distribtedInventoryLog.length - 1]['entryId'] + 1;
 }
+export function CheckInventoryForDistribution(componentTypeToCheck, quantityToDistribute) {
+    let currentInventoryArray = getCurrentInventory();
+    const itemToCheck = getComponent({ componentType: componentTypeToCheck });
+    if (itemToCheck) {
+        if (itemToCheck['quantity'] < quantityToDistribute) {
+            //There is enough to distribute
+            return { hasEnough: false, quantity: itemToCheck['quantity'] };
+        }
+        else {
+            //There is not enough to distribute
+            return { hasEnough: true, quantity: itemToCheck['quantity'] };
+        }
+    }
+    else {
+        //The component was not found, return false to create an error message
+        return { hasEnough: false, quantity: 0 };
+    }
+}
 /* Donated Inventory */
 //Returns the donated inventory log
 export function getDoantedInventoryLog() {
@@ -202,17 +220,25 @@ export function addComponentTypeToInventory(newComponent) {
     updateLocalStorage("currentInventory", currentInventoryList);
 }
 //Returns component matching id
-export function getComponent(componentId) {
+export function getComponent({ componentId, componentType }) {
     const currentInventoryList = getArrayFromLocalStorgae("currentInventory");
-    let component = currentInventoryList.find(item => item['componentId'] === componentId);
-    if (component) {
-        return component;
+    if (componentId) {
+        let component = currentInventoryList.find(item => item['componentId'] === componentId);
+        if (component) {
+            return component;
+        }
+    }
+    else {
+        let component = currentInventoryList.find(item => item['componentType'] === componentType);
+        if (component) {
+            return component;
+        }
     }
     return null;
 }
 //Delete component Type matching id and entry logs
 export function deleteComponentType(componentId) {
-    const componentToDelete = getComponent(componentId);
+    const componentToDelete = getComponent({ componentId: componentId });
     if (componentToDelete) {
         let distribtedInventoryLog = getDistributedInventoryLog();
         let donatedInventoryLog = getDoantedInventoryLog();

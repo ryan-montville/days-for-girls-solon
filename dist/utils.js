@@ -46,22 +46,6 @@ export function addITemToTable(item, numCells, itemType, dateFormat) {
     }
     return newRow;
 }
-export function CheckInventoryForDistribution(componentTypeToCheck, quantityToDistribute) {
-    let currentInventoryLocalStorage = localStorage.getItem("currentInventory");
-    let currentInventoryArray = JSON.parse(currentInventoryLocalStorage);
-    let itemToCheck = currentInventoryArray.find(item => item['componentType'] === componentTypeToCheck);
-    if (itemToCheck) {
-        if (itemToCheck['quantity'] < quantityToDistribute) {
-            return { hasEnough: false, quantity: itemToCheck['quantity'] };
-        }
-        else {
-            return { hasEnough: true, quantity: itemToCheck['quantity'] };
-        }
-    }
-    else {
-        return { hasEnough: false, quantity: 0 };
-    }
-}
 export function clearMessages() {
     const messageWrappers = document.getElementsByClassName('message-wrapper');
     for (const messageWrapper of messageWrappers) {
@@ -137,7 +121,7 @@ export function deleteItem(itemId, itemType) {
     //Get item based on its key name and key ID
     switch (itemType) {
         case "componentItem": {
-            itemToDelete = getComponent(itemId);
+            itemToDelete = getComponent({ componentId: itemId });
             //Create the title for the delete modal
             deleteModalTitle = `Are you sure you want to delete  '${itemToDelete['componentType']}' from the inventory and logs?`;
             //Create the message for successful delete

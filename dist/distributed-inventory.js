@@ -1,5 +1,5 @@
-import { addITemToTable, createTable, createMessage, clearMessages, closeModal, CheckInventoryForDistribution, displayLoadingMessage, populateComponteTypeSelect, trapFocus } from "./utils.js";
-import { addDistributedEntryLog, getNextDistributedEntryId, getDistributedInventoryLog } from "./controller.js";
+import { addITemToTable, createTable, createMessage, clearMessages, closeModal, displayLoadingMessage, populateComponteTypeSelect, trapFocus } from "./utils.js";
+import { addDistributedEntryLog, CheckInventoryForDistribution, getNextDistributedEntryId, getDistributedInventoryLog } from "./controller.js";
 //Page Elements
 const distributeInventoryModal = document.getElementById('distribute-inventory-modal');
 const distributeInventoryBackdrop = document.getElementById('distribute-inventory-backdrop');

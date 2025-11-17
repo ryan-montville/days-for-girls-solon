@@ -1,6 +1,6 @@
-import { addITemToTable, createTable, createMessage, clearMessages, closeModal, CheckInventoryForDistribution, 
+import { addITemToTable, createTable, createMessage, clearMessages, closeModal, 
     displayLoadingMessage, populateComponteTypeSelect, trapFocus } from "./utils.js";
-import { addDistributedEntryLog, getNextDistributedEntryId, getDistributedInventoryLog } from "./controller.js";
+import { addDistributedEntryLog, CheckInventoryForDistribution, getNextDistributedEntryId, getDistributedInventoryLog } from "./controller.js";
 import { InventoryEntry } from "./models.js";
 
 //Page Elements
