@@ -1,12 +1,11 @@
-import { addITemToTable, createTable, createMessage, clearMessages, closeModal, displayLoadingMessage, populateComponteTypeSelect, trapFocus } from "./utils.js";
-import { addDistributedEntryLog, CheckInventoryForDistribution, getNextDistributedEntryId, getDistributedInventoryLog } from "./controller.js";
+import { addITemToTable, createTable, createMessage, createDeleteModal, clearMessages, closeModal, displayLoadingMessage, fixDate, populateComponteTypeSelect, trapFocus } from "./utils.js";
+import { addDistributedEntryLog, CheckInventoryForDistribution, deleteDistributedEntry, getNextDistributedEntryId, getDistributedInventoryLog } from "./controller.js";
 //Page Elements
 const distributeInventoryModal = document.getElementById('distribute-inventory-modal');
 const distributeInventoryBackdrop = document.getElementById('distribute-inventory-backdrop');
 const previousEntriesCard = document.getElementById('previous-entries-card');
 function loadPreviousEntries() {
     const distributedInventoryData = getDistributedInventoryLog();
-    console.log(distributedInventoryData.length);
     /*Temporary solution to clear the card when form submit. Will update submitData() to
     add the row to the table instead of calling this function ad recreating the entire table */
     const noEntriesP = previousEntriesCard.querySelector('p');
@@ -32,7 +31,37 @@ function loadPreviousEntries() {
         const tableColumnHeaders = ['Date', 'Component', 'Quantity', 'Destination', 'Delete'];
         const previousEntriesTable = createTable('previous-entries-table', tableColumnHeaders);
         let tableBody = distributedInventoryData.reduceRight((acc, currentItem) => {
+            //Create a row for the current item
             const newRow = addITemToTable(currentItem, 5, "distributedEntry", 'shortDate');
+            //Get the delete button and add an event listener
+            const deleteButton = newRow.querySelector("button");
+            if (deleteButton) {
+                deleteButton.addEventListener('click', () => {
+                    //Create/open the modal and get the button row to add event lsiteners
+                    const buttonRow = createDeleteModal(currentItem, `Are you sure you want to delete this entry?`);
+                    if (buttonRow) {
+                        const noButton = buttonRow.children[0];
+                        const yesButton = buttonRow.children[1];
+                        if (yesButton) {
+                            yesButton.addEventListener('click', () => {
+                                //Delete the log entry
+                                deleteDistributedEntry(currentItem['entryId']);
+                                //Close the delete modal
+                                closeModal('delete-item-backdrop');
+                                //Create a message saying the log entry has been deleted
+                                createMessage(`Deleted entry ${fixDate(currentItem['entryDate'].toString(), 'shortDate')}: ${currentItem['quantity']} ${currentItem['componentType']} to ${currentItem['destination']}`, "main-message", "delete");
+                                //Remove the entry from the table
+                                newRow.remove();
+                            });
+                        }
+                        if (noButton) {
+                            noButton.addEventListener('click', () => {
+                                closeModal('delete-item-backdrop');
+                            });
+                        }
+                    }
+                });
+            }
             acc.appendChild(newRow);
             return acc;
         }, document.createElement('tbody'));

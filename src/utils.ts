@@ -40,9 +40,9 @@ export function addITemToTable(item: TableItem, numCells: number, itemType: stri
         deleteButton.setAttribute('class', 'material-symbols-outlined');
         let deleteText = document.createTextNode('delete');
         deleteButton.appendChild(deleteText);
-        deleteButton.addEventListener('click', () => {
-            deleteItem(itemValues[0], itemType);
-        });
+        // deleteButton.addEventListener('click', () => {
+        //     deleteItem(itemValues[0], itemType);
+        // });
         deleteButtonCell.appendChild(deleteButton);
         newRow.appendChild(deleteButtonCell);
     }
@@ -117,154 +117,55 @@ export function createTable(tableId: string, columnHeaders: string[]) {
     return newTable;
 }
 
-export function deleteItem(itemId: number, itemType: string) {
-    //This function will be updated once data storage is resolved. Currently just updates local storage
-    let deleteModalTitle: string = "";
-    let deletedMessage: string = "";
-    let itemToDelete: InventoryEntry | ComponentItem | SignUpEntry | Event | null | undefined = null;
-
-    //Get item based on its key name and key ID
-    switch (itemType) {
-        case "componentItem": {
-            itemToDelete = getComponent({componentId: itemId}) as ComponentItem;
-            //Create the title for the delete modal
-            deleteModalTitle = `Are you sure you want to delete  '${itemToDelete['componentType']}' from the inventory and logs?`;
-            //Create the message for successful delete
-            deletedMessage = `Deleted '${itemToDelete['componentType']}' from the inventory and logs`;
-            break;
-        }
-        case "contactEntry": {
-            //Might not be needed depending on how mailing list sign up works
-            break; 
-        }
-        case "event": {
-            itemToDelete = getEvent(itemId) as Event;
-            //Create the title for the delete modal
-            deleteModalTitle = `Are you sure you want to delete the event '${itemToDelete['eventTitle']}'?`;
-            //Create the message for successful delete
-            deletedMessage = `Deleted event '${itemToDelete['eventTitle']}'`;
-            break;
-        }
-        case "donatedEntry": {
-            itemToDelete = getDonatedLogEntry(itemId) as InventoryEntry;
-            //Create the title for the delete modal
-            deleteModalTitle = `Are you sure you want to delete these donated ${itemToDelete['componentType']}?`;
-            //Create the message for successful delete
-            deletedMessage = `Deleted ${itemToDelete['quantity']} ${itemToDelete['componentType']} donated on ${fixDate(itemToDelete.entryDate.toString(), 'shortDate')} by ${itemToDelete['whoDonated']}`;
-            break;
-        }
-        case "distributedEntry": {
-            itemToDelete = getDistributedLogEnry(itemId) as InventoryEntry;
-            //Create the title for the delete modal
-            deleteModalTitle = `Are you sure you want to delete these distributed ${itemToDelete['componentType']}?`;
-            //Create the message for successful delete
-            deletedMessage = `Deleted ${itemToDelete['quantity']} ${itemToDelete['componentType']} distributed on ${fixDate(itemToDelete.entryDate.toString(), 'shortDate')} to ${itemToDelete['destination']}`;
-            break;
-        }
-        case "signUpEntry": {
-            itemToDelete = getSignUpEntry(itemId) as SignUpEntry
-            //Create the title for the delete modal
-            deleteModalTitle = `Are you sure you want to delete this sign up?`;
-            //Create the message for successful delete
-            deletedMessage = `Deleted sign up from ${itemToDelete['fullName']}`;
-            break;
-        }
-        default: {
-            createMessage("Error deleting item. Try reloading the page", "main-message", "error");
+export function createDeleteModal(itemToDelete: InventoryEntry | ComponentItem | SignUpEntry | Event, modalTitle: string): HTMLElement | null {
+    //Open delete item modal by changing the display of the backdrop
+    const deleteItemBackdrop = document.getElementById('delete-item-backdrop') as HTMLElement;
+    const deleteForm = document.getElementById('delete-item-modal') as HTMLFormElement;
+    deleteItemBackdrop.style.display = 'flex';
+    deleteForm.setAttribute('aria-modal', 'true');
+    const deleteItemModal = document.getElementById('delete-item-modal') as HTMLFormElement;
+    deleteItemModal.innerHTML = '';
+    //Display the modal title
+    let deleteMoalH2 = document.createElement('h2');
+    let deleteModalText = document.createTextNode(modalTitle);
+    deleteMoalH2.appendChild(deleteModalText);
+    deleteItemModal.appendChild(deleteMoalH2);
+    //Create an array of the item's keys and values
+    let itemKeys = Object.keys(itemToDelete);
+    let itemValues = Object.values(itemToDelete);
+    let l = itemValues.length;
+    //Display the item's key value pairs
+    for (let i = 0; i < l; i++) {
+        let keyValueP = document.createElement('p');
+        //Don't display the id key/values or event description
+        if (!itemKeys[i].includes("Id") && !itemKeys[i].includes("eventDescription")) {
+            let readableKey: string = itemKeys[i].replace(/([a-z])([A-Z])/g, '$1 $2');
+            let keyValue = document.createTextNode(`${readableKey.toLowerCase()}: ${itemValues[i]}`);
+            keyValueP.appendChild(keyValue);
+            deleteItemModal.appendChild(keyValueP);
         }
     }
-
-    //If the item exists, open the delete modal
-    if (itemToDelete) {
-        //Open delete item modal by changing the display of the backdrop
-        const deleteItemBackdrop = document.getElementById('delete-item-backdrop') as HTMLElement;
-        const deleteForm = document.getElementById('delete-item-modal') as HTMLFormElement;
-        deleteItemBackdrop.style.display = 'flex';
-        deleteForm.setAttribute('aria-modal', 'true');
-        const deleteItemModal = document.getElementById('delete-item-modal') as HTMLFormElement;
-        deleteItemModal.innerHTML = '';
-        //Display the modal title
-        let deleteMoalH2 = document.createElement('h2');
-        let deleteModalText = document.createTextNode(`${deleteModalTitle}`);
-        deleteMoalH2.appendChild(deleteModalText);
-        deleteItemModal.appendChild(deleteMoalH2);
-        //Create an array of the item's keys and values
-        let itemKeys = Object.keys(itemToDelete);
-        let itemValues = Object.values(itemToDelete);
-        let l = itemValues.length;
-        //Display the item's key value pairs
-        for (let i = 0; i < l; i++) {
-            let keyValueP = document.createElement('p');
-            //Don't display the id key/values or event description
-            if (!itemKeys[i].includes("Id") && !itemKeys[i].includes("eventDescription")) {
-                let readableKey: string = itemKeys[i].replace(/([a-z])([A-Z])/g, '$1 $2');
-                let keyValue = document.createTextNode(`${readableKey.toLowerCase()}: ${itemValues[i]}`);
-                keyValueP.appendChild(keyValue);
-                deleteItemModal.appendChild(keyValueP);
-            }
-        }
-        //Create button row
-        let buttonRow = document.createElement('section');
-        buttonRow.setAttribute('class', 'button-row');
-        let noButton = document.createElement('button');
-        noButton.setAttribute('type', 'button');
-        noButton.setAttribute('class', 'secondary');
-        let noButtonText = document.createTextNode("No");
-        noButton.appendChild(noButtonText);
-        noButton.addEventListener('click', () => {
-            //Close delete modal
-            deleteItemBackdrop.style.display = 'none';
-        });
-        buttonRow.appendChild(noButton);
-        let yesButton = document.createElement('button');
-        let yesButtonText = document.createTextNode('Yes');
-        yesButton.appendChild(yesButtonText);
-        yesButton.setAttribute('type', 'button');
-        yesButton.setAttribute('class', 'delete-button');
-        yesButton.addEventListener('click', () => {
-            switch (itemType) {
-                case "componentItem": {
-                    deleteComponentType(itemId);
-                    break;
-                }
-                case "contactEntry": {
-                    //Might not be needed depending on how mailing list sign up works
-                    break;
-                }
-                case "donatedEntry": {
-                    deleteDonatedEntry(itemId);
-                    break;
-                }
-                case "distributedEntry": {
-                    deleteDistributedEntry(itemId);
-                    break;
-                }
-                case "event": {
-                    deleteEvent(itemId);
-                    break;
-                }
-                case "signUpEntry": {
-                    deleteSignUpEntry(itemId);
-                    break;
-                }
-                default: {
-                    //This should never be created since the modal shouldn't open if the item doesn't exist
-                    createMessage("Error deleting item. Try reloading the page", "main-message", "error");
-                }
-            }
-            //Close the delete modal
-            deleteItemBackdrop.style.display = 'none';
-            //Create a message after the item is deleted
-            createMessage(deletedMessage, "main-message", "delete");
-            // window.location.reload(); figure out different way to update the dom without reloading page
-        });
-        buttonRow.appendChild(yesButton);
-        deleteItemModal.appendChild(buttonRow);
-        noButton.focus();
-        trapFocus(deleteItemModal, deleteItemBackdrop);
-    } else {
-        createMessage("Item already removed from database. Try reloading the page", "main-message", "error");
-    }
+    //Create button row
+    let buttonRow = document.createElement('section');
+    buttonRow.setAttribute('class', 'button-row');
+    let noButton = document.createElement('button');
+    noButton.setAttribute('type', 'button');
+    noButton.setAttribute('class', 'secondary');
+    noButton.setAttribute('id', "no");
+    let noButtonText = document.createTextNode("No");
+    noButton.appendChild(noButtonText);
+    buttonRow.appendChild(noButton);
+    let yesButton = document.createElement('button');
+    let yesButtonText = document.createTextNode('Yes');
+    yesButton.appendChild(yesButtonText);
+    yesButton.setAttribute('type', 'button');
+    yesButton.setAttribute('class', 'delete-button');
+    yesButton.setAttribute('id', 'yes');
+    buttonRow.appendChild(yesButton);
+    deleteItemModal.appendChild(buttonRow);
+    noButton.focus();
+    trapFocus(deleteItemModal, deleteItemBackdrop);
+    return buttonRow;
 }
 
 export function fixDate(dateString: string, dateFormat: string): string {

@@ -257,11 +257,9 @@ function updateComponentInventoryQuantity(componentType, reason, quantity) {
     const componetIndex = currentInventoryList.findIndex(component => component['componentType'] === componentType);
     if (reason === "add") {
         currentInventoryList[componetIndex]['quantity'] += quantity;
-        console.log(`adding ${quantity} of ${componentType}`);
     }
     else {
         currentInventoryList[componetIndex]['quantity'] -= quantity;
-        console.log(`Removing ${quantity} of ${componentType}`);
     }
     updateLocalStorage("currentInventory", currentInventoryList);
 }
