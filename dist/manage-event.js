@@ -1,5 +1,5 @@
 import { addITemToTable, createMessage, createDeleteModal, createTable, closeModal, fixDate, trapFocus } from "./utils.js";
-import { deleteSignUpEntry, getEvent, getSignUpsForEventId, updateEvent } from "./controller.js";
+import { deleteEvent, deleteSignUpEntry, getEvent, getSignUpsForEventId, updateEvent } from "./controller.js";
 //Page Elements
 const signUpEntriesCard = document.getElementById('sign-up-entires-card');
 const deleteEventCard = document.getElementById('deleteEventCard');
@@ -230,7 +230,27 @@ else {
     //Event listener for the delete button
     deleteEventButton.addEventListener('click', () => {
         //Need a way for the controller to tell the page to redirect and display message
-        deleteItem(paramEventId, "event");
+        const buttonRow = createDeleteModal(eventObject, "Are you sure you want to delete this event?");
+        if (buttonRow) {
+            const noButton = buttonRow.children[0];
+            const yesButton = buttonRow.children[1];
+            if (yesButton) {
+                yesButton.addEventListener('click', () => {
+                    //Delete the log entry
+                    deleteEvent(paramEventId);
+                    //Close the delete modal
+                    closeModal('delete-item-backdrop');
+                    //Create a message saying the log entry has been deleted
+                    createMessage(`Deleted event ${eventObject['eventTitle']} ${eventObject['eventDate']}`, "main-message", "delete");
+                    //Figure out way to redirect to events page and display the message
+                });
+            }
+            if (noButton) {
+                noButton.addEventListener('click', () => {
+                    closeModal('delete-item-backdrop');
+                });
+            }
+        }
     });
     //Event listener to reset the form to the event data
     let resetFormButton = document.getElementById('reset');
