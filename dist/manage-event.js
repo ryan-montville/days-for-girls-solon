@@ -1,5 +1,5 @@
-import { addITemToTable, createMessage, createTable, closeModal, deleteItem, fixDate, trapFocus } from "./utils.js";
-import { getEvent, getSignUpsForEventId, updateEvent } from "./controller.js";
+import { addITemToTable, createMessage, createDeleteModal, createTable, closeModal, fixDate, trapFocus } from "./utils.js";
+import { deleteSignUpEntry, getEvent, getSignUpsForEventId, updateEvent } from "./controller.js";
 //Page Elements
 const signUpEntriesCard = document.getElementById('sign-up-entires-card');
 const deleteEventCard = document.getElementById('deleteEventCard');
@@ -167,6 +167,34 @@ function populateEntriesTable(eventObject) {
         const signUpTable = createTable('sign-up-table', tableColumnHeaders);
         let tableBody = eventSignUpEntries.reduce((acc, currentEntry) => {
             const newRow = addITemToTable(currentEntry, 4, "signUpEntry");
+            const deleteButton = newRow.querySelector("button");
+            if (deleteButton) {
+                deleteButton.addEventListener('click', () => {
+                    //Create/open the modal and get the button row to add event lsiteners
+                    const buttonRow = createDeleteModal(currentEntry, `Are you sure you want to delete this entry?`);
+                    if (buttonRow) {
+                        const noButton = buttonRow.children[0];
+                        const yesButton = buttonRow.children[1];
+                        if (yesButton) {
+                            yesButton.addEventListener('click', () => {
+                                //Delete the sign up entry
+                                deleteSignUpEntry(currentEntry['entryId']);
+                                //Close the delete modal
+                                closeModal('delete-item-backdrop');
+                                //Create a message saying the sign up entry has been deleted
+                                createMessage(`Deleted entry from ${currentEntry['fullName']}`, "main-message", "delete");
+                                //Remove the entry from the table
+                                newRow.remove();
+                            });
+                        }
+                        if (noButton) {
+                            noButton.addEventListener('click', () => {
+                                closeModal('delete-item-backdrop');
+                            });
+                        }
+                    }
+                });
+            }
             acc.appendChild(newRow);
             return acc;
         }, document.createElement('tbody'));

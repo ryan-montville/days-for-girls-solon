@@ -1,6 +1,8 @@
-import { addITemToTable, createTable, createMessage, clearMessages, closeModal, fixDate, trapFocus } from "./utils.js";
+import { addITemToTable, createTable, createMessage, createDeleteModal, clearMessages, closeModal, 
+    fixDate, trapFocus } from "./utils.js";
 import { InventoryEntry, ComponentItem, ComponentSummary } from "./models.js";
-import { addComponentTypeToInventory, getCurrentInventory, getDistributedInventoryLog, getDoantedInventoryLog, getNextCurrentInventoryId } from "./controller.js";
+import { addComponentTypeToInventory, deleteComponentType, getCurrentInventory, getDistributedInventoryLog, 
+    getDoantedInventoryLog, getNextCurrentInventoryId } from "./controller.js";
 
 //Page elements
 const generateForm = document.getElementById('generateForm') as HTMLFormElement;
@@ -22,8 +24,36 @@ function loadCurrentInventory() {
         const tableColumnHeaders: string[] = ['Component', 'Quantity', 'Delete'];
         const currentInventoryTable = createTable('current-inventory-table', tableColumnHeaders);
         const tableBody = currrentInventoryArray.reduce((acc: HTMLElement, currentComponent: ComponentItem) => {
-            const newComponent = addITemToTable(currentComponent, 3, "componentItem");
-            acc.appendChild(newComponent);
+            const newRow = addITemToTable(currentComponent, 3, "componentItem");
+            const deleteButton = newRow.querySelector("button");
+            if (deleteButton) {
+                deleteButton.addEventListener('click', () => {
+                    //Create/open the modal and get the button row to add event lsiteners
+                    const buttonRow = createDeleteModal(currentComponent, `Are you sure you want to delete this component?`);
+                    if (buttonRow) {
+                        const noButton = buttonRow.children[0];
+                        const yesButton = buttonRow.children[1];
+                        if (yesButton) {
+                            yesButton.addEventListener('click', () => {
+                                //Delete the component
+                                deleteComponentType(currentComponent['componentId']);
+                                //Close the delete modal
+                                closeModal('delete-item-backdrop');
+                                //Create a message saying the component has been deleted
+                                createMessage(`Deleted component "${currentComponent['componentType']}"`, "main-message", "delete");
+                                //Remove the component from the table
+                                newRow.remove();
+                            });
+                        }
+                        if (noButton) {
+                            noButton.addEventListener('click', () => {
+                                closeModal('delete-item-backdrop');
+                            });
+                        }
+                    }
+                });
+            }
+            acc.appendChild(newRow);
             return acc;
         }, document.createElement('tbody'));
         currentInventoryTable.appendChild(tableBody);
