@@ -159,10 +159,7 @@ async function loadHeader(partentPage: string, currentPage: string): Promise<voi
         const response = await fetch(githubTemplateBaseURL + 'header.html');
         if (!response.ok) {
             console.error(`${response.status}: ${response.statusText}`);
-            console.warn(response)
-            console.warn(githubTemplateBaseURL + 'header.html')
         }
-        console.log(githubTemplateBaseURL + 'header.html')
         //Wait while the app converts the data to a string to pass to innerHTML
         const headerData = await response.text();
         //Create the header element and set the header HTML
