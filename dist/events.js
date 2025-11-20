@@ -88,6 +88,6 @@ function checkIfSignedIn() {
         eventsHeader.appendChild(createNewEventButton);
     }
 }
-initializeApp('Upcoming Events');
+initializeApp('Upcoming Events', 'Upcoming Events');
 checkIfSignedIn();
 loadEvents();

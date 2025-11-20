@@ -93,7 +93,7 @@ function checkIfSignedIn() {
     }
 }
 
-initializeApp('Upcoming Events');
+initializeApp('Upcoming Events', 'Upcoming Events');
 
 checkIfSignedIn();
 loadEvents();
