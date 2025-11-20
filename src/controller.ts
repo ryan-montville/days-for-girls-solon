@@ -129,7 +129,7 @@ export function getDistributedInventoryLog(): InventoryEntry[] {
 }
 
 //Returns distributed log entry matching entry ID
-export function getDistributedLogEnry(entryId: number): InventoryEntry | null {
+export function getDistributedLogEntry(entryId: number): InventoryEntry | null {
     const distribtedInventoryLog: InventoryEntry[] = getArrayFromLocalStorgae("distributedInventory");
     const entry: InventoryEntry | undefined = distribtedInventoryLog.find(entry => entry['entryId'] === entryId);
     if (entry) return entry;
@@ -150,7 +150,7 @@ export function addDistributedEntryLog(logEntry: InventoryEntry) {
 export function deleteDistributedEntry(entryId: number) {
     let distribtedInventoryLog: InventoryEntry[] = getArrayFromLocalStorgae("distributedInventory");
     const updatedDistributedLog = distribtedInventoryLog.filter(entry => entry['entryId'] !== entryId);
-    const logEntry = getDistributedLogEnry(entryId);
+    const logEntry = getDistributedLogEntry(entryId);
     //Update the current inventory count for the component
     if (logEntry) updateComponentInventoryQuantity(logEntry['componentType'], "add", logEntry['quantity']);
     updateLocalStorage("distributedInventory", updatedDistributedLog);

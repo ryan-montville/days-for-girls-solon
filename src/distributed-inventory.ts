@@ -1,7 +1,11 @@
-import { addITemToTable, createTable, createMessage, createDeleteModal, clearMessages, closeModal,
-    displayLoadingMessage, fixDate, populateComponteTypeSelect, trapFocus } from "./utils.js";
-import { addDistributedEntryLog, CheckInventoryForDistribution, deleteDistributedEntry,
-    getNextDistributedEntryId, getDistributedInventoryLog } from "./controller.js";
+import {
+    createTableRow, createTable, createMessage, createDeleteModal, clearMessages, closeModal,
+    displayLoadingMessage, fixDate, populateComponteTypeSelect, trapFocus
+} from "./utils.js";
+import {
+    addDistributedEntryLog, CheckInventoryForDistribution, deleteDistributedEntry,
+    getNextDistributedEntryId, getDistributedInventoryLog
+} from "./controller.js";
 import { initializeApp } from "./app.js";
 import { InventoryEntry } from "./models.js";
 
@@ -9,6 +13,41 @@ import { InventoryEntry } from "./models.js";
 const distributeInventoryModal = document.getElementById('distribute-inventory-modal') as HTMLFormElement;
 const distributeInventoryBackdrop = document.getElementById('distribute-inventory-backdrop') as HTMLElement;
 const previousEntriesCard = document.getElementById('previous-entries-card') as HTMLElement;
+
+function addNewRow(newEntry: InventoryEntry) {
+    //Create a new row for the table with the entry details
+    const newRow = createTableRow(newEntry, 5, "distributedEntry", 'shortDate');
+    //Add an event Listner to the entry's delete button
+    const deleteButton = newRow.querySelector("button");
+    if (deleteButton) {
+        deleteButton.addEventListener('click', () => {
+            //Create/open the modal and get the button row to add event lsiteners
+            const buttonRow = createDeleteModal(newEntry, `Are you sure you want to delete this entry?`);
+            if (buttonRow) {
+                const noButton = buttonRow.children[0];
+                const yesButton = buttonRow.children[1];
+                if (yesButton) {
+                    yesButton.addEventListener('click', () => {
+                        //Delete the log entry
+                        deleteDistributedEntry(newEntry['entryId']);
+                        //Close the delete modal
+                        closeModal('delete-item-backdrop');
+                        //Create a message saying the log entry has been deleted
+                        createMessage(`Deleted entry ${fixDate(newEntry['entryDate'].toString(), 'shortDate')}: ${newEntry['quantity']} ${newEntry['componentType']} to ${newEntry['destination']}`, "main-message", "delete");
+                        //Remove the entry from the table
+                        newRow.remove();
+                    });
+                }
+                if (noButton) {
+                    noButton.addEventListener('click', () => {
+                        closeModal('delete-item-backdrop');
+                    });
+                }
+            }
+        });
+    }
+    return newRow;
+}
 
 function loadPreviousEntries() {
     const distributedInventoryData: InventoryEntry[] = getDistributedInventoryLog();
@@ -35,41 +74,13 @@ function loadPreviousEntries() {
         const previousEntriesTable = createTable('previous-entries-table', tableColumnHeaders);
         let tableBody = distributedInventoryData.reduceRight((acc: HTMLElement, currentItem: InventoryEntry) => {
             //Create a row for the current item
-            const newRow = addITemToTable(currentItem, 5, "distributedEntry", 'shortDate');
-            //Get the delete button and add an event listener
-            const deleteButton = newRow.querySelector("button");
-            if (deleteButton) {
-                deleteButton.addEventListener('click', () => {
-                    //Create/open the modal and get the button row to add event lsiteners
-                    const buttonRow = createDeleteModal(currentItem, `Are you sure you want to delete this entry?`);
-                    if (buttonRow) {
-                        const noButton = buttonRow.children[0];
-                        const yesButton = buttonRow.children[1];
-                        if (yesButton) {
-                            yesButton.addEventListener('click', () => {
-                                //Delete the log entry
-                                deleteDistributedEntry(currentItem['entryId']);
-                                //Close the delete modal
-                                closeModal('delete-item-backdrop');
-                                //Create a message saying the log entry has been deleted
-                                createMessage(`Deleted entry ${fixDate(currentItem['entryDate'].toString(), 'shortDate')}: ${currentItem['quantity']} ${currentItem['componentType']} to ${currentItem['destination']}`, "main-message", "delete");
-                                //Remove the entry from the table
-                                newRow.remove();
-                            });
-                        }
-                        if (noButton) {
-                            noButton.addEventListener('click', () => {
-                                closeModal('delete-item-backdrop');
-                            });
-                        }
-                    }
-                });
-            }
+            const newRow = addNewRow(currentItem)
             acc.appendChild(newRow);
             return acc;
         }, document.createElement('tbody'));
+        tableBody.setAttribute('id', 'distributedTableBody');
         previousEntriesTable.appendChild(tableBody);
-        loadingDiv.remove();  
+        loadingDiv.remove();
         previousEntriesCard.appendChild(previousEntriesTable);
     }
 }
@@ -115,7 +126,7 @@ function submitData() {
         if (quantity < 1) {
             createMessage("Please enter a quantity greater that 0", "distribute-modal-message", "error");
             return;
-        } else if(!checkInventory.hasEnough) {
+        } else if (!checkInventory.hasEnough) {
             createMessage(`Error: There are only ${checkInventory.quantity} ${newEntry['componentType']} currently in inventory`, "distribute-modal-message", "error");
             return;
         } else {
@@ -134,7 +145,16 @@ function submitData() {
     addDistributedEntryLog(newEntry);
     closeModal('distribute-inventory-backdrop');
     createMessage("The inventory has successfully been updated", "main-message", "check_circle");
-    loadPreviousEntries();
+    //Get the distributed log table body
+    const distributedTableBody = document.getElementById('distributedTableBody');
+    if (distributedTableBody) {
+        //If the table body exists, add the new row to the top of the table
+        const newRow = addNewRow(newEntry);
+        distributedTableBody.prepend(newRow);
+    } else {
+        //If the table body does not exist, create/load the table
+        loadPreviousEntries();
+    }
 
 }
 

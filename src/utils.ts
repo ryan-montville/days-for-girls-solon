@@ -1,10 +1,10 @@
 import { Event, SignUpEntry, ComponentItem, InventoryEntry } from "./models";
-import { deleteComponentType, deleteDistributedEntry, deleteDonatedEntry, deleteEvent, deleteSignUpEntry, getEvent, getComponent, getDistributedLogEnry, getDonatedLogEntry, getSignUpEntry } from "./controller.js";
-import { doc } from "firebase/firestore";
+import { deleteComponentType, deleteDistributedEntry, deleteDonatedEntry, deleteEvent, deleteSignUpEntry, getEvent, 
+    getComponent, getDistributedLogEntry, getDonatedLogEntry, getSignUpEntry } from "./controller.js";
 
 type TableItem = SignUpEntry | ComponentItem | InventoryEntry | {};
 
-export function addITemToTable(item: TableItem, numCells: number, itemType: string, dateFormat?: string): HTMLElement {
+export function createTableRow(item: TableItem, numCells: number, itemType: string, dateFormat?: string): HTMLElement {
     //Turn the item into arrays of its keys and values
     const itemKeys = Object.keys(item);
     const itemValues = Object.values(item)
@@ -38,12 +38,10 @@ export function addITemToTable(item: TableItem, numCells: number, itemType: stri
         let deleteButtonCell = document.createElement('td');
         let deleteButton = document.createElement('button');
         deleteButton.setAttribute('type', 'button');
-        deleteButton.setAttribute('class', 'material-symbols-outlined');
+        deleteButton.setAttribute('class', 'material-symbols-outlined deleteButton');
+        deleteButton.setAttribute('id', itemValues[0])
         let deleteText = document.createTextNode('delete');
         deleteButton.appendChild(deleteText);
-        // deleteButton.addEventListener('click', () => {
-        //     deleteItem(itemValues[0], itemType);
-        // });
         deleteButtonCell.appendChild(deleteButton);
         newRow.appendChild(deleteButtonCell);
     }

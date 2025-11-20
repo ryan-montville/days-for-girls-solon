@@ -1,10 +1,44 @@
-import { addITemToTable, createTable, createMessage, createDeleteModal, clearMessages, closeModal, displayLoadingMessage, fixDate, populateComponteTypeSelect, trapFocus } from "./utils.js";
+import { createTableRow, createTable, createMessage, createDeleteModal, clearMessages, closeModal, displayLoadingMessage, fixDate, populateComponteTypeSelect, trapFocus } from "./utils.js";
 import { addDonatedEntryLog, deleteDonatedEntry, getDoantedInventoryLog, getNextDonatedEntryId } from "./controller.js";
 import { initializeApp } from "./app.js";
 //Page Elements
 const addInventoryModalBackdrop = document.getElementById('add-inventory-backdrop');
 const addInventoryModal = document.getElementById('add-inventory-modal');
 const previousEntriesCard = document.getElementById('previous-entries-card');
+function addNewRow(newEntry) {
+    //Create a new row for the table with the entry details
+    const newRow = createTableRow(newEntry, 5, "donatedEntry", 'shortDate');
+    //Add an event Listner to the entry's delete button
+    const deleteButton = newRow.querySelector("button");
+    if (deleteButton) {
+        deleteButton.addEventListener('click', () => {
+            //Create/open the modal and get the button row to add event lsiteners
+            const buttonRow = createDeleteModal(newEntry, `Are you sure you want to delete this entry?`);
+            if (buttonRow) {
+                const noButton = buttonRow.children[0];
+                const yesButton = buttonRow.children[1];
+                if (yesButton) {
+                    yesButton.addEventListener('click', () => {
+                        //Delete the log entry
+                        deleteDonatedEntry(newEntry['entryId']);
+                        //Close the delete modal
+                        closeModal('delete-item-backdrop');
+                        //Create a message saying the log entry has been deleted
+                        createMessage(`Deleted entry ${fixDate(newEntry['entryDate'].toString(), 'shortDate')}: ${newEntry['quantity']} ${newEntry['componentType']} from ${newEntry['whoDonated']}`, "main-message", "delete");
+                        //Remove the entry from the table
+                        newRow.remove();
+                    });
+                }
+                if (noButton) {
+                    noButton.addEventListener('click', () => {
+                        closeModal('delete-item-backdrop');
+                    });
+                }
+            }
+        });
+    }
+    return newRow;
+}
 function loadPreviousEntries() {
     const donateInventoryData = getDoantedInventoryLog();
     /*Temporary solution to clear the card when form submit. Will update submitData() to
@@ -29,39 +63,11 @@ function loadPreviousEntries() {
         const tableColumnHeaders = ['Date', 'Component', 'Quantity', 'Destination', 'Delete'];
         const previousEntriesTable = createTable('previous-entries-table', tableColumnHeaders);
         let tableBody = donateInventoryData.reduceRight((acc, currentItem) => {
-            const newRow = addITemToTable(currentItem, 5, "donatedEntry", 'shortDate');
-            //Get the delete button and add an event listener
-            const deleteButton = newRow.querySelector("button");
-            if (deleteButton) {
-                deleteButton.addEventListener('click', () => {
-                    //Create/open the modal and get the button row to add event lsiteners
-                    const buttonRow = createDeleteModal(currentItem, `Are you sure you want to delete this entry?`);
-                    if (buttonRow) {
-                        const noButton = buttonRow.children[0];
-                        const yesButton = buttonRow.children[1];
-                        if (yesButton) {
-                            yesButton.addEventListener('click', () => {
-                                //Delete the log entry
-                                deleteDonatedEntry(currentItem['entryId']);
-                                //Close the delete modal
-                                closeModal('delete-item-backdrop');
-                                //Create a message saying the log entry has been deleted
-                                createMessage(`Deleted entry ${fixDate(currentItem['entryDate'].toString(), 'shortDate')}: ${currentItem['quantity']} ${currentItem['componentType']} from ${currentItem['whoDonated']}`, "main-message", "delete");
-                                //Remove the entry from the table
-                                newRow.remove();
-                            });
-                        }
-                        if (noButton) {
-                            noButton.addEventListener('click', () => {
-                                closeModal('delete-item-backdrop');
-                            });
-                        }
-                    }
-                });
-            }
+            const newRow = addNewRow(currentItem);
             acc.appendChild(newRow);
             return acc;
         }, document.createElement('tbody'));
+        tableBody.setAttribute('id', 'donatedTableBody');
         previousEntriesTable.appendChild(tableBody);
         loadingDiv.remove();
         previousEntriesCard.appendChild(previousEntriesTable);
@@ -130,7 +136,17 @@ function submitData() {
     //Clear the form
     addInventoryModal.reset();
     createMessage("The inventory has successfully been updated", "main-message", "check_circle");
-    loadPreviousEntries();
+    //Get the donated log table body
+    const donatedTableBody = document.getElementById('donatedTableBody');
+    if (donatedTableBody) {
+        //If the table body exists, add the new row to the top of the table
+        const newRow = addNewRow(newEntry);
+        donatedTableBody.prepend(newRow);
+    }
+    else {
+        //If the table body does not exist, create/load the table
+        loadPreviousEntries();
+    }
 }
 initializeApp('Inventory', 'Donated Inventory');
 //Event listener for add inventory form submit

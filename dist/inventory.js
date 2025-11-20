@@ -1,5 +1,5 @@
 import { initializeApp } from "./app.js";
-import { addITemToTable, createTable, createMessage, createDeleteModal, clearMessages, closeModal, fixDate, trapFocus } from "./utils.js";
+import { createTableRow, createTable, createMessage, createDeleteModal, clearMessages, closeModal, fixDate, trapFocus } from "./utils.js";
 import { addComponentTypeToInventory, deleteComponentType, getCurrentInventory, getDistributedInventoryLog, getDoantedInventoryLog, getNextCurrentInventoryId } from "./controller.js";
 //Page elements
 const generateForm = document.getElementById('generateForm');
@@ -7,6 +7,40 @@ const mainContent = document.getElementById('maincontent');
 const currentInventoryCard = document.getElementById('current-inventory-card');
 const manageInventoryBackdrop = document.getElementById('manage-inventory-backdrop');
 const manageInventoryModal = document.getElementById('manage-inventory-modal');
+function addNewRow(newComponent) {
+    //Create a new row for the table with the component details
+    const newRow = createTableRow(newComponent, 3, "componentItem");
+    //Add an event listener to the components delete button
+    const deleteButton = newRow.querySelector("button");
+    if (deleteButton) {
+        deleteButton.addEventListener('click', () => {
+            //Create/open the modal and get the button row to add event lsiteners
+            const buttonRow = createDeleteModal(newComponent, `Are you sure you want to delete this component?`);
+            if (buttonRow) {
+                const noButton = buttonRow.children[0];
+                const yesButton = buttonRow.children[1];
+                if (yesButton) {
+                    yesButton.addEventListener('click', () => {
+                        //Delete the component
+                        deleteComponentType(newComponent['componentId']);
+                        //Close the delete modal
+                        closeModal('delete-item-backdrop');
+                        //Create a message saying the component has been deleted
+                        createMessage(`Deleted component "${newComponent['componentType']}"`, "main-message", "delete");
+                        //Remove the component from the table
+                        newRow.remove();
+                    });
+                }
+                if (noButton) {
+                    noButton.addEventListener('click', () => {
+                        closeModal('delete-item-backdrop');
+                    });
+                }
+            }
+        });
+    }
+    return newRow;
+}
 function loadCurrentInventory() {
     const currrentInventoryArray = getCurrentInventory();
     if (currrentInventoryArray.length === 0) {
@@ -21,38 +55,11 @@ function loadCurrentInventory() {
         const tableColumnHeaders = ['Component', 'Quantity', 'Delete'];
         const currentInventoryTable = createTable('current-inventory-table', tableColumnHeaders);
         const tableBody = currrentInventoryArray.reduce((acc, currentComponent) => {
-            const newRow = addITemToTable(currentComponent, 3, "componentItem");
-            const deleteButton = newRow.querySelector("button");
-            if (deleteButton) {
-                deleteButton.addEventListener('click', () => {
-                    //Create/open the modal and get the button row to add event lsiteners
-                    const buttonRow = createDeleteModal(currentComponent, `Are you sure you want to delete this component?`);
-                    if (buttonRow) {
-                        const noButton = buttonRow.children[0];
-                        const yesButton = buttonRow.children[1];
-                        if (yesButton) {
-                            yesButton.addEventListener('click', () => {
-                                //Delete the component
-                                deleteComponentType(currentComponent['componentId']);
-                                //Close the delete modal
-                                closeModal('delete-item-backdrop');
-                                //Create a message saying the component has been deleted
-                                createMessage(`Deleted component "${currentComponent['componentType']}"`, "main-message", "delete");
-                                //Remove the component from the table
-                                newRow.remove();
-                            });
-                        }
-                        if (noButton) {
-                            noButton.addEventListener('click', () => {
-                                closeModal('delete-item-backdrop');
-                            });
-                        }
-                    }
-                });
-            }
+            const newRow = addNewRow(currentComponent);
             acc.appendChild(newRow);
             return acc;
         }, document.createElement('tbody'));
+        tableBody.setAttribute('id', 'currentInventoryTableBody');
         currentInventoryTable.appendChild(tableBody);
         currentInventoryCard.appendChild(currentInventoryTable);
     }
@@ -241,9 +248,20 @@ function addNewComponentType(formData) {
         createMessage(`Added '${newComponent['componentType']}' to inventory`, "main-message", "check_circle");
         //Update current inventory table
         closeModal('manage-inventory-backdrop');
+        //Get the current Inventory table body
+        const currentInventoryTableBody = document.getElementById('currentInventoryTableBody');
+        if (currentInventoryTableBody) {
+            //If the table body exists, add the new row to the top of the table
+            const newRow = addNewRow(newComponent);
+            currentInventoryTableBody.appendChild(newRow);
+        }
+        else {
+            //If the table body does not exist, create/load the table
+            loadCurrentInventory();
+        }
     }
 }
-initializeApp('Inventory');
+initializeApp('Inventory', 'Inventory');
 //Event listener for button to open Manage Inventory Modal
 const openMangeInventoryButton = document.getElementById('add-new-type');
 openMangeInventoryButton.addEventListener('click', () => {

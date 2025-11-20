@@ -1,4 +1,4 @@
-export function addITemToTable(item, numCells, itemType, dateFormat) {
+export function createTableRow(item, numCells, itemType, dateFormat) {
     //Turn the item into arrays of its keys and values
     const itemKeys = Object.keys(item);
     const itemValues = Object.values(item);
@@ -34,12 +34,10 @@ export function addITemToTable(item, numCells, itemType, dateFormat) {
         let deleteButtonCell = document.createElement('td');
         let deleteButton = document.createElement('button');
         deleteButton.setAttribute('type', 'button');
-        deleteButton.setAttribute('class', 'material-symbols-outlined');
+        deleteButton.setAttribute('class', 'material-symbols-outlined deleteButton');
+        deleteButton.setAttribute('id', itemValues[0]);
         let deleteText = document.createTextNode('delete');
         deleteButton.appendChild(deleteText);
-        // deleteButton.addEventListener('click', () => {
-        //     deleteItem(itemValues[0], itemType);
-        // });
         deleteButtonCell.appendChild(deleteButton);
         newRow.appendChild(deleteButtonCell);
     }
