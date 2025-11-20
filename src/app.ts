@@ -2,6 +2,7 @@ import { createMessage, closeModal, trapFocus, updateLocalStorage } from "./util
 
 const pageWrapper = document.getElementById('page-wrapper') as HTMLElement;
 let mobileNavToggle = document.getElementById('mobile-nav-toggle') as HTMLElement;
+const githubTemplateBaseURL = "https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/";
 
 export async function initializeApp(partentPage: string, currentPage: string) {
     //Wait for the DOM to load
@@ -155,7 +156,7 @@ async function loadHeader(partentPage: string, currentPage: string): Promise<voi
     const headerPlaceholder = document.getElementById('header-placeholder') as HTMLElement;
     try {
         //Get the header html from the header file
-        const response = await fetch('../header.html');
+        const response = await fetch(githubTemplateBaseURL + 'header.html');
         if (!response.ok) {
             console.error(`${response.status}: ${response.statusText}`);
         }
@@ -183,7 +184,7 @@ async function loadFooter(): Promise<void> {
     const footerPlaceholder = document.getElementById('footer-placeholder') as HTMLElement;
     try {
         //Get the footer html from the footer file
-        const response = await fetch('../footer.html');
+        const response = await fetch(githubTemplateBaseURL + 'footer.html');
         if (!response.ok) {
             console.error(`${response.status}: ${response.statusText}`);
         }
@@ -204,7 +205,7 @@ async function loadModals() {
     const modalPlaceholder = document.getElementById('modal-placeholder') as HTMLElement;
     try {
         //Get the modal html from the modal file
-        const response = await fetch('../modal.html');
+        const response = await fetch(githubTemplateBaseURL + 'modal.html');
         if (!response.ok) {
             console.error(`${response.status}: ${response.statusText}`);
         }
@@ -249,7 +250,7 @@ function signOut() {
     openSignInModal.style.display = 'block';
 }
 
-//check if signed in
+//check if user is signed in
 function checkIfSignedIn() {
     const inventoryLink = document.getElementById('inventory-link') as HTMLElement;
     let username = localStorage.getItem("username");

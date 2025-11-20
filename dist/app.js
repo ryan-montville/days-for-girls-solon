@@ -1,6 +1,7 @@
 import { createMessage, closeModal, trapFocus, updateLocalStorage } from "./utils.js";
 const pageWrapper = document.getElementById('page-wrapper');
 let mobileNavToggle = document.getElementById('mobile-nav-toggle');
+const githubTemplateBaseURL = "https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/";
 export async function initializeApp(partentPage, currentPage) {
     //Wait for the DOM to load
     await new Promise(resolve => {
@@ -150,7 +151,7 @@ async function loadHeader(partentPage, currentPage) {
     const headerPlaceholder = document.getElementById('header-placeholder');
     try {
         //Get the header html from the header file
-        const response = await fetch('../header.html');
+        const response = await fetch(githubTemplateBaseURL + 'header.html');
         if (!response.ok) {
             console.error(`${response.status}: ${response.statusText}`);
         }
@@ -178,7 +179,7 @@ async function loadFooter() {
     const footerPlaceholder = document.getElementById('footer-placeholder');
     try {
         //Get the footer html from the footer file
-        const response = await fetch('../footer.html');
+        const response = await fetch(githubTemplateBaseURL + 'footer.html');
         if (!response.ok) {
             console.error(`${response.status}: ${response.statusText}`);
         }
@@ -199,7 +200,7 @@ async function loadModals() {
     const modalPlaceholder = document.getElementById('modal-placeholder');
     try {
         //Get the modal html from the modal file
-        const response = await fetch('../modal.html');
+        const response = await fetch(githubTemplateBaseURL + 'modal.html');
         if (!response.ok) {
             console.error(`${response.status}: ${response.statusText}`);
         }
@@ -241,7 +242,7 @@ function signOut() {
     navSignOutButton.style.display = 'none';
     openSignInModal.style.display = 'block';
 }
-//check if signed in
+//check if user is signed in
 function checkIfSignedIn() {
     const inventoryLink = document.getElementById('inventory-link');
     let username = localStorage.getItem("username");
