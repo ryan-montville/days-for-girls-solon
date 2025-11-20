@@ -1,5 +1,6 @@
 import { createMessage, clearMessages, fixDate } from "./utils.js";
 import { addSignUpEntry, getEvent, getNextSignUpId } from "./controller.js";
+import { initializeApp } from "./app.js";
 import { SignUpEntry, Event } from "./models.js";
 
 
@@ -106,6 +107,8 @@ if (!eventObject) {
 } else {
     setEventInfo(eventObject);
 }
+
+initializeApp('Upcoming Events', 'Event Sign Up');
 
 signUpForm.addEventListener('submit', (e) => {
     e.preventDefault();

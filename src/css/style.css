@@ -125,10 +125,6 @@ nav a:hover {
     border: 0;
 }
 
-#inventory-link {
-    display: none;
-}
-
 #sign-out-button {
     display: none;
 }

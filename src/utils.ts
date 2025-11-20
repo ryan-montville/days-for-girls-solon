@@ -1,5 +1,6 @@
 import { Event, SignUpEntry, ComponentItem, InventoryEntry } from "./models";
 import { deleteComponentType, deleteDistributedEntry, deleteDonatedEntry, deleteEvent, deleteSignUpEntry, getEvent, getComponent, getDistributedLogEnry, getDonatedLogEntry, getSignUpEntry } from "./controller.js";
+import { doc } from "firebase/firestore";
 
 type TableItem = SignUpEntry | ComponentItem | InventoryEntry | {};
 

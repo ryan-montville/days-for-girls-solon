@@ -1,4 +1,5 @@
-import { clearMessages, createMessage, updateLocalStorage } from "./utils.js";
+import { clearMessages, createMessage } from "./utils.js";
+import { initializeApp } from "./app.js";
 import { createNewEvent, getNextEventId } from "./controller.js";
 import { Event } from "./models";
 
@@ -65,6 +66,8 @@ function submitData() {
     //Create a message saying event was sucessfully created
     window.location.href = 'events.html';
 }
+
+initializeApp('Upcoming Events', 'Create Event');
 
 //Create form submit event listener
 createForm.addEventListener('submit', (e) => {

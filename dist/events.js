@@ -1,3 +1,4 @@
+import { initializeApp } from "./app.js";
 import { fixDate } from "./utils.js";
 import { getEventsList } from "./controller.js";
 let isUserSignedIn = false;
@@ -87,5 +88,6 @@ function checkIfSignedIn() {
         eventsHeader.appendChild(createNewEventButton);
     }
 }
+initializeApp('Upcoming Events');
 checkIfSignedIn();
 loadEvents();

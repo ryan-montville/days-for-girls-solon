@@ -1,4 +1,5 @@
 import { createMessage, clearMessages } from "./utils.js";
+import { initializeApp } from "./app.js";
 let mailingListForm = document.getElementById('mailing-list-form');
 function submitData() {
     clearMessages();
@@ -73,6 +74,7 @@ function submitData() {
         alert(alertMessage);
     }
 }
+initializeApp('Mailing List', 'Mailing List');
 mailingListForm.addEventListener('submit', (e) => {
     e.preventDefault();
     clearMessages();

@@ -2,6 +2,7 @@ import { addITemToTable, createTable, createMessage, createDeleteModal, clearMes
     displayLoadingMessage, fixDate, populateComponteTypeSelect, trapFocus } from "./utils.js";
 import { addDistributedEntryLog, CheckInventoryForDistribution, deleteDistributedEntry,
     getNextDistributedEntryId, getDistributedInventoryLog } from "./controller.js";
+import { initializeApp } from "./app.js";
 import { InventoryEntry } from "./models.js";
 
 //Page Elements
@@ -136,6 +137,8 @@ function submitData() {
     loadPreviousEntries();
 
 }
+
+initializeApp('Inventory', 'Distributed Inventory');
 
 //Event listener for distribute inventory form submit
 distributeInventoryModal.addEventListener('submit', (e) => {

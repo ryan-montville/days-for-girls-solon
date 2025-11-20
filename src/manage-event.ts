@@ -3,6 +3,7 @@ import {
     fixDate, trapFocus
 } from "./utils.js";
 import { deleteEvent, deleteSignUpEntry, getEvent, getSignUpsForEventId, updateEvent } from "./controller.js";
+import { initializeApp } from "./app.js";
 import { SignUpEntry, Event } from "./models.js";
 
 //Page Elements
@@ -205,6 +206,8 @@ function populateEntriesTable(eventObject: Event) {
         signUpEntriesCard.appendChild(signUpTable);
     }
 }
+
+initializeApp('Upcoming Events', 'Manage Event');
 
 //If the event doesn't exist, remove cards from page and add an error card
 if (eventObject === null) {

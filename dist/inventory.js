@@ -1,3 +1,4 @@
+import { initializeApp } from "./app.js";
 import { addITemToTable, createTable, createMessage, createDeleteModal, clearMessages, closeModal, fixDate, trapFocus } from "./utils.js";
 import { addComponentTypeToInventory, deleteComponentType, getCurrentInventory, getDistributedInventoryLog, getDoantedInventoryLog, getNextCurrentInventoryId } from "./controller.js";
 //Page elements
@@ -242,6 +243,7 @@ function addNewComponentType(formData) {
         closeModal('manage-inventory-backdrop');
     }
 }
+initializeApp('Inventory');
 //Event listener for button to open Manage Inventory Modal
 const openMangeInventoryButton = document.getElementById('add-new-type');
 openMangeInventoryButton.addEventListener('click', () => {

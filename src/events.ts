@@ -1,4 +1,5 @@
-import { createMessage, fixDate, updateLocalStorage } from "./utils.js";
+import { initializeApp } from "./app.js";
+import { createMessage, fixDate } from "./utils.js";
 import { getEventsList } from "./controller.js";
 import { Event } from "./models.js";
 
@@ -91,6 +92,8 @@ function checkIfSignedIn() {
         eventsHeader.appendChild(createNewEventButton);
     }
 }
+
+initializeApp('Upcoming Events');
 
 checkIfSignedIn();
 loadEvents();

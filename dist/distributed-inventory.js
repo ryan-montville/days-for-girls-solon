@@ -1,5 +1,6 @@
 import { addITemToTable, createTable, createMessage, createDeleteModal, clearMessages, closeModal, displayLoadingMessage, fixDate, populateComponteTypeSelect, trapFocus } from "./utils.js";
 import { addDistributedEntryLog, CheckInventoryForDistribution, deleteDistributedEntry, getNextDistributedEntryId, getDistributedInventoryLog } from "./controller.js";
+import { initializeApp } from "./app.js";
 //Page Elements
 const distributeInventoryModal = document.getElementById('distribute-inventory-modal');
 const distributeInventoryBackdrop = document.getElementById('distribute-inventory-backdrop');
@@ -137,6 +138,7 @@ function submitData() {
     createMessage("The inventory has successfully been updated", "main-message", "check_circle");
     loadPreviousEntries();
 }
+initializeApp('Inventory', 'Distributed Inventory');
 //Event listener for distribute inventory form submit
 distributeInventoryModal.addEventListener('submit', (e) => {
     e.preventDefault();

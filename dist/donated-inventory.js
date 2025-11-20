@@ -1,5 +1,6 @@
 import { addITemToTable, createTable, createMessage, createDeleteModal, clearMessages, closeModal, displayLoadingMessage, fixDate, populateComponteTypeSelect, trapFocus } from "./utils.js";
 import { addDonatedEntryLog, deleteDonatedEntry, getDoantedInventoryLog, getNextDonatedEntryId } from "./controller.js";
+import { initializeApp } from "./app.js";
 //Page Elements
 const addInventoryModalBackdrop = document.getElementById('add-inventory-backdrop');
 const addInventoryModal = document.getElementById('add-inventory-modal');
@@ -131,6 +132,7 @@ function submitData() {
     createMessage("The inventory has successfully been updated", "main-message", "check_circle");
     loadPreviousEntries();
 }
+initializeApp('Inventory', 'Donated Inventory');
 //Event listener for add inventory form submit
 addInventoryModal.addEventListener('submit', (e) => {
     e.preventDefault();

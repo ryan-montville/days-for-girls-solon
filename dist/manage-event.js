@@ -1,5 +1,6 @@
 import { addITemToTable, createMessage, createDeleteModal, createTable, closeModal, fixDate, trapFocus } from "./utils.js";
 import { deleteEvent, deleteSignUpEntry, getEvent, getSignUpsForEventId, updateEvent } from "./controller.js";
+import { initializeApp } from "./app.js";
 //Page Elements
 const signUpEntriesCard = document.getElementById('sign-up-entires-card');
 const deleteEventCard = document.getElementById('deleteEventCard');
@@ -202,6 +203,7 @@ function populateEntriesTable(eventObject) {
         signUpEntriesCard.appendChild(signUpTable);
     }
 }
+initializeApp('Upcoming Events', 'Manage Event');
 //If the event doesn't exist, remove cards from page and add an error card
 if (eventObject === null) {
     createMessage("Could not find event", "main-message", "error");

@@ -1,5 +1,6 @@
 import { ContactEntry } from "./models.js";
 import { createMessage, clearMessages } from "./utils.js";
+import { initializeApp } from "./app.js";
 
 let mailingListForm = document.getElementById('mailing-list-form') as HTMLFormElement;
 
@@ -70,6 +71,8 @@ function submitData() {
         alert(alertMessage);
     }
 }
+
+initializeApp('Mailing List', 'Mailing List');
 
 mailingListForm.addEventListener('submit', (e) => {
     e.preventDefault();
