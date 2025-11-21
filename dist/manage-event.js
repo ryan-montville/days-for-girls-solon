@@ -1,4 +1,4 @@
-import { createTableRow, createMessage, createDeleteModal, createTable, closeModal, fixDate, trapFocus } from "./utils.js";
+import { createButton, createTableRow, createMessage, createDeleteModal, createTable, closeModal, fixDate, trapFocus } from "./utils.js";
 import { deleteEvent, deleteSignUpEntry, getEvent, getSignUpsForEventId, updateEvent } from "./controller.js";
 import { initializeApp } from "./app.js";
 //Page Elements
@@ -52,16 +52,7 @@ function displayEventInfo(eventObject) {
     eventInfoCard.appendChild(eventDescriptionP);
     const buttonRow = document.createElement('section');
     buttonRow.setAttribute('class', 'form-row');
-    const editButton = document.createElement('button');
-    editButton.setAttribute('class', 'primary');
-    editButton.setAttribute('type', 'button');
-    const editIcon = document.createElement('span');
-    editIcon.setAttribute('class', 'material-symbols-outlined');
-    const editIconName = document.createTextNode('edit_calendar');
-    editIcon.appendChild(editIconName);
-    editButton.appendChild(editIcon);
-    const editButtonText = document.createTextNode('Edit Event Info');
-    editButton.appendChild(editButtonText);
+    const editButton = createButton('Edit Event Info', 'button', 'editButton', 'primary', 'edit_calendar');
     editButton.addEventListener('click', () => {
         //Open the edit event modal
         editModalBackdrop.style.display = 'flex';

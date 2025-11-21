@@ -1,7 +1,7 @@
 import { initializeApp } from "./app.js";
 import {
-    createTableRow, createTable, createMessage, createDeleteModal, clearMessages, closeModal,
-    fixDate, trapFocus
+    createButton, createTableRow, createTable, createMessage, createDeleteModal, clearMessages, 
+    closeModal, fixDate, trapFocus
 } from "./utils.js";
 import { InventoryEntry, ComponentItem, ComponentSummary } from "./models.js";
 import {
@@ -221,9 +221,7 @@ function generateReport() {
         //Create button to generate new inventory report
         const formRow = document.createElement('div');
         formRow.setAttribute('class', 'form-row');
-        const newReportButton = document.createElement('button')
-        newReportButton.setAttribute('class', 'primary full');
-        newReportButton.textContent = "Generate New Report";
+        const newReportButton = createButton('Generate New Report', 'button', 'newReport', 'primary fulll');
         newReportButton.addEventListener('click', () => {
             reportCard.remove();
             generateForm.style.display = 'block';
@@ -297,21 +295,13 @@ openMangeInventoryButton.addEventListener('click', () => {
     addNewComponentTypeForm.appendChild(nameInputRow);
     const buttonRow = document.createElement('section');
     buttonRow.setAttribute('class', 'form-row');
-    const cancelButton = document.createElement('button');
-    cancelButton.setAttribute('type', 'button');
-    cancelButton.setAttribute('class', 'secondary');
-    const cancelText = document.createTextNode("Cancel");
-    cancelButton.appendChild(cancelText);
+    const cancelButton = createButton('Cancel', 'button', 'cancelButton', 'secondary');
     cancelButton.addEventListener('click', () => {
         //Close the modal
         closeModal('manage-inventory-backdrop')
     });
     buttonRow.appendChild(cancelButton);
-    const submitButton = document.createElement('button');
-    submitButton.setAttribute('type', 'submit');
-    submitButton.setAttribute('class', 'primary');
-    const submitText = document.createTextNode("Submit");
-    submitButton.appendChild(submitText);
+    const submitButton = createButton('Submit', 'submt', 'submitButton', 'primary');
     buttonRow.appendChild(submitButton);
     addNewComponentTypeForm.appendChild(buttonRow);
     addNewComponentTypeForm.addEventListener('submit', (e) => {
