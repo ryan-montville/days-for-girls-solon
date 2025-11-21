@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/assets/manifest-CCQF4_wR.json">
+    <link rel="icon" type="image/x-icon" href="/assets/favicon-ClxSuC_q.ico">
+    <meta name="theme-color" content="#ff9f00">
+    <title>Days For Girls Solon Team</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Solway:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <script type="module" crossorigin src="/assets/inventory-Dhyfen8b.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/app-DLSjkG7u.js">
+  <link rel="stylesheet" crossorigin href="/assets/app-D1ov-OT-.css">
+</head>
+
+<body>
+    <a href="#maincontent" class="skip-link">Skip to main content</a>
+    <button id="mobile-nav-toggle" class="material-symbols-outlined">menu</button>
+    <div id="page-wrapper">
+        <div id="header-placeholder"></div>
+        <section class="message-wrapper" id="main-message"></section>
+        <main id="maincontent">
+            <section class="button-row">
+                <a href="donated-inventory.html" class="secondary">Donated Inventory</a>
+                <a href="distributed-inventory.html" class="secondary">Distributed inventory</a>
+            </section>
+            <article class="card" id="current-inventory-card">
+                <h2>Current Inventory</h2>
+            </article>
+            <article class="card" id="manage-inventory-card">
+                <h2>Manage Inventory</h2>
+                <div class="form-row">
+                    <button class="secondary" id="add-new-type">Add new component type</button>
+                    <button class=" secondary" id="manage-storage-locations">Manage Storage locations</button>
+                </div>
+            </article>
+            <section class="message-wrapper" id="report-message"></section>
+            <form id="generateForm" class="card">
+                <div class="form-row">
+                    <span>
+                        <label for="startDate">Start Date:</label>
+                        <input type="date" id="startDate" name="startDate" />
+                    </span>
+                    <span>
+                        <label for="endDate">End Date:</label>
+                        <input type="date" id="endDate" name="endDate" />
+                    </span>
+                </div>
+                <div class="form-row">
+                    <button type="submit" id="generate-button" class="primary full">Generate Report</button>
+                </div>
+            </form>
+        </main>
+        <div id="footer-placeholder"></div>
+    </div>
+    <div id="modal-placeholder"></div>
+    <!--Manage Inventory Modal-->
+    <div class="backdrop" id="manage-inventory-backdrop">
+        <section class="message-wrapper" id="manage-inventory-message"></section>
+        <div id="manage-inventory-modal" class="modal" aria-modal="false" role="dialog"></div>
+    </div>
+    <!--Sign In Modal-->
+    <div class="backdrop" id="sign-in-backdrop">
+        <form role="dialog" id="sign-in-modal" aria-modal="false" aria-labelledby="dialog-label" class="modal">
+            <section class="message-wrapper" id="sign-in-message"></section>
+            <h2 id="dialog-label">Sign In</h2>
+            <section class="form-row">
+                <label for="username">Username:</label>
+                <input type="email" id="username" name="username" />
+            </section>
+            <section class="form-row">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" />
+            </section>
+            <section class="form-row">
+                <button type="button" id="close-modal-button" class="secondary">Close</button>
+                <button type="submit" id="form-sign-in-button" class="primary">Sign In</button>
+            </section>
+        </form>
+    </div>
+</body>
+
+</html>
+
+
+
+
