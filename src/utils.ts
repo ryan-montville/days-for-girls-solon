@@ -1,8 +1,27 @@
 import { Event, SignUpEntry, ComponentItem, InventoryEntry } from "./models";
-import { deleteComponentType, deleteDistributedEntry, deleteDonatedEntry, deleteEvent, deleteSignUpEntry, getEvent, 
-    getComponent, getDistributedLogEntry, getDonatedLogEntry, getSignUpEntry } from "./controller.js";
+import {
+    deleteComponentType, deleteDistributedEntry, deleteDonatedEntry, deleteEvent, deleteSignUpEntry, getEvent,
+    getComponent, getDistributedLogEntry, getDonatedLogEntry, getSignUpEntry
+} from "./controller.js";
 
 type TableItem = SignUpEntry | ComponentItem | InventoryEntry | {};
+
+export function createButton(buttonText: string, buttonType: string, buttonId: string, buttonClass: string, icon?: string): HTMLElement {
+    const newButton = document.createElement('button');
+    newButton.setAttribute('type', buttonType);
+    newButton.setAttribute('id', buttonId);
+    newButton.setAttribute('class', buttonClass);
+    if (icon) {
+        const buttonIconSpan = document.createElement('span');
+        buttonIconSpan.setAttribute('class', 'material-symbols-outlined');
+        const buttonIcon = document.createTextNode(icon);
+        buttonIconSpan.appendChild(buttonIcon);
+        newButton.appendChild(buttonIconSpan);
+    }
+    const buttonTextElm = document.createTextNode(buttonText);
+    newButton.appendChild(buttonTextElm);
+    return newButton;
+}
 
 export function createTableRow(item: TableItem, numCells: number, itemType: string, dateFormat?: string): HTMLElement {
     //Turn the item into arrays of its keys and values

@@ -1,3 +1,19 @@
+export function createButton(buttonText, buttonType, buttonId, buttonClass, icon) {
+    const newButton = document.createElement('button');
+    newButton.setAttribute('type', buttonType);
+    newButton.setAttribute('id', buttonId);
+    newButton.setAttribute('class', buttonClass);
+    if (icon) {
+        const buttonIconSpan = document.createElement('span');
+        buttonIconSpan.setAttribute('class', 'material-symbols-outlined');
+        const buttonIcon = document.createTextNode(icon);
+        buttonIconSpan.appendChild(buttonIcon);
+        newButton.appendChild(buttonIconSpan);
+    }
+    const buttonTextElm = document.createTextNode(buttonText);
+    newButton.appendChild(buttonTextElm);
+    return newButton;
+}
 export function createTableRow(item, numCells, itemType, dateFormat) {
     //Turn the item into arrays of its keys and values
     const itemKeys = Object.keys(item);

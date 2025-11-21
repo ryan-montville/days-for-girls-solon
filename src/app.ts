@@ -121,6 +121,12 @@ export async function initializeApp(partentPage: string, currentPage: string) {
 
 }
 
+export function isUserSignedIn(): boolean {
+    const username = localStorage.getItem("username");
+    if (username) return true;
+    return false;
+}
+
 function loadData() {
     //Get inventory data from json file and put into local storage
     fetch('src/inventory.json')
@@ -155,10 +161,11 @@ function loadData() {
 async function loadHeader(partentPage: string, currentPage: string): Promise<void> {
     const headerPlaceholder = document.getElementById('header-placeholder') as HTMLElement;
     try {
-        //Get the header html from the header file
+        //Get the header html from the header file. Using a relative path broke on GitHub pages
         const response = await fetch(githubTemplateBaseURL + 'header.html');
         if (!response.ok) {
             console.error(`${response.status}: ${response.statusText}`);
+            throw new Error("Error fetching header");
         }
         //Wait while the app converts the data to a string to pass to innerHTML
         const headerData = await response.text();
@@ -183,10 +190,11 @@ async function loadHeader(partentPage: string, currentPage: string): Promise<voi
 async function loadFooter(): Promise<void> {
     const footerPlaceholder = document.getElementById('footer-placeholder') as HTMLElement;
     try {
-        //Get the footer html from the footer file
+        //Get the footer html from the footer file. Using a relative path broke on GitHub pages
         const response = await fetch(githubTemplateBaseURL + 'footer.html');
         if (!response.ok) {
             console.error(`${response.status}: ${response.statusText}`);
+            throw new Error("Error fetching footer");
         }
         //Wait while the app converts the data to a string to pass to innerHTML
         const footerData = await response.text();
@@ -204,10 +212,11 @@ async function loadModals() {
     const body = document.querySelector('body') as HTMLElement;
     const modalPlaceholder = document.getElementById('modal-placeholder') as HTMLElement;
     try {
-        //Get the modal html from the modal file
+        //Get the modal html from the modal file. Using a relative path broke on GitHub pages
         const response = await fetch(githubTemplateBaseURL + 'modal.html');
         if (!response.ok) {
             console.error(`${response.status}: ${response.statusText}`);
+            throw new Error("Error fetching modals");
         }
         //Wait while the app converts the data to a string to pass to innerHTML
         const modalData = await response.text();
