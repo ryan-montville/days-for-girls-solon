@@ -1,3 +1,4 @@
+import { getCurrentInventory } from "./controller.js";
 export function createButton(buttonText, buttonType, buttonId, buttonClass, icon) {
     const newButton = document.createElement('button');
     newButton.setAttribute('type', buttonType);
@@ -24,36 +25,31 @@ export function createTableRow(item, numCells, itemType, dateFormat) {
     let newRow = document.createElement('tr');
     //If passed an empty object, the table is empty. Create a row saying the table is empty
     if (itemValuesLength === 0) {
-        let noneCell = document.createElement('td');
+        const noneCell = document.createElement('td');
         noneCell.setAttribute('colspan', numCells.toString());
-        let noneText = document.createTextNode("No items to display");
+        const noneText = document.createTextNode("No items to display");
         noneCell.appendChild(noneText);
         newRow.appendChild(noneCell);
     }
     else {
         //Add the values to a new table row, keyStartIndex skips primary key and foreign key ids
         for (let i = keyStartIndex; i < itemValuesLength; i++) {
-            let newCell = document.createElement('td');
+            const newCell = document.createElement('td');
             if (itemKeys[i] === 'entryDate') {
                 if (dateFormat) {
-                    let dateFixed = fixDate(itemValues[i], dateFormat);
-                    let dateString = document.createTextNode(dateFixed);
+                    const dateFixed = fixDate(itemValues[i], dateFormat);
+                    const dateString = document.createTextNode(dateFixed);
                     newCell.appendChild(dateString);
                 }
             }
             else {
-                let valueString = document.createTextNode(itemValues[i]);
+                const valueString = document.createTextNode(itemValues[i]);
                 newCell.appendChild(valueString);
             }
             newRow.appendChild(newCell);
         }
-        let deleteButtonCell = document.createElement('td');
-        let deleteButton = document.createElement('button');
-        deleteButton.setAttribute('type', 'button');
-        deleteButton.setAttribute('class', 'material-symbols-outlined deleteButton');
-        deleteButton.setAttribute('id', itemValues[0]);
-        let deleteText = document.createTextNode('delete');
-        deleteButton.appendChild(deleteText);
+        const deleteButtonCell = document.createElement('td');
+        const deleteButton = createButton('', 'button', itemValues[0], '', 'delete');
         deleteButtonCell.appendChild(deleteButton);
         newRow.appendChild(deleteButtonCell);
     }
@@ -66,17 +62,17 @@ export function clearMessages() {
     }
 }
 export function closeModal(modalBackdropId) {
-    let modalBackdrop = document.getElementById(modalBackdropId);
-    let modal = modalBackdrop.getElementsByClassName('modal');
+    const modalBackdrop = document.getElementById(modalBackdropId);
+    const modal = modalBackdrop.getElementsByClassName('modal');
     if (modal) {
         modal[0].setAttribute('aria-modal', 'false');
     }
     modalBackdrop.style.display = 'none';
 }
 export function createMessage(message, location, type) {
-    let messageWrapper = document.getElementById(location);
+    const messageWrapper = document.getElementById(location);
     messageWrapper.innerHTML = '';
-    let messageDiv = document.createElement('div');
+    const messageDiv = document.createElement('div');
     if (type === 'check_circle') {
         messageDiv.setAttribute('class', 'success message');
         messageDiv.setAttribute('aria-live', 'polite');
@@ -97,18 +93,14 @@ export function createMessage(message, location, type) {
         messageDiv.setAttribute('aria-live', 'polite');
         console.log(message);
     }
-    let icon = document.createElement('span');
+    const icon = document.createElement('span');
     icon.setAttribute('class', 'material-symbols-outlined');
-    let iconName = document.createTextNode(type);
+    const iconName = document.createTextNode(type);
     icon.appendChild(iconName);
     messageDiv.appendChild(icon);
-    let messageText = document.createTextNode(message);
+    const messageText = document.createTextNode(message);
     messageDiv.appendChild(messageText);
-    let closeButton = document.createElement('button');
-    closeButton.setAttribute('type', 'button');
-    closeButton.setAttribute('class', 'material-symbols-outlined');
-    let closeIcon = document.createTextNode('close');
-    closeButton.appendChild(closeIcon);
+    const closeButton = createButton('', 'button', 'closeButton', '', 'close');
     closeButton.addEventListener('click', () => messageWrapper.innerHTML = '');
     messageDiv.appendChild(closeButton);
     messageWrapper.appendChild(messageDiv);
@@ -135,41 +127,31 @@ export function createDeleteModal(itemToDelete, modalTitle) {
     const deleteItemModal = document.getElementById('delete-item-modal');
     deleteItemModal.innerHTML = '';
     //Display the modal title
-    let deleteMoalH2 = document.createElement('h2');
-    let deleteModalText = document.createTextNode(modalTitle);
+    const deleteMoalH2 = document.createElement('h2');
+    const deleteModalText = document.createTextNode(modalTitle);
     deleteMoalH2.appendChild(deleteModalText);
     deleteItemModal.appendChild(deleteMoalH2);
     //Create an array of the item's keys and values
-    let itemKeys = Object.keys(itemToDelete);
-    let itemValues = Object.values(itemToDelete);
-    let l = itemValues.length;
+    const itemKeys = Object.keys(itemToDelete);
+    const itemValues = Object.values(itemToDelete);
+    const l = itemValues.length;
     //Display the item's key value pairs
     for (let i = 0; i < l; i++) {
-        let keyValueP = document.createElement('p');
+        const keyValueP = document.createElement('p');
         //Don't display the id key/values or event description
         if (!itemKeys[i].includes("Id") && !itemKeys[i].includes("eventDescription")) {
-            let readableKey = itemKeys[i].replace(/([a-z])([A-Z])/g, '$1 $2');
-            let keyValue = document.createTextNode(`${readableKey.toLowerCase()}: ${itemValues[i]}`);
+            const readableKey = itemKeys[i].replace(/([a-z])([A-Z])/g, '$1 $2');
+            const keyValue = document.createTextNode(`${readableKey.toLowerCase()}: ${itemValues[i]}`);
             keyValueP.appendChild(keyValue);
             deleteItemModal.appendChild(keyValueP);
         }
     }
     //Create button row
-    let buttonRow = document.createElement('section');
+    const buttonRow = document.createElement('section');
     buttonRow.setAttribute('class', 'button-row');
-    let noButton = document.createElement('button');
-    noButton.setAttribute('type', 'button');
-    noButton.setAttribute('class', 'secondary');
-    noButton.setAttribute('id', "no");
-    let noButtonText = document.createTextNode("No");
-    noButton.appendChild(noButtonText);
+    const noButton = createButton('No', 'button', 'no', 'secondary');
     buttonRow.appendChild(noButton);
-    let yesButton = document.createElement('button');
-    let yesButtonText = document.createTextNode('Yes');
-    yesButton.appendChild(yesButtonText);
-    yesButton.setAttribute('type', 'button');
-    yesButton.setAttribute('class', 'delete-button');
-    yesButton.setAttribute('id', 'yes');
+    const yesButton = createButton('Yes', 'button', 'yes', 'delete-button');
     buttonRow.appendChild(yesButton);
     deleteItemModal.appendChild(buttonRow);
     noButton.focus();
@@ -177,8 +159,8 @@ export function createDeleteModal(itemToDelete, modalTitle) {
     return buttonRow;
 }
 export function fixDate(dateString, dateFormat) {
-    let dateObj = new Date(dateString);
-    let dateTimezoneFixed = new Date(dateObj.getTime() - dateObj.getTimezoneOffset() * -60000);
+    const dateObj = new Date(dateString);
+    const dateTimezoneFixed = new Date(dateObj.getTime() - dateObj.getTimezoneOffset() * -60000);
     if (dateFormat === 'shortDate') {
         return dateTimezoneFixed.toLocaleDateString('en-US', {
             month: '2-digit',
@@ -195,8 +177,7 @@ export function fixDate(dateString, dateFormat) {
     }
 }
 export function getComponentTypes() {
-    let currentInventoryLocalStorage = localStorage.getItem('currentInventory');
-    let currentInventoryArray = JSON.parse(currentInventoryLocalStorage);
+    const currentInventoryArray = getCurrentInventory();
     let componentTypes = [];
     currentInventoryArray.forEach(component => componentTypes.push(component['componentType']));
     return componentTypes;

@@ -275,3 +275,12 @@ export function getNextCurrentInventoryId() {
 //Add components to location
 //Move components from one location to another
 //Remove components from location when distributed
+/* Donate Page Content */
+//Get the content for the donate page
+export function getDonatePageContent() {
+    const contentData = localStorage.getItem("donatePage");
+    return JSON.parse(contentData);
+}
+export function submitDonatePageContent(pageContent) {
+    updateLocalStorage("donatePage", pageContent);
+}

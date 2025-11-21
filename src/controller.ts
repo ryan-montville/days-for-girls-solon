@@ -226,7 +226,6 @@ export function getNextDonatedEntryId(): number {
 }
 
 /* Current Inventory */
-
 //Returns the current inventory
 export function getCurrentInventory(): ComponentItem[] {
     return getArrayFromLocalStorgae("currentInventory") as ComponentItem[];
@@ -298,3 +297,14 @@ export function getNextCurrentInventoryId(): number {
 //Move components from one location to another
 
 //Remove components from location when distributed
+
+/* Donate Page Content */
+//Get the content for the donate page
+export function getDonatePageContent(): string {
+    const contentData = localStorage.getItem("donatePage") as string;
+    return JSON.parse(contentData);
+}
+
+export function submitDonatePageContent(pageContent: string) {
+    updateLocalStorage("donatePage", pageContent);
+}

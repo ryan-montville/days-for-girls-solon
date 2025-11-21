@@ -1,5 +1,6 @@
 import { initializeApp, isUserSignedIn } from "./app.js";
 import { createButton, createMessage, clearMessages } from "./utils.js";
+import { getDonatePageContent, submitDonatePageContent } from "./controller.js";
 
 initializeApp('Donate', 'Donante');
 
@@ -13,8 +14,28 @@ if (isUserSignedIn()) {
         outputCard.style.display = 'none';
         const editForm = createEditForm();
         mainContent.appendChild(editForm);
-    })
+    });
     outputButtonRow.appendChild(editButton);
+}
+
+function submitData() {
+    clearMessages();
+    const editForm = document.getElementById('editForm') as HTMLFormElement;
+    if (editForm) {
+        const editFormData = new FormData(editForm)
+        const pageContent = editFormData.get('pageContentTextArea');
+        //Validate pageContent
+        if (pageContent === null || pageContent.toString().trim() === '') {
+            createMessage("Please enter the content for the donate page", 'main-message', 'error');
+        } else {
+            submitDonatePageContent(pageContent.toString());
+            editForm.remove();
+            outputCard.style.display = 'block';
+            createMessage("Content Sucessfully updated", 'main-message', 'check_circle');
+        }
+    } else {
+        console.error("Form not found");
+    }
 }
 
 function createEditForm() {
@@ -22,8 +43,9 @@ function createEditForm() {
     editform.setAttribute('id', 'editForm');
     editform.setAttribute('class', 'card');
     const textArea = document.createElement('textarea');
-    //Put page content in text area
-
+    textArea.setAttribute('id', 'pageContentTextArea');
+    textArea.setAttribute('name', 'pageContentTextArea');
+    textArea.value = getDonatePageContent();
     editform.appendChild(textArea);
     const buttonRow = document.createElement('section');
     buttonRow.setAttribute('class', 'form-row');
@@ -34,8 +56,10 @@ function createEditForm() {
     });
     buttonRow.appendChild(cancelButton);
     const submitButton = createButton('Submit', 'submit', 'submitButton', 'primary');
-    //Add event listner here?
-
+    editform.addEventListener('submit', (e) => {
+        e.preventDefault();
+        submitData();
+    })
     buttonRow.appendChild(submitButton);
     editform.appendChild(buttonRow);
     return editform;
