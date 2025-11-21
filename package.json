@@ -4,16 +4,19 @@
   "description": "A web app for the Days for Girls Solon Ohio team",
   "main": "dist/main.js",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch",
-    "start": "npm run watch"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "author": "Ryan Montville",
   "license": "ISC",
   "devDependencies": {
-    "typescript": "^5.9.3"
+    "@types/node": "^24.10.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.4"
   },
   "dependencies": {
-    "firebase": "^12.6.0"
+    "firebase": "^12.6.0",
+    "marked": "^17.0.1"
   }
 }
