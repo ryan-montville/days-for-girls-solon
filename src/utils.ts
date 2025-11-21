@@ -66,6 +66,20 @@ export function clearMessages() {
     }
 }
 
+export function storeMessage(message: string, messageContainer: string, icon: string) {
+    const messageToStore = {message: message, messageContainer: messageContainer, icon: icon};
+    sessionStorage.setItem("message", JSON.stringify(messageToStore));
+}
+
+export function retrieveMessage() {
+    const storedMessage = sessionStorage.getItem("message");
+    if (storedMessage) {
+        const messageToCreate: {message: string, messageContainer: string, icon: string}  = JSON.parse(storedMessage)
+        createMessage(messageToCreate['message'], messageToCreate['messageContainer'], messageToCreate['icon']);
+        sessionStorage.removeItem("message");
+    }
+}
+
 export function closeModal(modalBackdropId: string) {
     const modalBackdrop = document.getElementById(modalBackdropId) as HTMLElement;
     const modal = modalBackdrop.getElementsByClassName('modal');

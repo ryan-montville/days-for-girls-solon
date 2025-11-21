@@ -1,4 +1,4 @@
-import { clearMessages, createMessage } from "./utils.js";
+import { clearMessages, createMessage, storeMessage } from "./utils.js";
 import { initializeApp } from "./app.js";
 import { createNewEvent, getNextEventId } from "./controller.js";
 import { Event } from "./models";
@@ -63,7 +63,9 @@ function submitData() {
         newEvent['eventDescription'] = eventDescriptionValue.toString();
     }
     createNewEvent(newEvent);
-    //Create a message saying event was sucessfully created
+    //Create a message saying event was sucessfully created and store it to be displayed on events page
+    storeMessage(`Sucessfully created event '${newEvent['eventTitle']}'`, 'main-message', 'check_circle');
+    //Redirect to the events page
     window.location.href = 'events.html';
 }
 

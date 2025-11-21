@@ -1,4 +1,4 @@
-import { createMessage, closeModal, trapFocus, updateLocalStorage } from "./utils.js";
+import { createMessage, closeModal, retrieveMessage, trapFocus, updateLocalStorage } from "./utils.js";
 
 const pageWrapper = document.getElementById('page-wrapper') as HTMLElement;
 let mobileNavToggle = document.getElementById('mobile-nav-toggle') as HTMLElement;
@@ -26,6 +26,9 @@ export async function initializeApp(partentPage: string, currentPage: string) {
     const closeModalButton = document.getElementById('close-modal-button') as HTMLElement;
     checkForLocalStorageData();
     checkIfSignedIn();
+
+    //Check to see if there is a message to display
+    retrieveMessage();
 
     //Mobile Nav toggle
     mobileNavToggle.addEventListener('click', () => {

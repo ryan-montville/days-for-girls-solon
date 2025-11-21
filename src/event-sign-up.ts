@@ -1,4 +1,4 @@
-import { createMessage, clearMessages, fixDate } from "./utils.js";
+import { createMessage, storeMessage, clearMessages, fixDate } from "./utils.js";
 import { addSignUpEntry, getEvent, getNextSignUpId } from "./controller.js";
 import { initializeApp } from "./app.js";
 import { SignUpEntry, Event } from "./models.js";
@@ -26,17 +26,17 @@ if (idString) {
 const eventObject: Event | null = getEvent(paramEventId);
 
 function setEventInfo(eventInfo: Event) {
-    let signUpHeader = document.getElementById('sign-up-header') as HTMLElement;
-    let signUpTitleH2 = document.createElement('h2')
-    let signUpTitle = document.createTextNode(`Sign up for ${eventInfo['eventTitle']}`);
+    const signUpHeader = document.getElementById('sign-up-header') as HTMLElement;
+    const signUpTitleH2 = document.createElement('h2')
+    const signUpTitle = document.createTextNode(`Sign up for ${eventInfo['eventTitle']}`);
     signUpTitleH2.appendChild(signUpTitle);
     signUpHeader.appendChild(signUpTitleH2);
-    let dateTimeH3 = document.createElement('h3');
-    let dateTime = document.createTextNode(`${fixDate(eventInfo['eventDate'].toString(), 'longDate')} ${eventInfo['eventTime']}`);
+    const dateTimeH3 = document.createElement('h3');
+    const dateTime = document.createTextNode(`${fixDate(eventInfo['eventDate'].toString(), 'longDate')} ${eventInfo['eventTime']}`);
     dateTimeH3.appendChild(dateTime);
     signUpHeader.appendChild(dateTimeH3)
-    let eventLocationH3 = document.createElement('h3');
-    let eventLocation = document.createTextNode(eventInfo['eventLocation']);
+    const eventLocationH3 = document.createElement('h3');
+    const eventLocation = document.createTextNode(eventInfo['eventLocation']);
     eventLocationH3.appendChild(eventLocation);
     signUpHeader.appendChild(eventLocationH3);
 }
@@ -54,7 +54,7 @@ function submitData() {
     //Get the next entryId. This shouldn't be needed when proper data storage is implemented
     newSignUp['entryId'] = getNextSignUpId();
     //Validate full name input
-    let fullNameValue = signUpFormData.get('fullName');
+    const fullNameValue = signUpFormData.get('fullName');
     if (fullNameValue === null || fullNameValue.toString().trim() === '') {
         createMessage("Please enter your name", "main-message", "error");
         return;
@@ -68,7 +68,7 @@ function submitData() {
         }
     }
     //Validate email
-    let emailValue = signUpFormData.get('email');
+    const emailValue = signUpFormData.get('email');
     if (emailValue === null || emailValue.toString().trim() === '') {
         createMessage("Please enter your email", "main-message", "error");
         return;
@@ -77,32 +77,35 @@ function submitData() {
         newSignUp['email'] = emailValue.toString();
     }
     //Get any comments entered
-    let commentsValue = signUpFormData.get('comments');
+    const commentsValue = signUpFormData.get('comments');
     if (commentsValue) {
         newSignUp['comments'] = commentsValue.toString();
     }
     //Submit the sign up entry
     addSignUpEntry(newSignUp);
-    //window.location.href = 'events.html';
-    //Find a way to pass this message to the events page after the redirect
-    createMessage("You have sucessfully signed up for the event", "main-message", "check_circle");
+    //Store the message to be displayed on the events page
+    if (eventObject) {
+        storeMessage(`You have sucessfully signed up for the event '${eventObject['eventTitle']}'`, "main-message", "check_circle");
+    }
+    //Redirect to the events page
+    window.location.href = 'events.html';
 }
 
 if (!eventObject) {
     createMessage("Could not find event", "main-message", "error");
     signUpForm.remove();
-    let errorCard = document.createElement('section');
+    const errorCard = document.createElement('section');
     errorCard.setAttribute('class', 'card');
-    let errorH2 = document.createElement('h2');
-    let errorTite = document.createTextNode("Could not find event");
+    const errorH2 = document.createElement('h2');
+    const errorTite = document.createTextNode("Could not find event");
     errorH2.appendChild(errorTite);
     errorCard.appendChild(errorH2);
-    let errorP = document.createElement('p');
-    let errorMessage = document.createTextNode('The event you were looking for does not exist or the url is incorrect. Please go back to the events page and try again.');
+    const errorP = document.createElement('p');
+    const errorMessage = document.createTextNode('The event you were looking for does not exist or the url is incorrect. Please go back to the events page and try again.');
     errorP.appendChild(errorMessage);
     errorCard.appendChild(errorP);
 
-    let main = document.querySelector('main');
+    const main = document.querySelector('main');
     if (main) main.appendChild(errorCard);
 } else {
     setEventInfo(eventObject);
