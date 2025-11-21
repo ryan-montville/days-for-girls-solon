@@ -11,7 +11,3 @@ Halfway through the semester we had Dev Week where we shareed our progress on ou
 TODO:
 * Proper data storage instead of local storage
 * User authentication
-* Responsive design/mobile view
-* Form validation 
-* Add ability to add new component types to inventory, make component types less hardcoded
-* Add ability to edit/update donate page

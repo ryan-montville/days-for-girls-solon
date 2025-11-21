@@ -5,6 +5,14 @@ initializeApp('Donate', 'Donante');
 const outputCard = document.getElementById('output');
 const mainContent = document.getElementById('maincontent');
 const outputButtonRow = document.getElementById('outputButtonRow');
+function loadDonateContent() {
+    const pageContentSection = document.getElementById('pageContentSection');
+    const updatedContent = document.createElement('section');
+    const contentString = getDonatePageContent();
+    updatedContent.innerHTML = contentString;
+    outputCard.replaceChild(updatedContent, pageContentSection);
+}
+loadDonateContent();
 if (isUserSignedIn()) {
     const editButton = createButton('Edit', 'button', 'editButton', 'secondary', 'edit');
     editButton.addEventListener('click', () => {
@@ -27,6 +35,7 @@ function submitData() {
         else {
             submitDonatePageContent(pageContent.toString());
             editForm.remove();
+            loadDonateContent();
             outputCard.style.display = 'block';
             createMessage("Content Sucessfully updated", 'main-message', 'check_circle');
         }
