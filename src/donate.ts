@@ -1,7 +1,7 @@
 import { initializeApp, isUserSignedIn } from "./app.js";
 import { createButton, createMessage, clearMessages } from "./utils.js";
 import { getDonatePageContent, submitDonatePageContent } from "./controller.js";
-// import { marked } from 'marked';
+import { marked } from 'marked';
 
 initializeApp('Donate', 'Donante');
 
@@ -14,12 +14,11 @@ async function loadDonateContent() {
     const updatedContent = document.createElement('section');
     let contentString = getDonatePageContent();
     if (!contentString) {
-        contentString = "testing";
+        contentString = "## No content Found";
     }
-    console.log(contentString);
     //Use Marked.js to convert the markdown to HTML
-    // const contentHTML = await marked.parse(contentString);
-    // updatedContent.innerHTML = contentHTML;
+    const contentHTML = await marked.parse(contentString);
+    updatedContent.innerHTML = contentHTML;
     outputCard.replaceChild(updatedContent, pageContentSection);
 }
 
