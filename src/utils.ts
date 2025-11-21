@@ -52,7 +52,7 @@ export function createTableRow(item: TableItem, numCells: number, itemType: stri
             newRow.appendChild(newCell);
         }
         const deleteButtonCell = document.createElement('td');
-        const deleteButton = createButton('', 'button', itemValues[0], '', 'delete');
+        const deleteButton = createButton('', 'button', itemValues[0], 'delete-button-icon', 'delete');
         deleteButtonCell.appendChild(deleteButton);
         newRow.appendChild(deleteButtonCell);
     }

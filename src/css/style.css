@@ -3,7 +3,9 @@
     :root {
         --body-background: #e7e9f1;
         --primary-accent: #ff9f00;
+        --primary-hover: #cc7f00;
         --secondary-accent: #00bcd9;
+        --secondary-hover: #008b9e;
         --message-text: white;
         --error-background: #b81f24;
         --success-background: green;
@@ -20,7 +22,9 @@
     :root {
         --body-background: #000000;
         --primary-accent: #ff9f00;
+        --primary-hover: #cc7f00;
         --secondary-accent: #00bcd9;
+        --secondary-hover: #008b9e;
         --message-text: white;
         --error-background: #b81f24;
         --success-background: green;

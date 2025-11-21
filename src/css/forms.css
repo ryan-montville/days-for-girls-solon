@@ -38,9 +38,17 @@ button {
     color: white;
 }
 
+.primary:hover {
+    background-color: var(--primary-hover);
+}
+
 .secondary {
     background-color: var(--secondary-accent);
     color: white;
+}
+
+.secondary:hover {
+    background-color: var(--secondary-hover);
 }
 
 input, select {

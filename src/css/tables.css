@@ -24,3 +24,13 @@ table ol,
 table ul {
     margin: 5px 20px;
 }
+
+.delete-button-icon {
+    background-color: transparent;
+    color: var(--main-text);
+}
+
+.delete-button-icon:hover {
+    background-color: var(--secondary-accent);
+    border-radius: 5px;
+}
