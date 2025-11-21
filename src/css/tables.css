@@ -19,3 +19,8 @@ td {
 tr:nth-child(even) {
     background-color: var(--body-background);
 }
+
+table ol,
+table ul {
+    margin: 5px 20px;
+}

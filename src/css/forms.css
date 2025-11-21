@@ -61,6 +61,10 @@ textarea {
     color: var(--main-text);
 }
 
+#donateContentTextArea {
+    height: 500px;
+}
+
 .full {
     flex-grow: 1;
 }

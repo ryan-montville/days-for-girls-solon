@@ -224,6 +224,14 @@ h4 {
     font-family: "Solway", serif;
 }
 
+blockquote {
+  border-left: 4px solid #ccc;
+  padding-left: 15px;
+  margin: 20px 0;
+  font-style: italic;
+  color: var(--main-text)
+}
+
 .card {
     background-color: var(--main-background);
     border-top: 5px solid var(--primary-accent);
@@ -246,6 +254,12 @@ h4 {
 
 .small a {
     text-align: center;
+}
+
+/* Donate Page */
+#pageContentSection ul,
+#pageContentSection ol {
+    margin: 5px 20px;
 }
 
 /* footer */
@@ -408,6 +422,7 @@ footer a:hover {
         flex-direction: column;
         justify-content: flex-start;
         background-color: var(--main-background);
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
     }
 
     nav a,
