@@ -54,7 +54,7 @@ export default defineConfig({
         background_color: '#e5e5e5',
         display: 'standalone',
         scope: '/days-for-girls-solon/',
-        start_url: '/days-for-girls-solon/',
+        start_url: '/days-for-girls-solon/index.html',
         icons: [
           {
             src: 'https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/images/icon-192.png',
