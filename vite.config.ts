@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   base: '/days-for-girls-solon/',
@@ -20,4 +21,59 @@ export default defineConfig({
       },
     },
   },
+  plugins: [
+    VitePWA({
+      //Web App Manifest configuration
+      registerType: 'autoUpdate',
+      injectRegister: 'auto',
+      //Workbox configuration
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,wasm,json}'],
+        cleanupOutdatedCaches: true,
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) => url.origin === 'https://fonts.googleapis.com',
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'google-fonts-stylesheets',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 365
+              }
+            }
+          }
+        ]
+      },
+      
+      //Manifest.json generation
+      manifest: {
+        name: 'Days for Girls Solon OH',
+        short_name: 'Vite PWA',
+        description: '',
+        theme_color: '#ff9f00',
+        background_color: '#e5e5e5',
+        display: 'standalone',
+        scope: '/days-for-girls-solon/',
+        start_url: '/days-for-girls-solon/',
+        icons: [
+          {
+            src: 'https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/images/icon-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: 'https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/images/icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+          },
+          {
+            src: 'https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/images/icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          }
+        ],
+      }
+    })
+  ],
 });
