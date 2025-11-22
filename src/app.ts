@@ -132,7 +132,7 @@ export function isUserSignedIn(): boolean {
 
 function loadData() {
     //Get inventory data from json file and put into local storage
-    fetch('src/inventory.json')
+    fetch('https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/src/inventory.json')
         .then(data => data.json())
         .then(jsonData => {
             //Adding current inventory data to local storage
@@ -147,7 +147,7 @@ function loadData() {
             console.error(`Error loading inventory data: ${error}`);
         });
     //Get events data from json file and put into local storage
-    fetch('src/events.json')
+    fetch('https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/src/events.json')
         .then(data => data.json())
         .then(jsonData => {
             //Adding events data to local storage
@@ -234,6 +234,15 @@ async function loadModals() {
 }
 
 function checkForLocalStorageData() {
+    //Temp query param to clear local storage
+    const queryString: string = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const clearParam: string | null = urlParams.get('clear');
+    if (clearParam) {
+        if (clearParam === 'true') {
+            localStorage.clear();
+        }
+    }
     //Not sure how this will work once proper data storage is implemented
     const currentInventoryLocalStorage: string | null = localStorage.getItem("currentInventory");
     if (!currentInventoryLocalStorage) {
