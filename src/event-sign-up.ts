@@ -8,22 +8,19 @@ import { SignUpEntry, Event } from "./models.js";
 const signUpForm = document.getElementById('sign-up-form') as HTMLFormElement;
 
 //Get event id from url
-const queryString: string = window.location.search;
-const urlParams = new URLSearchParams(queryString);
+const urlParams = new URLSearchParams(window.location.search);
 const idString: string | null = urlParams.get('id');
-let paramEventId: number = 0;
-if (idString) {
-    const parsedId: number = parseInt(idString, 10);
-    if (!isNaN(parsedId)) {
-        paramEventId = parsedId;
-    } else {
-        createMessage("Could not find event", "main-message", "error");
-    }
-} else {
-    createMessage("Could not find event", "main-message", "error");
-}
+const paramEventId: number = idString ? parseInt(idString) : 0;
+const idIsInvalid: boolean = paramEventId === 0 || isNaN(paramEventId);
+
+initializeApp('Upcoming Events', 'Event Sign Up');
+
 //Get event matching eventId
 const eventObject: Event | null = getEvent(paramEventId);
+//If id is invalid
+if (idIsInvalid || eventObject === null) {
+    createMessage("Could not find event", "main-message", "error");
+}
 
 function setEventInfo(eventInfo: Event) {
     const signUpHeader = document.getElementById('sign-up-header') as HTMLElement;
@@ -110,8 +107,6 @@ if (!eventObject) {
 } else {
     setEventInfo(eventObject);
 }
-
-initializeApp('Upcoming Events', 'Event Sign Up');
 
 signUpForm.addEventListener('submit', (e) => {
     e.preventDefault();

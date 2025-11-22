@@ -12,22 +12,16 @@ const deleteEventCard = document.getElementById('deleteEventCard') as HTMLElemen
 const deleteEventButton = document.getElementById('delete-button') as HTMLElement;
 
 //Get event id from url
-const queryString: string = window.location.search;
-const urlParams = new URLSearchParams(queryString);
+const urlParams = new URLSearchParams(window.location.search);
 const idString: string | null = urlParams.get('id');
-let paramEventId: number = 0;
-if (idString) {
-    const parsedId: number = parseInt(idString, 10);
-    if (!isNaN(parsedId)) {
-        paramEventId = parsedId;
-    } else {
-        createMessage("Could not find event", "main-message", "error");
-    }
-} else {
+const paramEventId: number = idString ? parseInt(idString) : 0;
+const idIsInvalid: boolean = paramEventId === 0 || isNaN(paramEventId);
+//Get event matching eventId
+const eventObject: Event | null = getEvent(paramEventId);
+//If id is invalid
+if (idIsInvalid || eventObject === null) {
     createMessage("Could not find event", "main-message", "error");
 }
-//Get event matching eventId
-const eventObject: Event | null = getEvent(paramEventId)
 //Get modal backdrop elements
 const editModalBackdrop = document.getElementById('edit-event-backdrop') as HTMLElement;
 const editEventModal = document.getElementById('edit-event-modal') as HTMLFormElement;
