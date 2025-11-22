@@ -1,4 +1,4 @@
-import { createMessage, closeModal, retrieveMessage, trapFocus, updateLocalStorage } from "./utils.js";
+import { createMessage, closeModal, storeMessage, retrieveMessage, trapFocus, updateLocalStorage } from "./utils.js";
 
 const pageWrapper = document.getElementById('page-wrapper') as HTMLElement;
 let mobileNavToggle = document.getElementById('mobile-nav-toggle') as HTMLElement;
@@ -76,9 +76,9 @@ export async function initializeApp(partentPage: string, currentPage: string) {
         }
         localStorage.setItem('username', username?.toString());
         signInModalBackdrop.style.display = 'none';
-        createMessage("Sign In Successful", "main-message", "check_circle");
         signIn();
-        // window.location.reload();
+        storeMessage("Sign In Successful", "main-message", "check_circle");
+        window.location.reload();
     });
 
     //event listener to sign out
@@ -257,18 +257,16 @@ function signIn() {
     inventoryLink.style.display = 'block';
     openSignInModal.style.display = 'none';
     navSignOutButton.style.display = 'block';
-    console.log('Found username in local storage. Sign in successful');
+    
 }
 
 function signOut() {
     const inventoryLink = document.getElementById('inventory-link') as HTMLElement;
-    const openSignInModal = document.getElementById('open-sign-in-modal-button') as HTMLElement;
     const navSignOutButton = document.getElementById('sign-out-button') as HTMLElement;
-    console.log("Removing username from local storage");
     localStorage.removeItem("username");
     inventoryLink.style.display = 'none';
     navSignOutButton.style.display = 'none';
-    openSignInModal.style.display = 'block';
+    window.location.reload();
 }
 
 //check if user is signed in

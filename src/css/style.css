@@ -8,6 +8,7 @@
         --secondary-hover: #008b9e;
         --message-text: white;
         --error-background: #b81f24;
+        --error-hover: #a51b20;
         --success-background: green;
         --delete-background: #FC6A03;
         --nav-text: #4f4b4e;
@@ -27,6 +28,7 @@
         --secondary-hover: #008b9e;
         --message-text: white;
         --error-background: #b81f24;
+        --error-hover: #a51b20;
         --success-background: green;
         --delete-background: #FC6A03;
         --error-text: #fff;
