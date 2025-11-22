@@ -43,36 +43,6 @@ export default defineConfig({
             }
           }
         ]
-      },
-      
-      //Manifest.json generation
-      manifest: {
-        name: 'Days for Girls Solon OH',
-        short_name: 'Vite PWA',
-        description: '',
-        theme_color: '#ff9f00',
-        background_color: '#e5e5e5',
-        display: 'standalone',
-        scope: '/days-for-girls-solon/',
-        start_url: '/days-for-girls-solon/index.html',
-        icons: [
-          {
-            src: 'https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/images/icon-192.png',
-            sizes: '192x192',
-            type: 'image/png',
-          },
-          {
-            src: 'https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/images/icon-512.png',
-            sizes: '512x512',
-            type: 'image/png',
-          },
-          {
-            src: 'https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/images/icon-512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'maskable',
-          }
-        ],
       }
     })
   ],
