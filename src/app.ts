@@ -24,7 +24,7 @@ export async function initializeApp(partentPage: string, currentPage: string) {
     const signInModalBackdrop = document.getElementById('sign-in-backdrop') as HTMLElement;
     const signInModal = document.getElementById('sign-in-modal') as HTMLFormElement;
     const closeModalButton = document.getElementById('close-modal-button') as HTMLElement;
-    checkForLocalStorageData();
+    await checkForLocalStorageData();
     checkIfSignedIn();
 
     //Check to see if there is a message to display
@@ -130,8 +130,9 @@ export function isUserSignedIn(): boolean {
     return false;
 }
 
-function loadData() {
-    //Get inventory data from json file and put into local storage
+async function loadData() {
+    await Promise.all([
+        //Get inventory data from json file and put into local storage
     fetch('https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/src/inventory.json')
         .then(data => data.json())
         .then(jsonData => {
@@ -145,7 +146,7 @@ function loadData() {
         .catch((error) => {
             createMessage("Error loading inventory data. Please try reloading the page", 'main-message', 'error');
             console.error(`Error loading inventory data: ${error}`);
-        });
+        }),
     //Get events data from json file and put into local storage
     fetch('https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/src/events.json')
         .then(data => data.json())
@@ -159,6 +160,7 @@ function loadData() {
             createMessage("Error loading events data. Please try reloading the page", 'main-message', 'error');
             console.error(`Error loading events data: ${error}`);
         })
+    ]);
 }
 
 async function loadHeader(partentPage: string, currentPage: string): Promise<void> {
@@ -233,7 +235,7 @@ async function loadModals() {
     }
 }
 
-function checkForLocalStorageData() {
+async function checkForLocalStorageData() {
     //Temp query param to clear local storage
     const queryString: string = window.location.search;
     const urlParams = new URLSearchParams(queryString);
@@ -246,7 +248,7 @@ function checkForLocalStorageData() {
     //Not sure how this will work once proper data storage is implemented
     const currentInventoryLocalStorage: string | null = localStorage.getItem("currentInventory");
     if (!currentInventoryLocalStorage) {
-        loadData();
+        await loadData();
     }
 }
 
