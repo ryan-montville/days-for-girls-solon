@@ -40,7 +40,7 @@ function addEventToPage(eventData: Event) {
         button.textContent = 'Manage Event';
     } else {
         //Add sign up button
-        button.setAttribute('href', `./event-sign-up?id=${eventData['eventId']}`);
+        button.setAttribute('href', `./event-sign-up.html?id=${eventData['eventId']}`);
         button.textContent = 'Sign Up';
 
     }
