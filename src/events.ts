@@ -36,11 +36,11 @@ function addEventToPage(eventData: Event) {
     button.setAttribute('class', 'secondary');
     if (isUserSignedIn) {
         //Add manage event button
-        button.setAttribute('href', `manage-event.html?id=${eventData['eventId']}`);
+        button.setAttribute('href', `./manage-event?id=${eventData['eventId']}`);
         button.textContent = 'Manage Event';
     } else {
         //Add sign up button
-        button.setAttribute('href', `event-sign-up.html?id=${eventData['eventId']}`);
+        button.setAttribute('href', `./event-sign-up?id=${eventData['eventId']}`);
         button.textContent = 'Sign Up';
 
     }
