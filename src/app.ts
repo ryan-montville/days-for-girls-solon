@@ -236,15 +236,6 @@ async function loadModals() {
 }
 
 async function checkForLocalStorageData() {
-    //Temp query param to clear local storage
-    const queryString: string = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    const clearParam: string | null = urlParams.get('clear');
-    if (clearParam) {
-        if (clearParam === 'true') {
-            localStorage.clear();
-        }
-    }
     //Not sure how this will work once proper data storage is implemented
     const currentInventoryLocalStorage: string | null = localStorage.getItem("currentInventory");
     if (!currentInventoryLocalStorage) {

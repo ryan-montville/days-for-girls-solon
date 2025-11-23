@@ -18,7 +18,6 @@ export default defineConfig({
         inventory: resolve(__dirname, 'inventory.html'),
         mailingList: resolve(__dirname, 'mailing-list.html'),
         manageEvent: resolve(__dirname, 'manage-event.html'),
-        notFound: resolve(__dirname, '404.html'),
       },
     },
   },
