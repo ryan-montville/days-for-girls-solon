@@ -79,7 +79,7 @@ footer {
 /* Screens smaller than 850 */
 @media (max-width: 850px) {
     #page-wrapper {
-        grid-template-rows: 100px 30px auto 100px;
+        grid-template-rows: 100px 30px auto 180px;
     }
     .homepage-layout {
         grid-template-columns: 1fr;
