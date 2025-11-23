@@ -305,6 +305,11 @@ footer a:focus {
     text-decoration: underline;
 }
 
+footer .social-icon {
+    height: 20px;;
+    vertical-align: middle;
+}
+
 /* Media breakpoints */
 /*Screens 1045 and larger*/
 @media (min-width: 1045px) {
