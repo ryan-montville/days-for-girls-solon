@@ -81,11 +81,11 @@ function filterDateRange(startDate: Date, endDate: Date) {
     let allEntries: InventoryEntry[] = donatedEntryLog.concat(distribtedInventoryLog);
     //Filter allEntries array for entries within date range
     let filteredEntries: InventoryEntry[] = allEntries.filter(item => {
-        return new Date(item['entryDate']) >= startDate && new Date(item['entryDate']) <= endDate;
+        return item['entryDate'].toDate() >= startDate && item['entryDate'].toDate() <= endDate;
     });
     //Sort filteredEntries array by date
     let filteredEntriesSorted = filteredEntries.sort((a, b) => {
-        return new Date(a['entryDate']).getTime() - new Date(b['entryDate']).getTime();
+        return a['entryDate'].toDate().getTime() - b['entryDate'].toDate().getTime();
     });
     return filteredEntriesSorted;
 }

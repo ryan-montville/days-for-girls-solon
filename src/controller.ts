@@ -1,4 +1,5 @@
 import { ComponentItem, Event, InventoryEntry, SignUpEntry, } from "./models.js";
+import { Timestamp } from "firebase/firestore";
 
 function updateLocalStorage(itemName: string, data: Event[] | SignUpEntry[] | ComponentItem[] | InventoryEntry[] | string) {
     const dataString: string = JSON.stringify(data);
@@ -15,8 +16,8 @@ function getArrayFromLocalStorgae(localStorageItem: string) {
 export function getEventsList(): Event[] {
     let eventsList: Event[] = getArrayFromLocalStorgae("events");
     return eventsList.sort((a, b) => {
-        const dateA = new Date(a['eventDate']).getTime();
-        const dateB = new Date(b['eventDate']).getTime();
+        const dateA = a['eventDate'].toDate().getTime();
+        const dateB = b['eventDate'].toDate().getTime();
         return dateA - dateB;
     });
 }

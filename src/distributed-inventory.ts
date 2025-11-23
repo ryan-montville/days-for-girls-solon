@@ -1,6 +1,15 @@
+import { Timestamp } from "firebase/firestore";
 import {
-    createTableRow, createTable, createMessage, createDeleteModal, clearMessages, closeModal,
-    displayLoadingMessage, fixDate, populateComponteTypeSelect, trapFocus
+    createTableRow, 
+    createTable, 
+    createMessage, 
+    createDeleteModal, 
+    clearMessages, 
+    closeModal,
+    displayLoadingMessage, 
+    fixDate, 
+    populateComponteTypeSelect, 
+    trapFocus
 } from "./utils.js";
 import {
     addDistributedEntryLog, CheckInventoryForDistribution, deleteDistributedEntry,
@@ -91,7 +100,7 @@ function submitData() {
     //Create an object for the entry
     let newEntry: InventoryEntry = {
         entryId: 0,
-        entryDate: new Date(),
+        entryDate: Timestamp.fromDate(new Date(0)),
         componentType: "",
         quantity: 0,
         destination: ""
@@ -104,7 +113,8 @@ function submitData() {
         createMessage("Please enter the date the components are leaving", "distribute-modal-message", "error");
         return;
     } else {
-        newEntry['entryDate'] = new Date(dateValue.toString());
+        const jsDate = new Date(dateValue.toString());
+        newEntry['entryDate'] = Timestamp.fromDate(jsDate);
     }
     //Validate component type selected input
     const componentTypeValue = distributedFormData.get('componentType');

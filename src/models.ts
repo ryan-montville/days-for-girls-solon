@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export interface ComponentItem {
     componentId: number;
     componentType: string;
@@ -10,18 +12,10 @@ export interface ComponentSummary {
     quantityDistributed: number;
 }
 
-export interface ContactEntry {
-    contactId: number;
-    fullName: string;
-    email: string;
-    volunteerType: string;
-    phone?: number;
-}
-
 export interface Event {
     eventId: number;
     eventTitle: string;
-    eventDate: Date;
+    eventDate: Timestamp;
     eventLocation: string;
     eventTime: string;
     eventDescription: string;
@@ -30,7 +24,7 @@ export interface Event {
 
 export interface InventoryEntry {
     entryId: number;
-    entryDate: Date;
+    entryDate: Timestamp;
     componentType: string;
     quantity: number;
     whoDonated?: string;

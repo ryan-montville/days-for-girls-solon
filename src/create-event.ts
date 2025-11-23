@@ -1,6 +1,8 @@
+import { Timestamp } from "firebase/firestore";
 import { clearMessages, createMessage, storeMessage } from "./utils.js";
 import { initializeApp } from "./app.js";
 import { createNewEvent, getNextEventId } from "./controller.js";
+import { addEvent } from "./firebaseService.js";
 import { Event } from "./models";
 
 const createForm = document.getElementById('create-event') as HTMLFormElement;
@@ -12,7 +14,7 @@ function submitData() {
     let newEvent: Event = {
         eventId: 0,
         eventTitle: "",
-        eventDate: new Date(),
+        eventDate: Timestamp.fromDate(new Date(0)),
         eventLocation: "",
         eventTime: "",
         eventDescription: "",
@@ -35,7 +37,9 @@ function submitData() {
         return;
     }
      else {
-        newEvent['eventDate'] = new Date(dateValue.toString());
+        //Converting dateValue to a js date object 
+        const jsDate = new Date(dateValue.toString());
+        newEvent['eventDate'] = Timestamp.fromDate(jsDate);
      }
      //Validate event location input
      let locationValue = formData.get('eventLocation');
@@ -62,7 +66,7 @@ function submitData() {
     } else {
         newEvent['eventDescription'] = eventDescriptionValue.toString();
     }
-    createNewEvent(newEvent);
+    addEvent(newEvent);
     //Create a message saying event was sucessfully created and store it to be displayed on events page
     storeMessage(`Sucessfully created event '${newEvent['eventTitle']}'`, 'main-message', 'check_circle');
     //Redirect to the events page

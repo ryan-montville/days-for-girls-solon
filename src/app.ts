@@ -1,4 +1,5 @@
 import { createMessage, closeModal, storeMessage, retrieveMessage, trapFocus, updateLocalStorage } from "./utils.js";
+import { signInWithGooglePopup } from "./authService.js";
 
 const pageWrapper = document.getElementById('page-wrapper') as HTMLElement;
 let mobileNavToggle = document.getElementById('mobile-nav-toggle') as HTMLElement;
@@ -81,6 +82,28 @@ export async function initializeApp(partentPage: string, currentPage: string) {
         window.location.reload();
     });
 
+    //Event listener to sign in with Google
+    const googleSignInButton = document.getElementById('google-login-button') as HTMLElement;
+    googleSignInButton.addEventListener('click', async () => {
+        const googleMessage = document.getElementById('google-message') as HTMLElement;
+        googleMessage.textContent = "Opening Google window...";
+        try {
+            await signInWithGooglePopup();
+            googleMessage.textContent = "Google Sign-In successful!";
+        } catch (error: any) {
+            let errorMessage = "Sign-In failed.";
+            if (error.code === 'auth/popup-closed-by-user') {
+                errorMessage = "Sign-In window closed.";
+            } else if (error.code === 'auth/cancelled-popup-request') {
+                errorMessage = "Sign-In request already in progress.";
+            } else {
+                errorMessage = `Error: ${error.message}`;
+            }
+            googleMessage.textContent = errorMessage;
+            console.error("Google sign-in error details:", error);
+        }
+    });
+
     //event listener to sign out
     navSignOutButton.addEventListener('click', () => {
         signOut();
@@ -133,33 +156,33 @@ export function isUserSignedIn(): boolean {
 async function loadData() {
     await Promise.all([
         //Get inventory data from json file and put into local storage
-    fetch('https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/src/inventory.json')
-        .then(data => data.json())
-        .then(jsonData => {
-            //Adding current inventory data to local storage
-            updateLocalStorage("currentInventory", jsonData['currentInventory']);
-            //Adding incoming inventory data to local storage
-            updateLocalStorage("donatedInventory", jsonData['donatedInventory']);
-            //Adding outgoing inventory data to local storage
-            updateLocalStorage("distributedInventory", jsonData['distributedInventory'])
-        })
-        .catch((error) => {
-            createMessage("Error loading inventory data. Please try reloading the page", 'main-message', 'error');
-            console.error(`Error loading inventory data: ${error}`);
-        }),
-    //Get events data from json file and put into local storage
-    fetch('https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/src/events.json')
-        .then(data => data.json())
-        .then(jsonData => {
-            //Adding events data to local storage
-            updateLocalStorage("events", jsonData['upcomingEvents']);
-            //Adding event sign ups to local storage
-            updateLocalStorage("SignUpEntries", jsonData['SignUpEntries'])
-        })
-        .catch((error) => {
-            createMessage("Error loading events data. Please try reloading the page", 'main-message', 'error');
-            console.error(`Error loading events data: ${error}`);
-        })
+        fetch('https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/src/inventory.json')
+            .then(data => data.json())
+            .then(jsonData => {
+                //Adding current inventory data to local storage
+                updateLocalStorage("currentInventory", jsonData['currentInventory']);
+                //Adding incoming inventory data to local storage
+                updateLocalStorage("donatedInventory", jsonData['donatedInventory']);
+                //Adding outgoing inventory data to local storage
+                updateLocalStorage("distributedInventory", jsonData['distributedInventory'])
+            })
+            .catch((error) => {
+                createMessage("Error loading inventory data. Please try reloading the page", 'main-message', 'error');
+                console.error(`Error loading inventory data: ${error}`);
+            }),
+        //Get events data from json file and put into local storage
+        fetch('https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/src/events.json')
+            .then(data => data.json())
+            .then(jsonData => {
+                //Adding events data to local storage
+                updateLocalStorage("events", jsonData['upcomingEvents']);
+                //Adding event sign ups to local storage
+                updateLocalStorage("SignUpEntries", jsonData['SignUpEntries'])
+            })
+            .catch((error) => {
+                createMessage("Error loading events data. Please try reloading the page", 'main-message', 'error');
+                console.error(`Error loading events data: ${error}`);
+            })
     ]);
 }
 
@@ -250,7 +273,7 @@ function signIn() {
     inventoryLink.style.display = 'block';
     openSignInModal.style.display = 'none';
     navSignOutButton.style.display = 'block';
-    
+
 }
 
 function signOut() {
@@ -271,4 +294,12 @@ function checkIfSignedIn() {
     } else {
         inventoryLink.style.display = 'none';
     }
+}
+
+function showSignInModal() {
+
+}
+
+function showRegisterModal() {
+
 }

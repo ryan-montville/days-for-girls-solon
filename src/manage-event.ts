@@ -1,6 +1,14 @@
+import { Timestamp } from "firebase/firestore";
 import {
-    createButton, createTableRow, createMessage, createDeleteModal, clearMessages, createTable, 
-    closeModal, fixDate, trapFocus
+    createButton, 
+    createTableRow, 
+    createMessage, 
+    createDeleteModal, 
+    clearMessages, 
+    createTable, 
+    closeModal, 
+    fixDate, 
+    trapFocus
 } from "./utils.js";
 import { deleteEvent, deleteSignUpEntry, getEvent, getSignUpsForEventId, updateEvent } from "./controller.js";
 import { initializeApp } from "./app.js";
@@ -70,7 +78,7 @@ function resetInfo(eventObject: Event) {
     eventTitleInput.value = eventObject['eventTitle'];
     //Get event date input, create a new date object, get the date, and set the value
     let eventDateInput = document.getElementById('eventDate') as HTMLInputElement;
-    let eventDate: Date = new Date(eventObject['eventDate']);
+    let eventDate: Date = eventObject['eventDate'].toDate();
     eventDateInput.value = eventDate.toISOString().split('T')[0];
     //Get event location input and set the value
     let eventLocationInput = document.getElementById('eventLocation') as HTMLInputElement;
@@ -89,7 +97,7 @@ function editEventInfo() {
     let updatedEvent: Event = {
         eventId: paramEventId,
         eventTitle: "",
-        eventDate: new Date(),
+        eventDate: Timestamp.fromDate(new Date(0)),
         eventLocation: "",
         eventTime: "",
         eventDescription: "",
@@ -110,7 +118,9 @@ function editEventInfo() {
         return;
     }
     else {
-        updatedEvent['eventDate'] = new Date(dateValue.toString());
+        //Converting dateValue to a js date object 
+        const jsDate = new Date(dateValue.toString());
+        updatedEvent['eventDate'] = Timestamp.fromDate(jsDate);
     }
     //Validate event location input
     let locationValue = formData.get('eventLocation');
