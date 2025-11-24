@@ -21,7 +21,7 @@ export async function registerUser(email: string, password: string): Promise<Use
     }
 }
 
-export async function signInUSers(email: string, password: string): Promise<UserCredential> {
+export async function signInUsers(email: string, password: string): Promise<UserCredential> {
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         return userCredential;
@@ -31,7 +31,7 @@ export async function signInUSers(email: string, password: string): Promise<User
     }
 }
 
-export async function SignOutUser(): Promise<void> {
+export async function signOutUser(): Promise<void> {
     try {
         await signOut(auth);
     } catch (error) {
@@ -63,3 +63,5 @@ export async function signInWithGooglePopup() {
         throw error;
     }
 }
+
+export type { User };

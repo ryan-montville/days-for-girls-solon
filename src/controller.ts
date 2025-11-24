@@ -25,7 +25,7 @@ export function getEventsList(): Event[] {
 //Returns event matching eventId
 export function getEvent(eventId: number): Event | null {
     const eventsList: Event[] = getArrayFromLocalStorgae("events");
-    const eventToReturn: Event | undefined = eventsList.find(eventObj => eventObj['eventId'] === eventId);
+    const eventToReturn: Event | undefined = eventsList.find(eventObj => eventObj['eventId'] === eventId.toString());
     if (eventToReturn) return eventToReturn;
     //Return an empty event object if no event matching event ID
     return null;
@@ -49,7 +49,7 @@ export function updateEvent(updatedEvent: Event) {
 //Update the number of people attending an event
 function updateNumberAttending(eventId: number, reason: string) {
     let eventsList: Event[] = getArrayFromLocalStorgae("events");
-    const eventIndex = eventsList.findIndex(item => item['eventId'] === eventId);
+    const eventIndex = eventsList.findIndex(item => item['eventId'] === eventId.toString());
     if (reason === "delete") {
         eventsList[eventIndex]['numberAttending'] -= 1;
     } else {
@@ -66,7 +66,7 @@ export function deleteEvent(eventId: number) {
     updateLocalStorage("SignUpEntries", updatedSignUpList);
     //Delete the event from local storage
     let eventsList: Event[] = getArrayFromLocalStorgae("events");
-    const updatedList = eventsList.filter(eventObj => eventObj['eventId'] !== eventId);
+    const updatedList = eventsList.filter(eventObj => eventObj['eventId'] !== eventId.toString());
     updateLocalStorage("events", updatedList);
 }
 
@@ -76,7 +76,7 @@ export function getNextEventId(): number {
     if (eventsList.length === 0) {
         return 1;
     }
-    return eventsList[eventsList.length - 1]['eventId'] + 1;
+    return 42;
 }
 
 /* Event sign ups */

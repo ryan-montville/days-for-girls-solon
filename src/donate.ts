@@ -1,4 +1,4 @@
-import { initializeApp, isUserSignedIn } from "./app.js";
+import { initializeApp } from "./app.js";
 import { createButton, createMessage, clearMessages } from "./utils.js";
 import { getDonatePageContent, submitDonatePageContent } from "./controller.js";
 import { marked } from 'marked';
@@ -25,16 +25,17 @@ async function loadDonateContent() {
 markdownCheetSheetCard.style.display = 'none';
 loadDonateContent();
 
-if (isUserSignedIn()) {
-    const editButton = createButton('Edit', 'button', 'editButton', 'secondary', 'edit');
-    editButton.addEventListener('click', () => {
-        outputCard.style.display = 'none';
-        markdownCheetSheetCard.style.display = 'block';
-        const editForm = createEditForm();
-        mainContent.appendChild(editForm);
-    });
-    outputButtonRow.appendChild(editButton);
-}
+//Fix this to use the auth.onAuthStateChanged
+// if (isUserSignedIn()) {
+//     const editButton = createButton('Edit', 'button', 'editButton', 'secondary', 'edit');
+//     editButton.addEventListener('click', () => {
+//         outputCard.style.display = 'none';
+//         markdownCheetSheetCard.style.display = 'block';
+//         const editForm = createEditForm();
+//         mainContent.appendChild(editForm);
+//     });
+//     outputButtonRow.appendChild(editButton);
+// }
 
 function submitData() {
     clearMessages();

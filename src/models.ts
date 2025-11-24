@@ -13,7 +13,7 @@ export interface ComponentSummary {
 }
 
 export interface Event {
-    eventId: number;
+    eventId: string;
     eventTitle: string;
     eventDate: Timestamp;
     eventLocation: string;

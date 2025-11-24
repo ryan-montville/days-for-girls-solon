@@ -1,5 +1,6 @@
 import { Event, SignUpEntry, ComponentItem, InventoryEntry } from "./models";
 import { getCurrentInventory } from "./controller.js";
+import { Timestamp } from "firebase/firestore";
 
 type TableItem = SignUpEntry | ComponentItem | InventoryEntry | {};
 
@@ -20,7 +21,7 @@ export function createButton(buttonText: string, buttonType: string, buttonId: s
     return newButton;
 }
 
-export function createTableRow(item: TableItem, numCells: number, itemType: string, dateFormat?: string): HTMLElement {
+export function createTableRow(item: TableItem, numCells: number, dateFormat?: string): HTMLElement {
     //Turn the item into arrays of its keys and values
     const itemKeys = Object.keys(item);
     const itemValues = Object.values(item)
@@ -160,7 +161,13 @@ export function createDeleteModal(itemToDelete: InventoryEntry | ComponentItem |
         //Don't display the id key/values or event description
         if (!itemKeys[i].includes("Id") && !itemKeys[i].includes("eventDescription")) {
             const readableKey: string = itemKeys[i].replace(/([a-z])([A-Z])/g, '$1 $2');
-            const keyValue = document.createTextNode(`${readableKey.toLowerCase()}: ${itemValues[i]}`);
+            let keyValue: Text;
+            if (readableKey === 'event Date' || readableKey === 'entry date') {
+                keyValue = document.createTextNode(`${readableKey.toLowerCase()}: ${fixDate(itemValues[i], 'shortDate')} `);
+            } else {
+                keyValue = document.createTextNode(`${readableKey.toLowerCase()}: ${itemValues[i]}`);
+            }
+            
             keyValueP.appendChild(keyValue);
             deleteItemModal.appendChild(keyValueP);
         }
@@ -178,22 +185,26 @@ export function createDeleteModal(itemToDelete: InventoryEntry | ComponentItem |
     return buttonRow;
 }
 
-export function fixDate(dateString: string, dateFormat: string): string {
-    const dateObj: Date = new Date(dateString);
-    const dateTimezoneFixed: Date = new Date(dateObj.getTime() - dateObj.getTimezoneOffset() * -60000);
-    if (dateFormat === 'shortDate') {
-        return dateTimezoneFixed.toLocaleDateString('en-US', {
-            month: '2-digit',
-            day: '2-digit',
-            year: 'numeric',
-        });
-    } else {
-        return dateTimezoneFixed.toLocaleDateString('en-US', {
-            month: 'long',
-            day: '2-digit',
-            year: 'numeric',
-        });
+export function fixDate(dateString: string | Timestamp, dateFormat: string): string {
+    let dateObj: Date = new Date(0);
+    //If Timestamp, convert it to a date object
+    if (dateString instanceof Timestamp) {
+        dateObj = dateString.toDate();
+    } 
+    //If datestring, create a new date object
+    else if (typeof dateString === 'string') {
+        dateObj = new Date(dateString);
+    } 
+    //Check if the date object is valid
+    if (isNaN(dateObj.getTime())) {
+        console.error("fixDate received an invalid date object after parsing:", dateString);
+        return "Invalid Date";
     }
+    //Define formatting options
+    const options: Intl.DateTimeFormatOptions = (dateFormat === 'shortDate') ? 
+        { month: '2-digit', day: '2-digit', year: 'numeric' } : 
+        { month: 'long', day: '2-digit', year: 'numeric' };
+    return dateObj.toLocaleDateString('en-US', options);
 }
 
 export function getComponentTypes(): string[] {

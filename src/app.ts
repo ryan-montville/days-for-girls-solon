@@ -1,9 +1,44 @@
 import { createMessage, closeModal, storeMessage, retrieveMessage, trapFocus, updateLocalStorage } from "./utils.js";
-import { signInWithGooglePopup } from "./authService.js";
+import { signInWithGooglePopup, getCurrentUser, signOutUser } from "./authService.js";
+import { auth } from "./firebase.js";
 
 const pageWrapper = document.getElementById('page-wrapper') as HTMLElement;
 let mobileNavToggle = document.getElementById('mobile-nav-toggle') as HTMLElement;
 const githubTemplateBaseURL = "https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/";
+
+//Global DOM elements
+let nav: HTMLElement;
+let signInButton: HTMLElement;
+let signOutButton: HTMLElement;
+let inventoryLink: HTMLElement;
+let signInModalBackdrop: HTMLElement;
+let signInModal: HTMLFormElement;
+let closeModalButton: HTMLElement;
+
+function setUpAuthListener() {
+    auth.onAuthStateChanged(user => {
+        //Don't continue if these elements haven't loaded
+        if (!inventoryLink || !signInButton || !signOutButton) return;
+
+        if (user) {
+            //User is signed in
+            console.log("User is signed in");
+            //Hide the sign in button and show the sign out button
+            signInButton.style.display = 'none';
+            signOutButton.style.display = 'block';
+            //Close the sign in modal if it is open
+            closeModal('sign-in-backdrop');
+        } else {
+            //User is not signed in
+            console.log("User is not signed in");
+            //Hide the inventory link
+            inventoryLink.style.display = 'none';
+            //Make sure the sign in button is displayed and the sign out button is not displayed
+            signInButton.style.display = 'block';
+            signOutButton.style.display = 'none';
+        }
+    });
+}
 
 export async function initializeApp(partentPage: string, currentPage: string) {
     //Wait for the DOM to load
@@ -17,23 +52,28 @@ export async function initializeApp(partentPage: string, currentPage: string) {
 
     //Load the header and wait for it to be added to the DOM
     await loadHeader(partentPage, currentPage);
+    //Load the footer
     await loadFooter();
+    //Load the modals
     await loadModals();
-    const nav = document.querySelector('nav') as HTMLElement;
-    const openSignInModal = document.getElementById('open-sign-in-modal-button') as HTMLElement;
-    const navSignOutButton = document.getElementById('sign-out-button') as HTMLElement;
-    const signInModalBackdrop = document.getElementById('sign-in-backdrop') as HTMLElement;
-    const signInModal = document.getElementById('sign-in-modal') as HTMLFormElement;
-    const closeModalButton = document.getElementById('close-modal-button') as HTMLElement;
-    await checkForLocalStorageData();
-    checkIfSignedIn();
+    //Set the page elemenets once the header, footer, and modals are loaded and added to the DOM
+    nav = document.querySelector('nav') as HTMLElement;
+    inventoryLink = document.getElementById('inventory-link') as HTMLElement;
+    signInButton = document.getElementById('open-sign-in-modal-button') as HTMLElement;
+    signOutButton = document.getElementById('sign-out-button') as HTMLElement;
+    signInModalBackdrop = document.getElementById('sign-in-backdrop') as HTMLElement;
+    signInModal = document.getElementById('sign-in-modal') as HTMLFormElement;
+    closeModalButton = document.getElementById('close-modal-button') as HTMLElement;
+    await checkForLocalStorageData();//Remove ?
 
-    //Check to see if there is a message to display
+    //User Authentication check
+    setUpAuthListener();
+
+    //Check to see if there is a message waiting to be displayed
     retrieveMessage();
 
     //Mobile Nav toggle
     mobileNavToggle.addEventListener('click', () => {
-
         console.log("toggling nav menu")
         //Toggle to class 'open' on nav's classList
         nav.classList.toggle('open');
@@ -48,12 +88,15 @@ export async function initializeApp(partentPage: string, currentPage: string) {
     });
 
     //event listener for sign in button to open sign in modal
-    openSignInModal.addEventListener('click', (e) => {
+    signInButton.addEventListener('click', (e) => {
         e.preventDefault();
+        //Change the mobile nav button back to the menu icon
         if (nav.classList.contains('open')) {
             mobileNavToggle.innerText = 'menu';
             nav.classList.remove('open');
         }
+        //Dynamically generate/load the content of the sign in modal to handle registration?
+        //Display th sign in modal
         signInModalBackdrop.style.display = 'flex';
         signInModal.classList.add('opening');
         signInModal.setAttribute('aria-modal', 'true');
@@ -62,34 +105,41 @@ export async function initializeApp(partentPage: string, currentPage: string) {
         trapFocus(signInModal, signInModalBackdrop);
     });
 
-    //event listener to sign in
-    signInModal.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const signInFormData = new FormData(signInModal);
-        const username = signInFormData.get('username');
-        const password = signInFormData.get('password')
-        if (username === null || username?.toString().trim() === '') {
-            createMessage("Username must not be empty", "sign-in-message", "error");
-            return;
-        }
-        if (password === null || password.toString().trim() === '') {
-            createMessage("PAssword must not be empty", "sign-in-message", "error");
-        }
-        localStorage.setItem('username', username?.toString());
-        signInModalBackdrop.style.display = 'none';
-        signIn();
-        storeMessage("Sign In Successful", "main-message", "check_circle");
-        window.location.reload();
-    });
+    //event listener to sign in - Should this stay or only log in with Google?
+    // signInModal.addEventListener('submit', (event) => {
+    //     event.preventDefault();
+    //     const signInFormData = new FormData(signInModal);
+    //     const username = signInFormData.get('username');
+    //     const password = signInFormData.get('password')
+    //     if (username === null || username?.toString().trim() === '') {
+    //         createMessage("Username must not be empty", "sign-in-message", "error");
+    //         return;
+    //     }
+    //     if (password === null || password.toString().trim() === '') {
+    //         createMessage("PAssword must not be empty", "sign-in-message", "error");
+    //     }
+    //     localStorage.setItem('username', username?.toString());
+    //     signInModalBackdrop.style.display = 'none';
+    //     signIn();
+    //     storeMessage("Sign In Successful", "main-message", "check_circle");
+    //     window.location.reload();
+    // });
 
     //Event listener to sign in with Google
     const googleSignInButton = document.getElementById('google-login-button') as HTMLElement;
-    googleSignInButton.addEventListener('click', async () => {
+    googleSignInButton.addEventListener('click', async (e) => {
+        e.preventDefault();
         const googleMessage = document.getElementById('google-message') as HTMLElement;
         googleMessage.textContent = "Opening Google window...";
         try {
             await signInWithGooglePopup();
-            googleMessage.textContent = "Google Sign-In successful!";
+            //If sucessful sign in with Google, close the modal and display the message
+            //closeModal('sign-in-backdrop'); I don't think this is needed here, it should be handled in setupAuthListener
+            const user = getCurrentUser();
+            if (user) {
+                createMessage(`Welcome ${user.displayName}`, 'main-message', 'check_circle');
+                //window.location.reload(); maybe not needed anymore. Check events page once it works again
+            }
         } catch (error: any) {
             let errorMessage = "Sign-In failed.";
             if (error.code === 'auth/popup-closed-by-user') {
@@ -100,14 +150,14 @@ export async function initializeApp(partentPage: string, currentPage: string) {
                 errorMessage = `Error: ${error.message}`;
             }
             googleMessage.textContent = errorMessage;
+            createMessage(errorMessage, 'sign-in-message', 'error');
             console.error("Google sign-in error details:", error);
         }
     });
 
     //event listener to sign out
-    navSignOutButton.addEventListener('click', () => {
+    signOutButton.addEventListener('click', () => {
         signOut();
-        // window.location.reload();
     });
 
     //event listener for the sign in modal close button
@@ -145,12 +195,6 @@ export async function initializeApp(partentPage: string, currentPage: string) {
         }
     });
 
-}
-
-export function isUserSignedIn(): boolean {
-    const username = localStorage.getItem("username");
-    if (username) return true;
-    return false;
 }
 
 async function loadData() {
@@ -266,34 +310,43 @@ async function checkForLocalStorageData() {
     }
 }
 
-function signIn() {
-    const inventoryLink = document.getElementById('inventory-link') as HTMLElement;
-    const openSignInModal = document.getElementById('open-sign-in-modal-button') as HTMLElement;
-    const navSignOutButton = document.getElementById('sign-out-button') as HTMLElement;
-    inventoryLink.style.display = 'block';
-    openSignInModal.style.display = 'none';
-    navSignOutButton.style.display = 'block';
-
-}
+//Is this needed?
+// function signIn() {
+//     const inventoryLink = document.getElementById('inventory-link') as HTMLElement;
+//     const openSignInModal = document.getElementById('open-sign-in-modal-button') as HTMLElement;
+//     const navSignOutButton = document.getElementById('sign-out-button') as HTMLElement;
+//     inventoryLink.style.display = 'block';
+//     openSignInModal.style.display = 'none';
+//     navSignOutButton.style.display = 'block';
+// }
 
 function signOut() {
-    const inventoryLink = document.getElementById('inventory-link') as HTMLElement;
-    const navSignOutButton = document.getElementById('sign-out-button') as HTMLElement;
-    localStorage.removeItem("username");
-    inventoryLink.style.display = 'none';
-    navSignOutButton.style.display = 'none';
-    window.location.reload();
+    //Shouldn't need any of this, should be handled by setupAuthListener()
+    // const inventoryLink = document.getElementById('inventory-link') as HTMLElement;
+    // const navSignOutButton = document.getElementById('sign-out-button') as HTMLElement;
+    // inventoryLink.style.display = 'none';
+    // navSignOutButton.style.display = 'none';
+    signOutUser();
+    storeMessage("Signed Out Successfully", 'main-message', 'check_circle');
+    // window.location.reload(); maybe not needed anymore. Check events page once it works again
+
 }
 
 //check if user is signed in
 function checkIfSignedIn() {
     const inventoryLink = document.getElementById('inventory-link') as HTMLElement;
-    let username = localStorage.getItem("username");
-    if (username) {
-        signIn();
+    const authState = auth.onAuthStateChanged(user => {
+        if (user) {
+        const signInButton = document.getElementById('open-sign-in-modal-button') as HTMLElement;
+        const SignOutButton = document.getElementById('sign-out-button') as HTMLElement;
+        console.log("user is signed in");
+        signInButton.style.display = 'none';
+        SignOutButton.style.display = 'block';
     } else {
         inventoryLink.style.display = 'none';
+        console.log("user is not signed in");
     }
+    });
 }
 
 function showSignInModal() {

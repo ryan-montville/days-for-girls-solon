@@ -1,40 +1,48 @@
 import { initializeApp } from "./app.js";
+import { User } from "./authService.js";
 import { createMessage, fixDate } from "./utils.js";
-import { getEventsList } from "./controller.js";
+import { getAllEvents } from "./firebaseService.js";
 import { Event } from "./models.js";
+import { auth } from "./firebase.js";
 
-let isUserSignedIn: boolean = false;
 let main = document.getElementById('maincontent') as HTMLElement;
 
-function addEventToPage(eventData: Event) {
+function addEventToPage(eventData: Event, user: User | null) {
+    //Create a new event article to add to the accumulator
     let newEvent: HTMLElement = document.createElement('article');
     newEvent.setAttribute('id', eventData['eventId'].toString());
     newEvent.setAttribute('class', 'card');
+    //Add the event title
     let eventH3: HTMLElement = document.createElement('h3');
     let eventTitle: Text = document.createTextNode(eventData['eventTitle']);
     eventH3.appendChild(eventTitle);
     newEvent.appendChild(eventH3);
+    //Add the date and time of the event
     let eventDateAndTimeH4: HTMLElement = document.createElement('h4');
-    let eventDateAndTime: Text = document.createTextNode(`${fixDate(eventData['eventDate'].toString(), 'longDate')} ${eventData['eventTime']}`);
+    let eventDateAndTime: Text = document.createTextNode(`${fixDate(eventData['eventDate'], 'longDate')} ${eventData['eventTime']}`);
     eventDateAndTimeH4.appendChild(eventDateAndTime);
     newEvent.appendChild(eventDateAndTimeH4);
+    //Add the event location
     let eventLocationH4: HTMLElement = document.createElement('h4');
     let eventLocation: Text = document.createTextNode(eventData['eventLocation']);
     eventLocationH4.appendChild(eventLocation);
     newEvent.appendChild(eventLocationH4);
+    //Add the number of people attending the event
     let numberAttendingH4: HTMLElement = document.createElement('h4');
     let numberAttending: Text = document.createTextNode(`Number Attending: ${eventData['numberAttending']}`);
     numberAttendingH4.appendChild(numberAttending);
     newEvent.appendChild(numberAttendingH4);
+    //Add the event description
     let eventDescriptionP: HTMLElement = document.createElement('p');
     let eventDescription: Text = document.createTextNode(eventData['eventDescription']);
     eventDescriptionP.appendChild(eventDescription);
     newEvent.appendChild(eventDescriptionP);
+    //Add the action button for the event, determined on user sign in
     let buttonRow: HTMLElement = document.createElement('section');
     buttonRow.setAttribute('class', 'button-row left');
     let button: HTMLElement = document.createElement('a');
     button.setAttribute('class', 'secondary');
-    if (isUserSignedIn) {
+    if (user) {
         //Add manage event button
         button.setAttribute('href', `./manage-event?id=${eventData['eventId']}`);
         button.textContent = 'Manage Event';
@@ -42,18 +50,24 @@ function addEventToPage(eventData: Event) {
         //Add sign up button
         button.setAttribute('href', `./event-sign-up.html?id=${eventData['eventId']}`);
         button.textContent = 'Sign Up';
-
     }
     buttonRow.appendChild(button);
     newEvent.appendChild(buttonRow);
     return newEvent;
 }
 
-function loadEvents() {
-    //Get events list
-    let eventsList: Event[] = getEventsList();
+async function loadEvents(user: User | null) {
+    let eventsList: Event[] = [];
+
+    try {
+        //Get the events list from the firestoreService
+        eventsList = await getAllEvents();
+    } catch (error) {
+        createMessage("Failed to load events. Please try reloading the page", 'main-message', 'error');
+    }
+
     if (eventsList.length === 0) {
-        //Display no events message
+        //Create and display a no events card
         const noEventsCard = document.createElement('section');
         noEventsCard.setAttribute('id', 'no-events-card');
         noEventsCard.setAttribute('class', 'card');
@@ -63,9 +77,10 @@ function loadEvents() {
         noEventsCard.appendChild(noEventsP);
         main.appendChild(noEventsCard);
     } else {
-        //Display all upcoming events
+        //Create the event elements
+        console.log(eventsList);
         const events = eventsList.reduce((acc: HTMLElement, currentEvent: Event) => {
-            const newEvent = addEventToPage(currentEvent);
+            const newEvent = addEventToPage(currentEvent, user);
             acc.appendChild(newEvent);
             return acc;
         }, document.createElement('section'));
@@ -74,26 +89,38 @@ function loadEvents() {
     }
 }
 
-function checkIfSignedIn() {
-    let username = localStorage.getItem("username");
-    if (username) {
-        isUserSignedIn = true;
-        let createNewEventButton = document.createElement('a');
-        createNewEventButton.setAttribute('href', 'create-new-event.html');
-        createNewEventButton.setAttribute('class', 'secondary');
-        let createEventIcon = document.createElement('span');
+function updateUIbasedOnAuth(user: User | null) {
+    const eventsHeader = document.getElementById('events-header') as HTMLElement;
+    //Check to see if the events list element is already in the DOM and remove it
+    const eventsList = document.getElementById('events-list');
+    if (eventsList) eventsList.remove();
+    if (user) {
+        //Add the Create New Event link and add it to the DOM
+        const createNewEventLink = document.createElement('a');
+        createNewEventLink.setAttribute('href', 'create-new-event.html');
+        createNewEventLink.setAttribute('class', 'secondary');
+        const createEventIcon = document.createElement('span');
         createEventIcon.setAttribute('class', 'material-symbols-outlined');
-        let iconName = document.createTextNode('calendar_add_on');
+        const iconName = document.createTextNode('calendar_add_on');
         createEventIcon.appendChild(iconName);
-        createNewEventButton.appendChild(createEventIcon);
-        let createEventButtonText = document.createTextNode('Create New Event')
-        createNewEventButton.appendChild(createEventButtonText);
-        let eventsHeader = document.getElementById('events-header') as HTMLElement;
-        eventsHeader.appendChild(createNewEventButton);
+        createNewEventLink.appendChild(createEventIcon);
+        const createEventButtonText = document.createTextNode('Create New Event')
+        createNewEventLink.appendChild(createEventButtonText);
+        eventsHeader.appendChild(createNewEventLink);
+    } else {
+        //Check if the Create New Event link exists in the DOM and remove it
+        const createEventLink = eventsHeader.querySelector('a');
+        if (createEventLink) createEventLink.remove();
+
     }
 }
 
-initializeApp('Upcoming Events', 'Upcoming Events');
+initializeApp('Upcoming Events', 'Upcoming Events').then(() => {
+    auth.onAuthStateChanged(user => {
+        updateUIbasedOnAuth(user);
+        loadEvents(user);
+    });
 
-checkIfSignedIn();
-loadEvents();
+});
+
+
