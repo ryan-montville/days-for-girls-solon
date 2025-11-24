@@ -15,25 +15,19 @@ import { getEventById, deleteEvent, updateEvent } from "./firebaseService.js";
 import { initializeApp } from "./app.js";
 import { SignUpEntry, Event } from "./models.js";
 
-//Page Elements
+// Page Elements
 const signUpEntriesCard = document.getElementById('sign-up-entires-card') as HTMLElement;
 const deleteEventCard = document.getElementById('deleteEventCard') as HTMLElement;
 const deleteEventButton = document.getElementById('delete-button') as HTMLElement;
+const editModalBackdrop = document.getElementById('edit-event-backdrop') as HTMLElement;
+const editEventModal = document.getElementById('edit-event-modal') as HTMLFormElement;
 
-//Get event id from url
+// Get event id from url
 const urlParams = new URLSearchParams(window.location.search);
 const idString: string | null = urlParams.get('id');
 const eventId: string = idString ? idString : "";
+//Create a null event element, to be loaded inside initAppLogic
 let eventObject: Event | null = null;
-//Try to get the event matching the eventID
-eventObject = await getEventById(eventId);
-//If getEventById() returns null
-if (eventObject === null) {
-    createMessage("Could not find event", "main-message", "error");
-}
-//Get modal backdrop elements
-const editModalBackdrop = document.getElementById('edit-event-backdrop') as HTMLElement;
-const editEventModal = document.getElementById('edit-event-modal') as HTMLFormElement;
 
 function displayEventInfo(eventObject: Event) {
     //Get the event info card element
@@ -102,6 +96,13 @@ function resetInfo(eventObject: Event) {
 }
 
 async function editEventInfo() {
+    //Check if the eventObject is loaded
+    if (!eventObject) {
+        createMessage("Cannot update event. Please try reloading the page.", 'main-message', 'error');
+        return;
+    }
+
+    //Get the form data
     let formData: FormData = new FormData(editEventModal);
     //Create an object for the updated event
     let updatedEvent: Event = {
@@ -161,6 +162,8 @@ async function editEventInfo() {
     //Close the modal
     closeModal("edit-event-backdrop");
     if (success) {
+        //Update the eventObject
+        eventObject = updatedEvent; 
         displayEventInfo(updatedEvent);
         createMessage("The event was successfully updated", "main-message", "check_circle");
     } else {
@@ -227,9 +230,27 @@ async function editEventInfo() {
 //     }
 // }
 
-initializeApp('Upcoming Events', 'Manage Event').then(() => {
-    //If the event doesn't exist, remove cards from page and add an error card
+async function initAppLogic() {
+    //Check for event ID
+    if (eventId === "") {
+        //If the id is not in the url, store a message and redirect to the events page
+        storeMessage("Error loading event. Please try again.", "main-message", "error");
+        window.location.href = 'events.html'; 
+        return;
+    }
+
+    //Try to get the event once the app initialization is complete
+    try {
+        eventObject = await getEventById(eventId);
+    } catch (error) {
+        //If there is an error loading the event, store a message and redirect to the events page
+        storeMessage("Error loading event. Please try again.", "main-message", "error");
+        window.location.href = 'events.html'; 
+        return;
+    }
+
     if (eventObject === null) {
+        //If the eventObject is null, create a no event card
         createMessage("Could not find event", "main-message", "error");
         editEventModal.remove();
         signUpEntriesCard.remove();
@@ -246,15 +267,20 @@ initializeApp('Upcoming Events', 'Manage Event').then(() => {
         errorCard.appendChild(errorP);
         let main = document.querySelector('main');
         if (main) main.appendChild(errorCard);
+
+        // Optional: Redirect the user away after 5 seconds since the page is broken anyway
+        // setTimeout(() => {
+        //     window.location.href = 'events.html';
+        // }, 5000);
     } else {
-        //Else, load the event data into the edit form and load the signup entries
+        //Event found, load the event and set up event listeners
         resetInfo(eventObject);
         // populateEntriesTable(eventObject); not ready for this yet
         displayEventInfo(eventObject);
-        //Event listener for the delete button
+        
+        // Event listener for the delete button
         deleteEventButton.addEventListener('click', () => {
-            //Need a way for the controller to tell the page to redirect and display message
-            const buttonRow = createDeleteModal(eventObject, "Are you sure you want to delete this event?");
+            const buttonRow = createDeleteModal(eventObject!, "Are you sure you want to delete this event?");
             if (buttonRow) {
                 const noButton = buttonRow.children[0];
                 const yesButton = buttonRow.children[1];
@@ -266,7 +292,7 @@ initializeApp('Upcoming Events', 'Manage Event').then(() => {
                         closeModal('delete-item-backdrop');
                         if (success) {
                             //Store the message saying the event was deleted. Will be displayed when redirected to the events page
-                            storeMessage(`Deleted event ${eventObject['eventTitle']} ${eventObject['eventDate']}`, "main-message", "delete");
+                            storeMessage(`Deleted event ${eventObject!.eventTitle} ${eventObject!.eventDate}`, "main-message", "delete");
                             //Redirect to the events page
                             window.location.href = 'events.html';
                         } else {
@@ -281,20 +307,27 @@ initializeApp('Upcoming Events', 'Manage Event').then(() => {
                 }
             }
         });
-        //Event listener to reset the form to the event data
+        
+        // Event listener to reset the form to the event data
         let resetFormButton = document.getElementById('reset') as HTMLElement;
         resetFormButton.addEventListener('click', (e) => {
             e.preventDefault();
-            resetInfo(eventObject);
+            resetInfo(eventObject!);
         });
-        //Event listener to close the edit event modal
+        
+        // Event listener to close the edit event modal
         const cancelFormButton = document.getElementById('cancel') as HTMLElement;
         cancelFormButton.addEventListener('click', () => { closeModal("edit-event-backdrop"); })
-        //Event listener to submit the data to update the event
+        
+        // Event listener to submit the data to update the event
         editEventModal.addEventListener('submit', (e) => {
             e.preventDefault();
             editEventInfo();
         });
     }
-});
+}
 
+initializeApp('Upcoming Events', 'Manage Event').then(() => {
+    //Run the logic to load the events page after the app initialization has finished
+    initAppLogic();
+});
