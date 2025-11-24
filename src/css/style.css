@@ -260,6 +260,7 @@ h4 {
 
 /* hr with text code with help from https://codepen.io/scottzirkel/pen/yNxNME */
 .hr-text {
+    margin: 10px 0;
   line-height: 1em;
   position: relative;
   outline: 0;

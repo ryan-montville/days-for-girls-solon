@@ -1,4 +1,4 @@
-import { createMessage, closeModal, storeMessage, retrieveMessage, trapFocus, updateLocalStorage } from "./utils.js";
+import { createMessage, createButton, closeModal, storeMessage, retrieveMessage, trapFocus, updateLocalStorage } from "./utils.js";
 import { signInWithGooglePopup, getCurrentUser, signOutUser } from "./authService.js";
 import { auth } from "./firebase.js";
 
@@ -95,7 +95,10 @@ export async function initializeApp(partentPage: string, currentPage: string) {
             mobileNavToggle.innerText = 'menu';
             nav.classList.remove('open');
         }
-        //Dynamically generate/load the content of the sign in modal to handle registration?
+        const previousModal = signInModalBackdrop.querySelector('form');
+        if (previousModal) previousModal.remove();
+        const signInForm = showSignInModal();
+        signInModalBackdrop.appendChild(signInForm);
         //Display th sign in modal
         signInModalBackdrop.style.display = 'flex';
         signInModal.classList.add('opening');
@@ -125,33 +128,6 @@ export async function initializeApp(partentPage: string, currentPage: string) {
     //     window.location.reload();
     // });
 
-    //Event listener to sign in with Google
-    const googleSignInButton = document.getElementById('google-login-button') as HTMLElement;
-    googleSignInButton.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const googleMessage = document.getElementById('google-message') as HTMLElement;
-        googleMessage.textContent = "Opening Google window...";
-        try {
-            await signInWithGooglePopup();
-            //If sucessful sign in with Google, close the modal and display the message
-            const user = getCurrentUser();
-            if (user) {
-                createMessage(`Welcome ${user.displayName}`, 'main-message', 'check_circle');
-            }
-        } catch (error: any) {
-            let errorMessage = "Sign-In failed.";
-            if (error.code === 'auth/popup-closed-by-user') {
-                errorMessage = "Sign-In window closed.";
-            } else if (error.code === 'auth/cancelled-popup-request') {
-                errorMessage = "Sign-In request already in progress.";
-            } else {
-                errorMessage = `Error: ${error.message}`;
-            }
-            googleMessage.textContent = errorMessage;
-            createMessage(errorMessage, 'sign-in-message', 'error');
-            console.error("Google sign-in error details:", error);
-        }
-    });
 
     //event listener to sign out
     signOutButton.addEventListener('click', () => {
@@ -159,10 +135,10 @@ export async function initializeApp(partentPage: string, currentPage: string) {
     });
 
     //event listener for the sign in modal close button
-    closeModalButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        closeModal("sign-in-backdrop");
-    });
+    // closeModalButton.addEventListener('click', (e) => {
+    //     e.preventDefault();
+    //     closeModal("sign-in-backdrop");
+    // });
 
     //event listener for the user to press escape to close any modal that is open
     document.addEventListener('keydown', (e) => {
@@ -338,7 +314,125 @@ function checkIfSignedIn() {
 }
 
 function showSignInModal() {
+    //Create the form and set the attributes
+    const signInForm = document.createElement('form');
+    signInForm.setAttribute('role', 'dialog');
+    signInForm.setAttribute('id', 'sign-in-modal');
+    signInForm.setAttribute('aria-modal', 'false');
+    signInForm.setAttribute('aria-labelledby', 'dialog-label');
+    signInForm.setAttribute('class', 'modal');
+    //Create the h2 element
+    const signInH2 = document.createElement('h2');
+    signInH2.setAttribute('id', 'dialog-label');
+    const signInText = document.createTextNode("sign In");
+    signInH2.appendChild(signInText);
+    signInForm.appendChild(signInH2);
+    //Create the form-row for the username
+    const usernameFormRow = document.createElement('section');
+    usernameFormRow.setAttribute('class', 'form-row');
+    //Label
+    const usernameLabel = document.createElement('label');
+    usernameLabel.setAttribute('for', 'username');
+    const usernameText = document.createTextNode("Username:");
+    usernameLabel.appendChild(usernameText);
+    usernameFormRow.appendChild(usernameLabel);
+    //Input
+    const usernameInput = document.createElement('input');
+    usernameInput.setAttribute('type', 'text');
+    usernameInput.setAttribute('id', 'username');
+    usernameInput.setAttribute('name', 'username');
+    usernameFormRow.appendChild(usernameInput);
+    signInForm.appendChild(usernameFormRow);
+    //Create the form-row for the password
+    const passwordFormRow = document.createElement('section');
+    passwordFormRow.setAttribute('class', 'form-row');
+    //Label
+    const passwordLabel = document.createElement('label');
+    passwordLabel.setAttribute('for', 'password');
+    const passwordText = document.createTextNode("Password:");
+    passwordLabel.appendChild(passwordText);
+    passwordFormRow.appendChild(passwordLabel)
+    //Input
+    const passwordInput = document.createElement('input');
+    passwordInput.setAttribute('type', 'password');
+    passwordInput.setAttribute('id', 'password');
+    passwordInput.setAttribute('name', 'password');
+    passwordFormRow.appendChild(passwordInput);
+    signInForm.appendChild(passwordFormRow);
+    //Create the button row
+    const signInButtonRow = document.createElement('section');
+    signInButtonRow.setAttribute('class', 'form-row');
+    //Create the close button
+    const closeButton = createButton("Close", 'button', 'close-modal-button', 'secondary');
+    closeButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        //Close the sign in modal
+        closeModal('sign-in-backdrop');
+    });
+    signInButtonRow.appendChild(closeButton);
+    //Create the register button
+    const registerButton = createButton("Register", 'button', 'register-button', 'secondary');
+    registerButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        //Change the sign in modal content to the register form
+        //coming soon
+    });
+    signInButtonRow.appendChild(registerButton);
+    //Create the sign in button
+    const signInButton = createButton("Sign In", 'submit', 'form-sign-in-button', 'primary');
+    signInButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        //Sign in wiht firebase userAuth
+        //Coming soon
+    });
+    signInButtonRow.appendChild(signInButton);
+    signInForm.appendChild(signInButtonRow);
+    //Create a hr element with text
+    const orHr = document.createElement('hr');
+    orHr.setAttribute('class', 'hr-text');
+    orHr.setAttribute('data-content', 'OR');
+    signInForm.appendChild(orHr);
+    //Sign in with Google button
+    const googleButtonRow = document.createElement('section');
+    googleButtonRow.setAttribute('class', 'form-row');
+    const googleSignInButton = document.createElement('button');
+    googleSignInButton.setAttribute('id', 'google-login-button');
+    googleSignInButton.setAttribute('class', 'secondary full');
+    const googleIcon = document.createElement('img');
+    googleIcon.setAttribute('src', 'https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/145624dd90955b3c257b80a9523c1a51dc14dbfa/images/google-icon.svg');
+    googleSignInButton.appendChild(googleIcon);
+    const googleSignInText = document.createTextNode("Sign In with Google");
+    googleSignInButton.appendChild(googleSignInText);
+    googleSignInButton.addEventListener('click', async (e) => {
+        e.preventDefault();
 
+        createMessage("Opening Google window...", 'sign-in-message', 'info');
+        try {
+            await signInWithGooglePopup();
+
+            //If sucessful sign in with Google, close the modal and display the message
+            const user = getCurrentUser();
+            if (user) {
+                //Close the sign in modal
+                closeModal('sign-in-backdrop');
+                createMessage(`Welcome ${user.displayName}`, 'main-message', 'check_circle');
+            }
+        } catch (error: any) {
+            let errorMessage = "Sign-In failed.";
+            if (error.code === 'auth/popup-closed-by-user') {
+                errorMessage = "Sign-In window closed.";
+            } else if (error.code === 'auth/cancelled-popup-request') {
+                errorMessage = "Sign-In request already in progress.";
+            } else {
+                errorMessage = `Error: ${error.message}`;
+            }
+            createMessage(errorMessage, 'sign-in-message', 'error');
+            console.error("Google sign-in error details:", error);
+        }
+    });
+    googleButtonRow.appendChild(googleSignInButton);
+    signInForm.appendChild(googleButtonRow);
+    return signInForm;
 }
 
 function showRegisterModal() {
