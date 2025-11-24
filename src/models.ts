@@ -38,3 +38,8 @@ export interface SignUpEntry {
     email: string;
     comments?: string;
 }
+
+export interface DonatePageContent {
+    content: string;
+    lastUpdated: Timestamp;
+}

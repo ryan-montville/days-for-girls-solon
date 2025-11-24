@@ -13,9 +13,10 @@ import {
     Timestamp,
     increment,
     CollectionReference,
-    DocumentSnapshot
+    DocumentSnapshot,
+    setDoc
 } from "firebase/firestore";
-import { Event, SignUpEntry } from "./models.js";
+import { Event, SignUpEntry, DonatePageContent } from "./models.js";
 import { db } from "./firebase.js";
 
 //Global Firebase Variables
@@ -24,32 +25,27 @@ const appId: string = typeof __app_id !== 'undefined' ? __app_id : 'default-app-
 
 // Helper function to get the base collection path
 function getCollectionRef(collectionName: string): CollectionReference<any> {
-    // Path structure: /artifacts/{appId}/public/data/{collectionName}
     const path = `/artifacts/${appId}/public/data/${collectionName}`; 
     return collection(db, path);
 }
 
-// --- NEW HELPER FUNCTIONS ---
+function mapDocToDonateContent(docSnap: DocumentSnapshot<any>): DonatePageContent {
+    return docSnap.data() as DonatePageContent;
+}
 
-/**
- * Maps a Firestore DocumentSnapshot to a complete Event interface, including the document ID.
- */
 function mapDocToEvent(docSnap: DocumentSnapshot<any>): Event {
     const data = docSnap.data() as Omit<Event, 'eventId'>;
     return {
-        ...data, // Spread data fields first
-        eventId: docSnap.id, // Set the document ID LAST to ensure it is not overwritten
+        ...data,
+        eventId: docSnap.id,
     } as Event;
 }
 
-/**
- * Maps a Firestore DocumentSnapshot to a complete SignUpEntry interface, including the document ID.
- */
 function mapDocToSignUpEntry(docSnap: DocumentSnapshot<any>): SignUpEntry {
     const data = docSnap.data() as Omit<SignUpEntry, 'entryId'>;
     return {
-        ...data, // Spread data fields first
-        entryId: docSnap.id, // Set the document ID LAST to ensure it is not overwritten
+        ...data,
+        entryId: docSnap.id, 
     } as SignUpEntry;
 }
 
@@ -61,7 +57,6 @@ export async function getAllEvents(): Promise<Event[]> {
         const querySnapshot = await getDocs(q);
 
         querySnapshot.forEach((doc) => {
-            // Updated to use the new helper function
             events.push(mapDocToEvent(doc));
         });
         return events;
@@ -73,12 +68,10 @@ export async function getAllEvents(): Promise<Event[]> {
 
 export async function getEventById(eventId: string): Promise<Event | null> {
     try {
-        // FIX: Use doc(collectionRef, docId) instead of passing path string segments
         const docRef = doc(getCollectionRef('events'), eventId);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-            // Updated to use the new helper function
             return mapDocToEvent(docSnap);
         } else {
             console.warn("No such event document found!");
@@ -102,9 +95,7 @@ export async function addEvent(newEventData: Omit<Event, 'eventId'>): Promise<st
 
 export async function updateEvent(eventId: string, updatedEvent: Event): Promise<boolean> {
     try {
-        // FIX: Use doc(collectionRef, docId) instead of passing path string segments
         const docRef = doc(getCollectionRef('events'), eventId);
-        // Remove eventId property before updating to prevent issues if it's included in the object
         const { eventId: _, ...updateData } = updatedEvent; 
         await updateDoc(docRef, updateData as any);
         console.log(`Event updated successfully: ${eventId}`);
@@ -117,7 +108,6 @@ export async function updateEvent(eventId: string, updatedEvent: Event): Promise
 
 export async function deleteEvent(eventId: string): Promise<boolean> {
     try {
-        // FIX: Use doc(collectionRef, docId) instead of passing path string segments
         const docRef = doc(getCollectionRef('events'), eventId);
         await deleteDoc(docRef);
         console.log(`Event deleted successfully: ${eventId}`);
@@ -147,12 +137,6 @@ export async function updateNumberAttending(eventId: string, isIncrement: boolea
 }
 
 /* ---------------- Event Sign Up ---------------- */
-
-/**
- * Adds a new sign-up entry to the 'signUpEntries' collection.
- * @param newEntryData The sign-up data without the entryId.
- * @returns The ID of the newly created document.
- */
 export async function addSignUpEntry(newEntryData: Omit<SignUpEntry, 'entryId'>): Promise<string> {
     try {
         const docRef = await addDoc(getCollectionRef('signUpEntries'), newEntryData);
@@ -164,20 +148,14 @@ export async function addSignUpEntry(newEntryData: Omit<SignUpEntry, 'entryId'>)
     }
 }
 
-/**
- * Retrieves all sign-up entries associated with a specific event ID.
- * @param eventId The ID of the event to filter sign-ups by.
- * @returns An array of SignUpEntry objects.
- */
 export async function getSignUpEntriesForEventId(eventId: string): Promise<SignUpEntry[]> {
     try {
         const entries: SignUpEntry[] = [];
-        // Create a query to filter documents where eventId matches the provided ID
+        //Create a query to filter documents where eventId matches the provided ID
         const q = query(getCollectionRef('signUpEntries'), where('eventId', '==', eventId));
         const querySnapshot = await getDocs(q);
 
         querySnapshot.forEach((doc) => {
-            // Updated to use the new helper function
             entries.push(mapDocToSignUpEntry(doc));
         });
 
@@ -188,19 +166,12 @@ export async function getSignUpEntriesForEventId(eventId: string): Promise<SignU
     }
 }
 
-/**
- * Retrieves a single sign-up entry by its unique entry ID.
- * @param entryId The unique ID of the sign-up entry.
- * @returns The SignUpEntry object or null if not found.
- */
 export async function getSignUpEntryById(entryId: string): Promise<SignUpEntry | null> {
     try {
-        // FIX: Use doc(collectionRef, docId) instead of passing path string segments
         const docRef = doc(getCollectionRef('signUpEntries'), entryId);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-            // Updated to use the new helper function
             return mapDocToSignUpEntry(docSnap);
         } else {
             console.warn(`No sign-up entry document found with ID: ${entryId}`);
@@ -212,20 +183,63 @@ export async function getSignUpEntryById(entryId: string): Promise<SignUpEntry |
     }
 }
 
-/**
- * Deletes a sign-up entry by its unique entry ID.
- * @param entryId The unique ID of the sign-up entry to delete.
- * @returns True if deletion was successful, false otherwise.
- */
 export async function deleteSignUpEntry(entryId: string): Promise<boolean> {
     try {
-        // FIX: Use doc(collectionRef, docId) instead of passing path string segments
         const docRef = doc(getCollectionRef('signUpEntries'), entryId);
         await deleteDoc(docRef);
         console.log(`Sign-up entry deleted successfully: ${entryId}`);
         return true;
     } catch (error) {
         console.error(`Error deleting sign-up entry ${entryId}:`, error);
+        return false;
+    }
+}
+
+/* ---------------- Donate Page Content (Single Document) ---------------- */
+export async function addDonatePageContent(content: string): Promise<boolean> {
+    try {
+        const docRef = doc(getCollectionRef('donatePage'), 'donate-page-content');
+        const newContent: DonatePageContent = {
+            content: content,
+            lastUpdated: Timestamp.now()
+        };
+        await setDoc(docRef, newContent); 
+        console.log(`Initial donate page content added/set with ID: ${'donate-page-content'}`);
+        return true;
+    } catch (error) {
+        console.error("Error adding donate page content:", error);
+        return false;
+    }
+}
+
+export async function getDonatePageContent(): Promise<DonatePageContent | null> {
+    try {
+        const docRef = doc(getCollectionRef('donatePage'), 'donate-page-content');
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            return mapDocToDonateContent(docSnap);
+        } else {
+            console.warn(`No donate page content found at ID: ${'donate-page-content'}`);
+            return null;
+        }
+    } catch (error) {
+        console.error("Error fetching donate page content:", error);
+        return null;
+    }
+}
+
+export async function updateDonatePageContent(content: string): Promise<boolean> {
+    try {
+        const docRef = doc(getCollectionRef('donatePage'), 'donate-page-content');
+        await updateDoc(docRef, {
+            content: content,
+            lastUpdated: Timestamp.now()
+        });
+        console.log(`Donate page content updated at ID: ${'donate-page-content'}`);
+        return true;
+    } catch (error) {
+        console.error("Error updating donate page content:", error);
         return false;
     }
 }

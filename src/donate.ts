@@ -1,43 +1,62 @@
 import { initializeApp } from "./app.js";
-import { createButton, createMessage, clearMessages } from "./utils.js";
-import { getDonatePageContent, submitDonatePageContent } from "./controller.js";
+import { createButton, createMessage, clearMessages, fixDate } from "./utils.js";
+import { auth } from "./firebase.js";
+import { addDonatePageContent, updateDonatePageContent, getDonatePageContent } from "./firebaseService.js";
+import { DonatePageContent } from "./models.js";
 import { marked } from 'marked';
-
-initializeApp('Donate', 'Donante');
 
 const outputCard = document.getElementById('output') as HTMLElement;
 const markdownCheetSheetCard = document.getElementById('markdown-cheat-sheet') as HTMLElement;
 const mainContent = document.getElementById('maincontent') as HTMLElement;
 const outputButtonRow = document.getElementById('outputButtonRow') as HTMLElement;
+let hasDonateContent: boolean;
+let pageContentString: string = "";
 
 async function loadDonateContent() {
     const pageContentSection = document.getElementById('pageContentSection') as HTMLElement;
     pageContentSection.innerHTML = '';
-    let contentString = getDonatePageContent();
-    if (!contentString) {
-        contentString = "## No content Found";
+    let pageContentObject: DonatePageContent | null = await getDonatePageContent();
+    let lastUpdated: string = "";
+    if (!pageContentObject) {
+        pageContentString = "## No content Found";
+        hasDonateContent = false;
+    } else {
+        hasDonateContent = true;
+        pageContentString = pageContentObject['content'];
+        lastUpdated = fixDate(pageContentObject['lastUpdated'], 'longDate');
     }
     //Use Marked.js to convert the markdown to HTML
-    const contentHTML = await marked.parse(contentString);
+    const contentHTML = await marked.parse(pageContentString);
     pageContentSection.innerHTML = contentHTML;
+    const lastUpdatedP = document.createElement('p');
+    const lastUpdatedText = document.createTextNode(`Last updated: ${lastUpdated}`);
+    lastUpdatedP.appendChild(lastUpdatedText);
+    const loadingCard = document.getElementById('loading');
+    if (loadingCard) loadingCard.remove();
+    outputCard.classList.remove('hide');
+    pageContentSection.appendChild(lastUpdatedP);
 }
 
-markdownCheetSheetCard.style.display = 'none';
-loadDonateContent();
+initializeApp('Donate', 'Donate').then(response => {
+    loadDonateContent();
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            const editButton = createButton('Edit', 'button', 'editButton', 'secondary', 'edit');
+            editButton.addEventListener('click', async () => {
+                outputCard.classList.add('hide');
+                markdownCheetSheetCard.classList.remove('hide');
+                const editForm = createEditForm(pageContentString);
+                mainContent.appendChild(await editForm);
+            });
+            outputButtonRow.appendChild(editButton);
+        } else {
+            const editButton = document.getElementById('editButton');
+            if (editButton) editButton.remove();
+        }
+    });
+});
 
-//Fix this to use the auth.onAuthStateChanged
-// if (isUserSignedIn()) {
-//     const editButton = createButton('Edit', 'button', 'editButton', 'secondary', 'edit');
-//     editButton.addEventListener('click', () => {
-//         outputCard.style.display = 'none';
-//         markdownCheetSheetCard.style.display = 'block';
-//         const editForm = createEditForm();
-//         mainContent.appendChild(editForm);
-//     });
-//     outputButtonRow.appendChild(editButton);
-// }
-
-function submitData() {
+async function submitData() {
     clearMessages();
     const editForm = document.getElementById('editForm') as HTMLFormElement;
     if (editForm) {
@@ -47,34 +66,46 @@ function submitData() {
         if (pageContent === null || pageContent.toString().trim() === '') {
             createMessage("Please enter the content for the donate page", 'main-message', 'error');
         } else {
-            submitDonatePageContent(pageContent.toString());
-            editForm.remove();
-            loadDonateContent();
-            markdownCheetSheetCard.style.display = 'none';
-            outputCard.style.display = 'block';
-            createMessage("Content Sucessfully updated", 'main-message', 'check_circle');
+            let sucess: boolean;
+            if (hasDonateContent) {
+                sucess = await updateDonatePageContent(pageContent.toString());
+            } else {
+                sucess = await addDonatePageContent(pageContent.toString());
+            }
+            if (sucess) {
+                editForm.remove();
+                loadDonateContent();
+                markdownCheetSheetCard.classList.add('hide');
+                outputCard.classList.remove('hide');
+                createMessage("Content Sucessfully updated", 'main-message', 'check_circle');
+            } else {
+                editForm.remove();
+                markdownCheetSheetCard.classList.add('hide');
+                outputCard.classList.remove('hide');
+                createMessage("Failed to update content. Please try again.", 'main-message', 'error');
+            }
         }
     } else {
         console.error("Form not found");
     }
 }
 
-function createEditForm() {
+async function createEditForm(contentString: string) {
     const editform = document.createElement('form');
     editform.setAttribute('id', 'editForm');
     editform.setAttribute('class', 'card');
     const textArea = document.createElement('textarea');
     textArea.setAttribute('id', 'donateContentTextArea');
     textArea.setAttribute('name', 'donateContentTextArea');
-    textArea.value = getDonatePageContent();
+    textArea.value = contentString
     editform.appendChild(textArea);
     const buttonRow = document.createElement('section');
     buttonRow.setAttribute('class', 'form-row');
     const cancelButton = createButton('Cancel', 'button', 'cancelButton', 'secondary');
     cancelButton.addEventListener('click', () => {
         editform.remove();
-        markdownCheetSheetCard.style.display = 'none';
-        outputCard.style.display = 'block';
+        markdownCheetSheetCard.classList.add('hide');
+        outputCard.classList.remove('hide');
     });
     buttonRow.appendChild(cancelButton);
     const submitButton = createButton('Submit', 'submit', 'submitButton', 'primary');
@@ -90,5 +121,5 @@ function createEditForm() {
 //Event listener to close the markdown cheat sheet card
 const cheatSheetCloseButton = document.getElementById('cheat-sheet-close') as HTMLElement;
 cheatSheetCloseButton.addEventListener('click', () => {
-    markdownCheetSheetCard.style.display = 'none';
+    markdownCheetSheetCard.classList.add('hide');
 });

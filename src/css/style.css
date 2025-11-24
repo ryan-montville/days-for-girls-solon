@@ -148,9 +148,11 @@ nav a:hover {
 }
 
 #google-login-button {
+    background-color: white;
     padding: 10px;
-    text-align: center;
-    vertical-align: middle;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
     font-size: 1rem;
     font-family: Arial, Helvetica, sans-serif;
     font-weight: 900;
@@ -198,6 +200,9 @@ nav a:hover {
 }
 
 /* messages */
+#sign-in-message {
+    height: 50px;
+}
 .message-wrapper {
     display: flex;
     justify-content: center;

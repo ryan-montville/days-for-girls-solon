@@ -26,8 +26,6 @@ function setUpAuthListener() {
             //Hide the sign in button and show the sign out button
             signInButton.style.display = 'none';
             signOutButton.style.display = 'block';
-            //Close the sign in modal if it is open
-            closeModal('sign-in-backdrop');
         } else {
             //User is not signed in
             console.log("User is not signed in");
@@ -397,7 +395,7 @@ function showSignInModal() {
     googleButtonRow.setAttribute('class', 'form-row');
     const googleSignInButton = document.createElement('button');
     googleSignInButton.setAttribute('id', 'google-login-button');
-    googleSignInButton.setAttribute('class', 'secondary full');
+    googleSignInButton.setAttribute('class', 'full');
     const googleIcon = document.createElement('img');
     googleIcon.setAttribute('src', 'https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/145624dd90955b3c257b80a9523c1a51dc14dbfa/images/google-icon.svg');
     googleSignInButton.appendChild(googleIcon);
@@ -409,7 +407,6 @@ function showSignInModal() {
         createMessage("Opening Google window...", 'sign-in-message', 'info');
         try {
             await signInWithGooglePopup();
-
             //If sucessful sign in with Google, close the modal and display the message
             const user = getCurrentUser();
             if (user) {

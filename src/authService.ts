@@ -59,7 +59,7 @@ export async function signInWithGooglePopup() {
 
         return result;
     } catch (error: any) {
-        createMessage(`Error during Google Sign-In: ${error}`, 'main-message', 'error');
+        // createMessage(`Error during Google Sign-In: ${error}`, 'sign-in-message', 'error');
         throw error;
     }
 }
