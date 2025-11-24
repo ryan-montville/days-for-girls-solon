@@ -21,42 +21,48 @@ export function createButton(buttonText: string, buttonType: string, buttonId: s
     return newButton;
 }
 
-export function createTableRow(item: TableItem, numCells: number, dateFormat?: string): HTMLElement {
-    //Turn the item into arrays of its keys and values
+export function createTableRow(item: TableItem, keysToDisplay: string[], primaryIdKeyName: string, numCells: number, dateFormat?: string): HTMLElement {
+    //Get the keys for the item
     const itemKeys = Object.keys(item);
-    const itemValues = Object.values(item)
-    const itemValuesLength: number = itemValues.length;
-    //Find how many keys are ids, set keyStartIndex to skip them
-    const keyStartIndex: number = itemKeys.filter(keyName => keyName.includes('Id')).length;
+    //Create a new table row
     let newRow: HTMLElement = document.createElement('tr');
-    //If passed an empty object, the table is empty. Create a row saying the table is empty
-    if (itemValuesLength === 0) {
-        const noneCell = document.createElement('td');
-        noneCell.setAttribute('colspan', numCells.toString());
-        const noneText = document.createTextNode("No items to display");
-        noneCell.appendChild(noneText);
-        newRow.appendChild(noneCell);
-    } else {
-        //Add the values to a new table row, keyStartIndex skips primary key and foreign key ids
-        for (let i = keyStartIndex; i < itemValuesLength; i++) {
-            const newCell = document.createElement('td');
-            if (itemKeys[i] === 'entryDate') {
-                if (dateFormat) {
-                    const dateFixed: string = fixDate(itemValues[i], dateFormat);
-                    const dateString = document.createTextNode(dateFixed);
-                    newCell.appendChild(dateString);
-                }
+    //Only add the keys in keysToDisplay, this excludes any Id keys
+    for (const key of keysToDisplay) {
+        const newCell = document.createElement('td');
+        //Get the value for the key
+        const itemValue = (item as any)[key];
+        //Check if key is a date
+        if (key.includes('Date')) {
+            if (dateFormat && itemValue) {
+                //Format the date and add the cell to the row
+                const dateFixed: string = fixDate(itemValue, dateFormat);
+                const dateString = document.createTextNode(dateFixed);
+                newCell.appendChild(dateString);
             } else {
-                const valueString = document.createTextNode(itemValues[i]);
+                //If dateFormat (shortDate or longDate) is not provided, just add the value to the cell
+                const valueString = document.createTextNode(itemValue?.toString() || '');
                 newCell.appendChild(valueString);
             }
-            newRow.appendChild(newCell);
+        } else {
+            //Handle all other keys, add the value to the cell
+            const valueString = document.createTextNode(itemValue?.toString() || '');
+            newCell.appendChild(valueString);
         }
-        const deleteButtonCell = document.createElement('td');
-        const deleteButton = createButton('', 'button', itemValues[0], 'delete-button-icon', 'delete');
-        deleteButtonCell.appendChild(deleteButton);
-        newRow.appendChild(deleteButtonCell);
+        //Add the cell to the row
+        newRow.appendChild(newCell);
     }
+
+    //Create a cell for the delete button
+    const deleteButtonCell = document.createElement('td');
+    //Get the itemId
+    const itemId = (item as any)[primaryIdKeyName]?.toString() || '';
+    //Create the delete button
+    const deleteButton = createButton('', 'button', itemId, 'delete-button-icon', 'delete');
+    //Add the delete button to the cell
+    deleteButtonCell.appendChild(deleteButton);
+    //Add the cell to the row
+    newRow.appendChild(deleteButtonCell);
+    //Return the new table row
     return newRow;
 }
 
@@ -68,14 +74,14 @@ export function clearMessages() {
 }
 
 export function storeMessage(message: string, messageContainer: string, icon: string) {
-    const messageToStore = {message: message, messageContainer: messageContainer, icon: icon};
+    const messageToStore = { message: message, messageContainer: messageContainer, icon: icon };
     sessionStorage.setItem("message", JSON.stringify(messageToStore));
 }
 
 export function retrieveMessage() {
     const storedMessage = sessionStorage.getItem("message");
     if (storedMessage) {
-        const messageToCreate: {message: string, messageContainer: string, icon: string}  = JSON.parse(storedMessage)
+        const messageToCreate: { message: string, messageContainer: string, icon: string } = JSON.parse(storedMessage)
         createMessage(messageToCreate['message'], messageToCreate['messageContainer'], messageToCreate['icon']);
         sessionStorage.removeItem("message");
     }
@@ -167,7 +173,7 @@ export function createDeleteModal(itemToDelete: InventoryEntry | ComponentItem |
             } else {
                 keyValue = document.createTextNode(`${readableKey.toLowerCase()}: ${itemValues[i]}`);
             }
-            
+
             keyValueP.appendChild(keyValue);
             deleteItemModal.appendChild(keyValueP);
         }
@@ -190,19 +196,19 @@ export function fixDate(dateString: string | Timestamp, dateFormat: string): str
     //If Timestamp, convert it to a date object
     if (dateString instanceof Timestamp) {
         dateObj = dateString.toDate();
-    } 
+    }
     //If datestring, create a new date object
     else if (typeof dateString === 'string') {
         dateObj = new Date(dateString);
-    } 
+    }
     //Check if the date object is valid
     if (isNaN(dateObj.getTime())) {
         console.error("fixDate received an invalid date object after parsing:", dateString);
         return "Invalid Date";
     }
     //Define formatting options
-    const options: Intl.DateTimeFormatOptions = (dateFormat === 'shortDate') ? 
-        { month: '2-digit', day: '2-digit', year: 'numeric' } : 
+    const options: Intl.DateTimeFormatOptions = (dateFormat === 'shortDate') ?
+        { month: '2-digit', day: '2-digit', year: 'numeric' } :
         { month: 'long', day: '2-digit', year: 'numeric' };
     return dateObj.toLocaleDateString('en-US', options);
 }

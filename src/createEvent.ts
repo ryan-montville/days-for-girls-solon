@@ -66,7 +66,7 @@ async function submitData() {
     try {
         await addEvent(newEventData);
         /* Create a message saying event was successfully created and store it.
-        // It will be displayed on events page */
+        It will be displayed on events page */
         storeMessage(`Successfully created event '${newEventData.eventTitle}'`, 'main-message', 'check_circle');
         // Redirect to the events page
         window.location.href = 'events.html';

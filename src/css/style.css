@@ -263,6 +263,10 @@ blockquote {
     padding: 10px 0;
 }
 
+.hide {
+    display: none;
+}
+
 /* These 3 rules for the small cards make it so the buttton is at the bottom of the card */
 .small {
     display: flex;

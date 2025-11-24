@@ -47,7 +47,7 @@ export function updateEvent(updatedEvent: Event) {
 }
 
 //Update the number of people attending an event
-function updateNumberAttending(eventId: number, reason: string) {
+function updateNumberAttending(eventId: string, reason: string) {
     let eventsList: Event[] = getArrayFromLocalStorgae("events");
     const eventIndex = eventsList.findIndex(item => item['eventId'] === eventId.toString());
     if (reason === "delete") {
@@ -59,7 +59,7 @@ function updateNumberAttending(eventId: number, reason: string) {
 }
 
 //Delete an event
-export function deleteEvent(eventId: number) {
+export function deleteEvent(eventId: string) {
     //Delete all sign up entries for the event
     const signUpEntriesList: SignUpEntry[] = getArrayFromLocalStorgae("SignUpEntries");
     const updatedSignUpList = signUpEntriesList.filter(entry => entry['eventId'] !== eventId);
@@ -81,13 +81,13 @@ export function getNextEventId(): number {
 
 /* Event sign ups */
 //Get all sign up entries matching eventId
-export function getSignUpsForEventId(eventId: number): SignUpEntry[] {
+export function getSignUpsForEventId(eventId: string): SignUpEntry[] {
     const signUpEntriesList: SignUpEntry[] = getArrayFromLocalStorgae("SignUpEntries");
     return signUpEntriesList.filter(entry => entry['eventId'] === eventId);
 }
 
 //Returns sign up entry matching entry ID
-export function getSignUpEntry(entryId: number): SignUpEntry | null {
+export function getSignUpEntry(entryId: string): SignUpEntry | null {
     const signUpEntriesList: SignUpEntry[] = getArrayFromLocalStorgae("SignUpEntries");
     const signUpEntry: SignUpEntry | undefined = signUpEntriesList.find(entry => entry['entryId'] === entryId);
     if (signUpEntry) return signUpEntry;
@@ -104,7 +104,7 @@ export function addSignUpEntry(newSignUp: SignUpEntry) {
 }
 
 //Delete a sign up entry
-export function deleteSignUpEntry(entryId: number) {
+export function deleteSignUpEntry(entryId: string) {
     let signUpEntriesList: SignUpEntry[] = getArrayFromLocalStorgae("SignUpEntries");
     let updateSignUpList = signUpEntriesList.filter(entry => entry['entryId'] !== entryId);
     const signUpEntry = getSignUpEntry(entryId);

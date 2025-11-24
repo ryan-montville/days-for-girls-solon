@@ -36,7 +36,10 @@
                 <a href="events.html" class="secondary">
                     <span class="material-symbols-outlined">arrow_back</span> Back to Events</a>
             </section>
-            <form class="card" id="sign-up-form">
+            <article id="loading" class="card">
+                <p>Loading...</p>
+            </article>
+            <form class="card hide" id="sign-up-form">
                 <section id="sign-up-header"></section>
                 <section class="form-row">
                     <label for="fullName">Full Name:</label>
@@ -44,7 +47,7 @@
                 </section>
                 <section class="form-row">
                     <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" />
+                    <input type="text" id="email" name="email" />
                 </section>
                 <section id="commentsTextArea">
                     <label for="comments">Any comments you would like to add:</label>

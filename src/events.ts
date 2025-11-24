@@ -78,13 +78,14 @@ async function loadEvents(user: User | null) {
         main.appendChild(noEventsCard);
     } else {
         //Create the event elements
-        console.log(eventsList);
         const events = eventsList.reduce((acc: HTMLElement, currentEvent: Event) => {
             const newEvent = addEventToPage(currentEvent, user);
             acc.appendChild(newEvent);
             return acc;
         }, document.createElement('section'));
         events.setAttribute('id', 'events-list');
+        const loadingCard = document.getElementById('loading');
+        if (loadingCard) loadingCard.remove();
         main.appendChild(events);
     }
 }

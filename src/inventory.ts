@@ -18,7 +18,9 @@ const manageInventoryModal = document.getElementById('manage-inventory-modal') a
 
 function addNewRow(newComponent: ComponentItem) {
     //Create a new row for the table with the component details
-    const newRow = createTableRow(newComponent, 3, "componentItem");
+    const keysToDisplay = ['componentType', 'quantity'];
+    const idKeyName = 'componentId';
+    const newRow = createTableRow(newComponent, keysToDisplay, idKeyName, 3, "componentItem");
     //Add an event listener to the components delete button
     const deleteButton = newRow.querySelector("button");
     if (deleteButton) {

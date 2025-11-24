@@ -11,7 +11,7 @@ import {
     fixDate,
     trapFocus
 } from "./utils.js";
-import { getEventById, deleteEvent, updateEvent } from "./firebaseService.js";
+import { getEventById, deleteEvent, updateEvent, getSignUpEntriesForEventId, deleteSignUpEntry, updateNumberAttending } from "./firebaseService.js";
 import { initializeApp } from "./app.js";
 import { SignUpEntry, Event } from "./models.js";
 
@@ -21,6 +21,7 @@ const deleteEventCard = document.getElementById('deleteEventCard') as HTMLElemen
 const deleteEventButton = document.getElementById('delete-button') as HTMLElement;
 const editModalBackdrop = document.getElementById('edit-event-backdrop') as HTMLElement;
 const editEventModal = document.getElementById('edit-event-modal') as HTMLFormElement;
+const eventInfoCard = document.getElementById('event-info') as HTMLElement;
 
 // Get event id from url
 const urlParams = new URLSearchParams(window.location.search);
@@ -30,8 +31,6 @@ const eventId: string = idString ? idString : "";
 let eventObject: Event | null = null;
 
 function displayEventInfo(eventObject: Event) {
-    //Get the event info card element
-    const eventInfoCard = document.getElementById('event-info') as HTMLElement;
     //Clear the event info card if it already had event info
     eventInfoCard.innerHTML = '';
     //Add the event title
@@ -163,7 +162,7 @@ async function editEventInfo() {
     closeModal("edit-event-backdrop");
     if (success) {
         //Update the eventObject
-        eventObject = updatedEvent; 
+        eventObject = updatedEvent;
         displayEventInfo(updatedEvent);
         createMessage("The event was successfully updated", "main-message", "check_circle");
     } else {
@@ -172,70 +171,78 @@ async function editEventInfo() {
 
 }
 
-//Not ready for this yet
-// function addNewRow(newEntry: SignUpEntry) {
-//     //Create a new row for the table with the entry details
-//     const newRow = createTableRow(newEntry, 4, "signUpEntry");
-//     const deleteButton = newRow.querySelector("button");
-//     if (deleteButton) {
-//         deleteButton.addEventListener('click', () => {
-//             //Create/open the modal and get the button row to add event lsiteners
-//             const buttonRow = createDeleteModal(newEntry, `Are you sure you want to delete this entry?`);
-//             if (buttonRow) {
-//                 const noButton = buttonRow.children[0];
-//                 const yesButton = buttonRow.children[1];
-//                 if (yesButton) {
-//                     yesButton.addEventListener('click', () => {
-//                         //Delete the sign up entry
-//                         deleteSignUpEntry(newEntry['entryId']);
-//                         //Close the delete modal
-//                         closeModal('delete-item-backdrop');
-//                         //Create a message saying the sign up entry has been deleted
-//                         createMessage(`Deleted entry from ${newEntry['fullName']}`, "main-message", "delete");
-//                         //Remove the entry from the table
-//                         newRow.remove();
-//                     });
-//                 }
-//                 if (noButton) {
-//                     noButton.addEventListener('click', () => {
-//                         closeModal('delete-item-backdrop');
-//                     });
-//                 }
-//             }
-//         });
-//     }
-//     return newRow;
-// }
+function addNewRow(newEntry: SignUpEntry, eventObject: Event) {
+    //Create a new row for the table with the entry details
+    const keysToDisplay = ['fullName', 'email', 'comments'];
+    const idKeyName = 'entryId';
+    const newRow = createTableRow(newEntry, keysToDisplay, idKeyName, 4);
+    const deleteButton = newRow.querySelector("button");
+    if (deleteButton) {
+        deleteButton.addEventListener('click', () => {
+            //Create/open the modal and get the button row to add event lsiteners
+            const buttonRow = createDeleteModal(newEntry, `Are you sure you want to delete this entry?`);
+            if (buttonRow) {
+                const noButton = buttonRow.children[0];
+                const yesButton = buttonRow.children[1];
+                if (yesButton) {
+                    yesButton.addEventListener('click', async () => {
+                        //Delete the sign up entry
+                        const updateNumAttendingSuccess = await updateNumberAttending(newEntry['eventId'], false);
+                        const deleteEntrySuccess = await deleteSignUpEntry(newEntry['entryId']);
+                        //Close the delete modal
+                        closeModal('delete-item-backdrop');
+                        if (deleteEntrySuccess && updateNumAttendingSuccess) {
+                            //Create a message saying the sign up entry has been deleted
+                            createMessage(`Deleted entry from ${newEntry['fullName']}`, "main-message", "delete");
+                            //Remove the entry from the table
+                            newRow.remove();
+                            eventObject['numberAttending'] -= 1;
+                            displayEventInfo(eventObject)
+                        } else {
+                            //Create error message
+                            createMessage("Error deleting entry. Please reload the page and try again", 'main-message', 'error');
+                        }
 
-//Not ready for this yet
-// function populateEntriesTable(eventObject: Event) {
-//     //Get signup entries for the event
-//     let eventSignUpEntries: SignUpEntry[] = getSignUpsForEventId(paramEventId);
-//     if (eventSignUpEntries.length === 0) {
-//         let noEntriesP = document.createElement('p');
-//         let noEntriesText = document.createTextNode(`No one has signed up for ${eventObject['eventTitle']} yet`);
-//         noEntriesP.appendChild(noEntriesText);
-//         signUpEntriesCard.appendChild(noEntriesP);
-//     } else {
-//         //Create the table
-//         const tableColumnHeaders: string[] = ['Name', 'Email', 'Comments', 'Delete'];
-//         const signUpTable = createTable('sign-up-table', tableColumnHeaders);
-//         let tableBody = eventSignUpEntries.reduce((acc: HTMLElement, currentEntry: SignUpEntry) => {
-//             const newRow = addNewRow(currentEntry);
-//             acc.appendChild(newRow);
-//             return acc;
-//         }, document.createElement('tbody'));
-//         signUpTable.appendChild(tableBody);
-//         signUpEntriesCard.appendChild(signUpTable);
-//     }
-// }
+
+                    });
+                }
+                if (noButton) {
+                    noButton.addEventListener('click', () => {
+                        closeModal('delete-item-backdrop');
+                    });
+                }
+            }
+        });
+    }
+    return newRow;
+}
+
+function populateEntriesTable(eventObject: Event, eventSignUpEntries: SignUpEntry[]) {
+    if (eventSignUpEntries.length === 0) {
+        let noEntriesP = document.createElement('p');
+        let noEntriesText = document.createTextNode(`No one has signed up for ${eventObject['eventTitle']} yet`);
+        noEntriesP.appendChild(noEntriesText);
+        signUpEntriesCard.appendChild(noEntriesP);
+    } else {
+        //Create the table
+        const tableColumnHeaders: string[] = ['Name', 'Email', 'Comments', 'Delete'];
+        const signUpTable = createTable('sign-up-table', tableColumnHeaders);
+        let tableBody = eventSignUpEntries.reduce((acc: HTMLElement, currentEntry: SignUpEntry) => {
+            const newRow = addNewRow(currentEntry, eventObject);
+            acc.appendChild(newRow);
+            return acc;
+        }, document.createElement('tbody'));
+        signUpTable.appendChild(tableBody);
+        signUpEntriesCard.appendChild(signUpTable);
+    }
+}
 
 async function initAppLogic() {
     //Check for event ID
     if (eventId === "") {
         //If the id is not in the url, store a message and redirect to the events page
         storeMessage("Error loading event. Please try again.", "main-message", "error");
-        window.location.href = 'events.html'; 
+        window.location.href = 'events.html';
         return;
     }
 
@@ -245,7 +252,7 @@ async function initAppLogic() {
     } catch (error) {
         //If there is an error loading the event, store a message and redirect to the events page
         storeMessage("Error loading event. Please try again.", "main-message", "error");
-        window.location.href = 'events.html'; 
+        window.location.href = 'events.html';
         return;
     }
 
@@ -270,9 +277,15 @@ async function initAppLogic() {
     } else {
         //Event found, load the event and set up event listeners
         resetInfo(eventObject);
-        // populateEntriesTable(eventObject); not ready for this yet
+        const signUpEntries = await getSignUpEntriesForEventId(eventId);
+        populateEntriesTable(eventObject, signUpEntries);
         displayEventInfo(eventObject);
-        
+        const loadingCard = document.getElementById('loading');
+        if (loadingCard) loadingCard.remove();
+        eventInfoCard.classList.remove('hide');
+        signUpEntriesCard.classList.remove('hide');
+        deleteEventCard.classList.remove('hide');
+
         // Event listener for the delete button
         deleteEventButton.addEventListener('click', () => {
             const buttonRow = createDeleteModal(eventObject!, "Are you sure you want to delete this event?");
@@ -302,18 +315,18 @@ async function initAppLogic() {
                 }
             }
         });
-        
+
         // Event listener to reset the form to the event data
         let resetFormButton = document.getElementById('reset') as HTMLElement;
         resetFormButton.addEventListener('click', (e) => {
             e.preventDefault();
             resetInfo(eventObject!);
         });
-        
+
         // Event listener to close the edit event modal
         const cancelFormButton = document.getElementById('cancel') as HTMLElement;
         cancelFormButton.addEventListener('click', () => { closeModal("edit-event-backdrop"); })
-        
+
         // Event listener to submit the data to update the event
         editEventModal.addEventListener('submit', (e) => {
             e.preventDefault();

@@ -32,8 +32,8 @@ export interface InventoryEntry {
 }
 
 export interface SignUpEntry {
-    entryId: number;
-    eventId: number;
+    entryId: string;
+    eventId: string;
     fullName: string;
     email: string;
     comments?: string;

@@ -22,7 +22,9 @@ const previousEntriesCard = document.getElementById('previous-entries-card') as 
 
 function addNewRow(newEntry: InventoryEntry) {
     //Create a new row for the table with the entry details
-    const newRow = createTableRow(newEntry, 5, 'shortDate');
+    const keysToDisplay = ['entryDate', 'componentType', 'quantity', 'whoDonated'];
+    const idKeyName = 'entryId';
+    const newRow = createTableRow(newEntry, keysToDisplay, idKeyName, 5, 'shortDate');
     //Add an event Listner to the entry's delete button
     const deleteButton = newRow.querySelector("button");
     if (deleteButton) {
