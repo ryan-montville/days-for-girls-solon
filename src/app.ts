@@ -134,11 +134,9 @@ export async function initializeApp(partentPage: string, currentPage: string) {
         try {
             await signInWithGooglePopup();
             //If sucessful sign in with Google, close the modal and display the message
-            //closeModal('sign-in-backdrop'); I don't think this is needed here, it should be handled in setupAuthListener
             const user = getCurrentUser();
             if (user) {
                 createMessage(`Welcome ${user.displayName}`, 'main-message', 'check_circle');
-                //window.location.reload(); maybe not needed anymore. Check events page once it works again
             }
         } catch (error: any) {
             let errorMessage = "Sign-In failed.";
@@ -197,6 +195,7 @@ export async function initializeApp(partentPage: string, currentPage: string) {
 
 }
 
+//Delete this after all firebase is set up
 async function loadData() {
     await Promise.all([
         //Get inventory data from json file and put into local storage
@@ -310,25 +309,14 @@ async function checkForLocalStorageData() {
     }
 }
 
-//Is this needed?
-// function signIn() {
-//     const inventoryLink = document.getElementById('inventory-link') as HTMLElement;
-//     const openSignInModal = document.getElementById('open-sign-in-modal-button') as HTMLElement;
-//     const navSignOutButton = document.getElementById('sign-out-button') as HTMLElement;
-//     inventoryLink.style.display = 'block';
-//     openSignInModal.style.display = 'none';
-//     navSignOutButton.style.display = 'block';
-// }
-
 function signOut() {
-    //Shouldn't need any of this, should be handled by setupAuthListener()
-    // const inventoryLink = document.getElementById('inventory-link') as HTMLElement;
-    // const navSignOutButton = document.getElementById('sign-out-button') as HTMLElement;
-    // inventoryLink.style.display = 'none';
-    // navSignOutButton.style.display = 'none';
     signOutUser();
-    storeMessage("Signed Out Successfully", 'main-message', 'check_circle');
-    // window.location.reload(); maybe not needed anymore. Check events page once it works again
+    //Change the mobile nav button back to the menu icon
+    if (nav.classList.contains('open')) {
+        mobileNavToggle.innerText = 'menu';
+        nav.classList.remove('open');
+    }
+    createMessage("Signed Out Successfully", 'main-message', 'check_circle');
 
 }
 
@@ -337,15 +325,15 @@ function checkIfSignedIn() {
     const inventoryLink = document.getElementById('inventory-link') as HTMLElement;
     const authState = auth.onAuthStateChanged(user => {
         if (user) {
-        const signInButton = document.getElementById('open-sign-in-modal-button') as HTMLElement;
-        const SignOutButton = document.getElementById('sign-out-button') as HTMLElement;
-        console.log("user is signed in");
-        signInButton.style.display = 'none';
-        SignOutButton.style.display = 'block';
-    } else {
-        inventoryLink.style.display = 'none';
-        console.log("user is not signed in");
-    }
+            const signInButton = document.getElementById('open-sign-in-modal-button') as HTMLElement;
+            const SignOutButton = document.getElementById('sign-out-button') as HTMLElement;
+            console.log("user is signed in");
+            signInButton.style.display = 'none';
+            SignOutButton.style.display = 'block';
+        } else {
+            inventoryLink.style.display = 'none';
+            console.log("user is not signed in");
+        }
     });
 }
 

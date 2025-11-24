@@ -267,11 +267,6 @@ async function initAppLogic() {
         errorCard.appendChild(errorP);
         let main = document.querySelector('main');
         if (main) main.appendChild(errorCard);
-
-        // Optional: Redirect the user away after 5 seconds since the page is broken anyway
-        // setTimeout(() => {
-        //     window.location.href = 'events.html';
-        // }, 5000);
     } else {
         //Event found, load the event and set up event listeners
         resetInfo(eventObject);
@@ -292,7 +287,7 @@ async function initAppLogic() {
                         closeModal('delete-item-backdrop');
                         if (success) {
                             //Store the message saying the event was deleted. Will be displayed when redirected to the events page
-                            storeMessage(`Deleted event ${eventObject!.eventTitle} ${eventObject!.eventDate}`, "main-message", "delete");
+                            storeMessage(`Deleted event ${eventObject!['eventTitle']} ${fixDate(eventObject!['eventDate'], 'shortDate')}`, "main-message", "delete");
                             //Redirect to the events page
                             window.location.href = 'events.html';
                         } else {
