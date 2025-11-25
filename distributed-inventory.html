@@ -32,10 +32,14 @@
             <section class="form-row">
                 <a href="inventory.html" class="secondary">
                     <span class="material-symbols-outlined">arrow_back</span> Back to inventory</a>
-                <button type="button" class="primary" id="open-distribute-modal-button">
+                <button type="button" class="primary hide" id="newDistributedEntryButton">
                     <span class="material-symbols-outlined">local_shipping</span> Distribute Inventory</button>
             </section>
-            <article class="card" id="previous-entries-card">
+            <article id="loading" class="card">
+                <div class="loader"></div>
+                <h2>Loading...</h2>
+            </article>
+            <article class="card hide" id="previous-entries-card">
                 <h3>Previous Entries</h3>
             </article>
         </main>

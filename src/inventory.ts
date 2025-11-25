@@ -1,18 +1,18 @@
 import { initializeApp } from "./app.js";
 import {
-    createButton, createTableRow, createTable, createMessage, createDeleteModal, clearMessages, 
+    createButton, createTableRow, createTable, createMessage, createDeleteModal, clearMessages,
     closeModal, fixDate, trapFocus
 } from "./utils.js";
 import { InventoryEntry, ComponentItem, ComponentSummary } from "./models.js";
-import {
-    addComponentTypeToInventory, deleteComponentType, getCurrentInventory, getDistributedInventoryLog,
-    getDoantedInventoryLog, getNextCurrentInventoryId
-} from "./controller.js";
+import { addComponent, getAllComponents, getComponentbyId, deleteComponent, seedIfEmptyInventoryLog, getAllLogEntires } from "./firebaseService.js";
+import { auth } from "./firebase.js";
+import { User } from "./authService.js";
 
 //Page elements
 const generateForm = document.getElementById('generateForm') as HTMLFormElement;
 const mainContent = document.getElementById('maincontent') as HTMLElement;
 const currentInventoryCard = document.getElementById('current-inventory-card') as HTMLElement;
+const manageInventoryCard = document.getElementById('manage-inventory-card') as HTMLElement;
 const manageInventoryBackdrop = document.getElementById('manage-inventory-backdrop') as HTMLElement;
 const manageInventoryModal = document.getElementById('manage-inventory-modal') as HTMLElement;
 
@@ -31,15 +31,19 @@ function addNewRow(newComponent: ComponentItem) {
                 const noButton = buttonRow.children[0];
                 const yesButton = buttonRow.children[1];
                 if (yesButton) {
-                    yesButton.addEventListener('click', () => {
+                    yesButton.addEventListener('click', async () => {
                         //Delete the component
-                        deleteComponentType(newComponent['componentId']);
+                        const success = await deleteComponent(newComponent['componentId']);
                         //Close the delete modal
                         closeModal('delete-item-backdrop');
-                        //Create a message saying the component has been deleted
-                        createMessage(`Deleted component "${newComponent['componentType']}"`, "main-message", "delete");
-                        //Remove the component from the table
-                        newRow.remove();
+                        if (success) {
+                            //Create a message saying the component has been deleted
+                            createMessage(`Deleted component "${newComponent['componentType']}"`, "main-message", "delete");
+                            //Remove the component from the table
+                            newRow.remove();
+                        } else {
+                            createMessage("Could not delete component. Please try again", 'main-message', 'error');
+                        }
                     });
                 }
                 if (noButton) {
@@ -53,8 +57,14 @@ function addNewRow(newComponent: ComponentItem) {
     return newRow;
 }
 
-function loadCurrentInventory() {
-    const currrentInventoryArray: ComponentItem[] = getCurrentInventory();
+async function loadCurrentInventory() {
+    let currrentInventoryArray: ComponentItem[] = []
+    try {
+        //Get the current inventory from the firestore
+        currrentInventoryArray = await getAllComponents();
+    } catch (error) {
+        createMessage("Error loading inventory. Please try reloading the page.", 'main-message', 'error');
+    }
     if (currrentInventoryArray.length === 0) {
         //Display no inventory message
         const noInventoryP = document.createElement('p');
@@ -74,15 +84,21 @@ function loadCurrentInventory() {
         currentInventoryTable.appendChild(tableBody);
         currentInventoryCard.appendChild(currentInventoryTable);
     }
+    //Hide the loading card and display the current inventory card
+    const loadingCard = document.getElementById('loading');
+    if (loadingCard) loadingCard.remove();
+    currentInventoryCard.classList.remove('hide');
 }
 
-function filterDateRange(startDate: Date, endDate: Date) {
-    const donatedEntryLog: InventoryEntry[] = getDoantedInventoryLog();
-    const distribtedInventoryLog: InventoryEntry[] = getDistributedInventoryLog();
-    //Combine all donated and distributed entries into a single array
-    let allEntries: InventoryEntry[] = donatedEntryLog.concat(distribtedInventoryLog);
+async function filterDateRange(startDate: Date, endDate: Date) {
+    let logEntries: InventoryEntry[] = []
+    try {
+        logEntries = await getAllLogEntires();
+    } catch (error) {
+        createMessage("Error generating report. Please try reloading the page", 'main-message', 'error');
+    }
     //Filter allEntries array for entries within date range
-    let filteredEntries: InventoryEntry[] = allEntries.filter(item => {
+    let filteredEntries: InventoryEntry[] = logEntries.filter(item => {
         return item['entryDate'].toDate() >= startDate && item['entryDate'].toDate() <= endDate;
     });
     //Sort filteredEntries array by date
@@ -93,8 +109,8 @@ function filterDateRange(startDate: Date, endDate: Date) {
 }
 
 //Takes an array of inventory log entries and summarizes the array
-function calculateInventoryTotals(filteredArray: InventoryEntry[]) {
-    const currrentInventoryArray: ComponentItem[] = getCurrentInventory();
+async function calculateInventoryTotals(filteredArray: InventoryEntry[]) {
+    const currrentInventoryArray: ComponentItem[] = await getAllComponents();
     const uniqueComponents: ComponentSummary[] = currrentInventoryArray.reduce((acc: ComponentSummary[], currentComponent: ComponentItem) => {
         const newComponent: ComponentSummary = {
             "componentType": currentComponent['componentType'],
@@ -115,7 +131,7 @@ function calculateInventoryTotals(filteredArray: InventoryEntry[]) {
     return uniqueComponents;
 }
 
-function createSummaryTable(entriesSummary: any) {
+function createSummaryTable(entriesSummary: ComponentSummary[]) {
     //Create the table
     const summaryTable = createTable('summary-table', ['Total Donated', 'Total Distributed'])
     //table body
@@ -143,7 +159,7 @@ function createEntriesTable(filteredResults: InventoryEntry[]) {
     const entiresBody = filteredResults.reduce((acc: HTMLElement, currentEntry: InventoryEntry) => {
         const entryRow = document.createElement('tr');
         const dateCell = document.createElement('td');
-        const date = document.createTextNode(fixDate(currentEntry['entryDate'].toString(), 'shortDate'));
+        const date = document.createTextNode(fixDate(currentEntry['entryDate'], 'shortDate'));
         dateCell.appendChild(date);
         entryRow.appendChild(dateCell);
         const entryCell = document.createElement('td');
@@ -162,7 +178,7 @@ function createEntriesTable(filteredResults: InventoryEntry[]) {
     return entriesTable;
 }
 
-function generateReport() {
+async function generateReport() {
     let formData: FormData = new FormData(generateForm);
     let startDateValue = formData.get('startDate');
     let endDateValue = formData.get('endDate');
@@ -195,7 +211,7 @@ function generateReport() {
         let reportCard = document.createElement('article');
         reportCard.setAttribute('class', 'card');
         //Create list of entries within date range
-        let filteredResults = filterDateRange(startDate, endDate);
+        let filteredResults = await filterDateRange(startDate, endDate);
         if (filteredResults.length === 0) {
             //No results
             let noResultsH2 = document.createElement('h2');
@@ -212,7 +228,7 @@ function generateReport() {
             reportH2.appendChild(reportTitle);
             reportCard.appendChild(reportH2);
             //Generate donated and distributed totals within date range
-            let entriesSummary = calculateInventoryTotals(filteredResults);
+            let entriesSummary = await calculateInventoryTotals(filteredResults);
             //create table to summarize all entries
             const summaryTable = createSummaryTable(entriesSummary);
             reportCard.appendChild(summaryTable);
@@ -234,91 +250,121 @@ function generateReport() {
     }
 }
 
-//Maybe add check if logged in, else remove report card
-loadCurrentInventory();
-generateForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    clearMessages();
-    generateReport();
-});
-
-function addNewComponentType(formData: FormData) {
+async function submitData(formData: FormData) {
+    const newComponent: ComponentItem = {
+        componentId: "",
+        componentType: "",
+        quantity: 0
+    }
     const newComponentName = formData.get('nameInput');
     if (newComponentName === null || newComponentName.toString().trim() === '') {
         createMessage("Please enter the name of the new component type", "manage-inventory-message", "error");
         return;
     } else {
-        const newComponent: ComponentItem = {
-            componentId: getNextCurrentInventoryId(),
-            componentType: newComponentName.toString().trim(),
-            quantity: 0
-        }
-        addComponentTypeToInventory(newComponent);
-        createMessage(`Added '${newComponent['componentType']}' to inventory`, "main-message", "check_circle");
-        //Update current inventory table
-        closeModal('manage-inventory-backdrop');
-        //Get the current Inventory table body
-        const currentInventoryTableBody = document.getElementById('currentInventoryTableBody');
-        if (currentInventoryTableBody) {
-            //If the table body exists, add the new row to the top of the table
-            const newRow = addNewRow(newComponent);
-            currentInventoryTableBody.appendChild(newRow);
-        } else {
-            //If the table body does not exist, create/load the table
-            loadCurrentInventory();
+        newComponent['componentType'] = newComponentName.toString().trim();
+        try {
+            const componentId = await addComponent(newComponent);
+            closeModal('manage-inventory-backdrop');
+            if (componentId) {
+                //The component was added successfully to the firestore
+                createMessage(`Added '${newComponent['componentType']}' to inventory`, "main-message", "check_circle");
+                newComponent['componentId'] = componentId;
+                //Get the current Inventory table body
+                const currentInventoryTableBody = document.getElementById('currentInventoryTableBody');
+                if (currentInventoryTableBody) {
+                    //If the table body exists, add the new row to the top of the table
+                    const newRow = addNewRow(newComponent);
+                    currentInventoryTableBody.appendChild(newRow);
+                } else {
+                    //If the table body does not exist, create/load the table
+                    loadCurrentInventory();
+                }
+            } else {
+                //The component was not added to the firestore
+                createMessage("Failed to add new component. Please try again.", 'main-message', 'error');
+            }
+        } catch (error) {
+            createMessage("Failed to add new component. Please try again.", 'main-message', 'error');
         }
     }
 }
 
-initializeApp('Inventory', 'Inventory');
+function updateUIbasedOnAuth(user: User | null) {
+    if (user) {
+        //User is signed in, show the manage inventory card and generate report form
+        if (manageInventoryCard.classList.contains('hide')) manageInventoryCard.classList.remove('hide');
+        if (generateForm.classList.contains('hide')) generateForm.classList.remove('hide');
+    } else {
+        //User is not signed in, hide the manage inventory card and generate report form
+        if (!manageInventoryCard.classList.contains('hide')) manageInventoryCard.classList.add('hide');
+        if (!generateForm.classList.contains('hide')) generateForm.classList.add('hide');
+    }
+}
 
-//Event listener for button to open Manage Inventory Modal
-const openMangeInventoryButton = document.getElementById('add-new-type') as HTMLElement;
-openMangeInventoryButton.addEventListener('click', () => {
-    manageInventoryModal.innerHTML = '';
-    //Create the form to add a new component type
-    const addNewComponentTypeForm = document.createElement('form');
-    const formHeaderH2 = document.createElement('h2');
-    const formHeader = document.createTextNode("Add a New Component Type");
-    formHeaderH2.appendChild(formHeader);
-    addNewComponentTypeForm.appendChild(formHeaderH2);
-    const nameInputRow = document.createElement('section');
-    nameInputRow.setAttribute('class', 'form-row');
-    const nameLabel = document.createElement('label');
-    nameLabel.setAttribute('for', 'nameInput');
-    const nameText = document.createTextNode("Name of new component type:");
-    nameLabel.appendChild(nameText);
-    nameInputRow.appendChild(nameLabel);
-    const nameInput = document.createElement("input");
-    nameInput.setAttribute('type', 'text');
-    nameInput.setAttribute('id', 'nameInput');
-    nameInput.setAttribute('name', 'nameInput');
-    nameInputRow.appendChild(nameInput);
-    addNewComponentTypeForm.appendChild(nameInputRow);
-    const buttonRow = document.createElement('section');
-    buttonRow.setAttribute('class', 'form-row');
-    const cancelButton = createButton('Cancel', 'button', 'cancelButton', 'secondary');
-    cancelButton.addEventListener('click', () => {
-        //Close the modal
-        closeModal('manage-inventory-backdrop')
+initializeApp('Inventory', 'Inventory').then(async () => {
+    //Check to see in inventory log is empty. donated and distributed inventory pages will throw errors if the log is empty
+    await seedIfEmptyInventoryLog();
+    loadCurrentInventory();
+    auth.onAuthStateChanged(user => {
+        updateUIbasedOnAuth(user);
     });
-    buttonRow.appendChild(cancelButton);
-    const submitButton = createButton('Submit', 'submt', 'submitButton', 'primary');
-    buttonRow.appendChild(submitButton);
-    addNewComponentTypeForm.appendChild(buttonRow);
-    addNewComponentTypeForm.addEventListener('submit', (e) => {
-        clearMessages();
+    
+
+    //Event listener to generate inventory report
+    generateForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const data = new FormData(addNewComponentTypeForm);
-        addNewComponentType(data);
-    })
-    //Add the form to the modal
-    manageInventoryModal.appendChild(addNewComponentTypeForm);
-    //Open the modal
-    manageInventoryBackdrop.style.display = 'flex';
-    manageInventoryModal.classList.add('opening');
-    manageInventoryModal.setAttribute('aria-modal', 'true');
-    //Trap keyboard focus to modal form
-    nameInput.focus();
-    trapFocus(addNewComponentTypeForm, manageInventoryBackdrop);
+        clearMessages();
+        generateReport();
+    });
+
+    //Event listener for button to open Manage Inventory Modal
+    const openMangeInventoryButton = document.getElementById('add-new-type') as HTMLElement;
+    openMangeInventoryButton.addEventListener('click', () => {
+        manageInventoryModal.innerHTML = '';
+        //Create the form to add a new component type
+        const addNewComponentTypeForm = document.createElement('form');
+        const formHeaderH2 = document.createElement('h2');
+        const formHeader = document.createTextNode("Add a New Component Type");
+        formHeaderH2.appendChild(formHeader);
+        addNewComponentTypeForm.appendChild(formHeaderH2);
+        const nameInputRow = document.createElement('section');
+        nameInputRow.setAttribute('class', 'form-row');
+        const nameLabel = document.createElement('label');
+        nameLabel.setAttribute('for', 'nameInput');
+        const nameText = document.createTextNode("Name of new component type:");
+        nameLabel.appendChild(nameText);
+        nameInputRow.appendChild(nameLabel);
+        const nameInput = document.createElement("input");
+        nameInput.setAttribute('type', 'text');
+        nameInput.setAttribute('id', 'nameInput');
+        nameInput.setAttribute('name', 'nameInput');
+        nameInputRow.appendChild(nameInput);
+        addNewComponentTypeForm.appendChild(nameInputRow);
+        const buttonRow = document.createElement('section');
+        buttonRow.setAttribute('class', 'form-row');
+        const cancelButton = createButton('Cancel', 'button', 'cancelButton', 'secondary');
+        cancelButton.addEventListener('click', () => {
+            //Close the modal
+            closeModal('manage-inventory-backdrop')
+        });
+        buttonRow.appendChild(cancelButton);
+        const submitButton = createButton('Submit', 'submt', 'submitButton', 'primary');
+        buttonRow.appendChild(submitButton);
+        addNewComponentTypeForm.appendChild(buttonRow);
+        addNewComponentTypeForm.addEventListener('submit', (e) => {
+            clearMessages();
+            e.preventDefault();
+            const data = new FormData(addNewComponentTypeForm);
+            submitData(data);
+        })
+        //Add the form to the modal
+        manageInventoryModal.appendChild(addNewComponentTypeForm);
+        //Open the modal
+        manageInventoryBackdrop.style.display = 'flex';
+        manageInventoryModal.classList.add('opening');
+        manageInventoryModal.setAttribute('aria-modal', 'true');
+        //Trap keyboard focus to modal form
+        nameInput.focus();
+        trapFocus(addNewComponentTypeForm, manageInventoryBackdrop);
+    });
 });

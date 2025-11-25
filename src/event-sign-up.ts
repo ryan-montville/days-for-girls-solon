@@ -1,5 +1,5 @@
 import { createMessage, storeMessage, clearMessages, fixDate } from "./utils.js";
-import { getEventById, addSignUpEntry, updateNumberAttending } from "./firebaseService.js";
+import { getEventById, addSignUpEntry } from "./firebaseService.js";
 import { initializeApp } from "./app.js";
 import { SignUpEntry, Event } from "./models.js";
 
@@ -116,12 +116,6 @@ async function initAppLogic() {
         //Add the sign up entry to the firestore
         try {
             await addSignUpEntry(newSignUp);
-            const success = await updateNumberAttending(eventId, true);
-            if (success) {
-                console.log("Increased number attending");
-            } else {
-                console.error("Could not update num attending")
-            }
             /* Create a message saying sign up entry was successfully created and store it.
             It will be displayed on events page */
             storeMessage(`You have sucessfully signed up for the event '${eventObject!['eventTitle']}'`, "main-message", "check_circle");
@@ -130,7 +124,6 @@ async function initAppLogic() {
         } catch (error) {
             createMessage("Failed to sign up for event. Please try again", 'main-message', 'error');
         }
-
     }
 
     signUpForm.addEventListener('submit', (e) => {

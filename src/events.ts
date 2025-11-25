@@ -58,7 +58,6 @@ function addEventToPage(eventData: Event, user: User | null) {
 
 async function loadEvents(user: User | null) {
     let eventsList: Event[] = [];
-
     try {
         //Get the events list from the firestoreService
         eventsList = await getAllEvents();
@@ -75,6 +74,8 @@ async function loadEvents(user: User | null) {
         const noEvents = document.createTextNode("There are currently no upcoming events. Please check back later.");
         noEventsP.appendChild(noEvents);
         noEventsCard.appendChild(noEventsP);
+        const loadingCard = document.getElementById('loading');
+        if (loadingCard) loadingCard.remove();
         main.appendChild(noEventsCard);
     } else {
         //Create the event elements

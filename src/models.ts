@@ -1,7 +1,7 @@
 import { Timestamp } from "firebase/firestore";
 
 export interface ComponentItem {
-    componentId: number;
+    componentId: string;
     componentType: string;
     quantity: number;
 }
@@ -23,7 +23,7 @@ export interface Event {
 }
 
 export interface InventoryEntry {
-    entryId: number;
+    entryId: string;
     entryDate: Timestamp;
     componentType: string;
     quantity: number;

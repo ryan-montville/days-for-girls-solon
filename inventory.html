@@ -33,10 +33,14 @@
                 <a href="donated-inventory.html" class="secondary">Donated Inventory</a>
                 <a href="distributed-inventory.html" class="secondary">Distributed inventory</a>
             </section>
-            <article class="card" id="current-inventory-card">
+            <article id="loading" class="card">
+                <div class="loader"></div>
+                <h2>Loading...</h2>
+            </article>
+            <article class="card hide" id="current-inventory-card">
                 <h2>Current Inventory</h2>
             </article>
-            <article class="card" id="manage-inventory-card">
+            <article class="card hide" id="manage-inventory-card">
                 <h2>Manage Inventory</h2>
                 <div class="form-row">
                     <button class="secondary" id="add-new-type">
@@ -46,7 +50,7 @@
                 </div>
             </article>
             <section class="message-wrapper" id="report-message"></section>
-            <form id="generateForm" class="card">
+            <form id="generateForm" class="card hide">
                 <div class="form-row">
                     <span>
                         <label for="startDate">Start Date:</label>

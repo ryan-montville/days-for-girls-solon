@@ -1,5 +1,5 @@
 import { Event, SignUpEntry, ComponentItem, InventoryEntry } from "./models";
-import { getCurrentInventory } from "./controller.js";
+import { getAllComponents } from "./firebaseService";
 import { Timestamp } from "firebase/firestore";
 
 type TableItem = SignUpEntry | ComponentItem | InventoryEntry | {};
@@ -213,13 +213,6 @@ export function fixDate(dateString: string | Timestamp, dateFormat: string): str
     return dateObj.toLocaleDateString('en-US', options);
 }
 
-export function getComponentTypes(): string[] {
-    const currentInventoryArray: ComponentItem[] = getCurrentInventory();
-    let componentTypes: string[] = [];
-    currentInventoryArray.forEach(component => componentTypes.push(component['componentType']));
-    return componentTypes;
-}
-
 export function displayLoadingMessage() {
     const loadingDiv = document.createElement('div');
     const loadingP = document.createElement('p');
@@ -229,17 +222,23 @@ export function displayLoadingMessage() {
     return loadingDiv;
 }
 
-export function populateComponteTypeSelect(selctId: string) {
+export async function populateComponteTypeSelect(selctId: string) {
     let selectElement = document.getElementById(selctId) as HTMLSelectElement;
     if (selectElement.options.length === 1) {
-        let componentTypes: string[] = getComponentTypes();
-        componentTypes.forEach(component => {
-            let newOption = document.createElement('option');
-            newOption.setAttribute('value', component);
-            let componentName = document.createTextNode(component);
-            newOption.appendChild(componentName);
-            selectElement.appendChild(newOption);
-        });
+        let components: ComponentItem[] = [];
+        try {
+            components = await getAllComponents();
+            components.forEach(component => {
+                let newOption = document.createElement('option');
+                newOption.setAttribute('value', component['componentType']);
+                let componentName = document.createTextNode(component['componentType']);
+                newOption.appendChild(componentName);
+                selectElement.appendChild(newOption);
+            });
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
     }
 }
 

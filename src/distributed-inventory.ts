@@ -1,20 +1,16 @@
 import { Timestamp } from "firebase/firestore";
 import {
-    createTableRow, 
-    createTable, 
-    createMessage, 
-    createDeleteModal, 
-    clearMessages, 
+    createTableRow,
+    createTable,
+    createMessage,
+    createDeleteModal,
+    clearMessages,
     closeModal,
-    displayLoadingMessage, 
-    fixDate, 
-    populateComponteTypeSelect, 
+    fixDate,
+    populateComponteTypeSelect,
     trapFocus
 } from "./utils.js";
-import {
-    addDistributedEntryLog, CheckInventoryForDistribution, deleteDistributedEntry,
-    getNextDistributedEntryId, getDistributedInventoryLog
-} from "./controller.js";
+import { getFilteredLogEntries, addLogEntry, deleteLogEntry } from "./firebaseService.js";
 import { initializeApp } from "./app.js";
 import { InventoryEntry } from "./models.js";
 
@@ -38,15 +34,19 @@ function addNewRow(newEntry: InventoryEntry) {
                 const noButton = buttonRow.children[0];
                 const yesButton = buttonRow.children[1];
                 if (yesButton) {
-                    yesButton.addEventListener('click', () => {
+                    yesButton.addEventListener('click', async () => {
                         //Delete the log entry
-                        deleteDistributedEntry(newEntry['entryId']);
+                        const success = await deleteLogEntry(newEntry['entryId']);
                         //Close the delete modal
                         closeModal('delete-item-backdrop');
-                        //Create a message saying the log entry has been deleted
-                        createMessage(`Deleted entry ${fixDate(newEntry['entryDate'].toString(), 'shortDate')}: ${newEntry['quantity']} ${newEntry['componentType']} to ${newEntry['destination']}`, "main-message", "delete");
-                        //Remove the entry from the table
-                        newRow.remove();
+                        if (success) {
+                            //Create a message saying the log entry has been deleted
+                            createMessage(`Deleted entry ${fixDate(newEntry['entryDate'].toString(), 'shortDate')}: ${newEntry['quantity']} ${newEntry['componentType']} to ${newEntry['destination']}`, "main-message", "delete");
+                            //Remove the entry from the table
+                            newRow.remove();
+                        } else {
+                            createMessage('Failed to delete log entry. Please try reloading the page.', 'main-message', 'error');
+                        }
                     });
                 }
                 if (noButton) {
@@ -60,24 +60,19 @@ function addNewRow(newEntry: InventoryEntry) {
     return newRow;
 }
 
-function loadPreviousEntries() {
-    const distributedInventoryData: InventoryEntry[] = getDistributedInventoryLog();
-    /*Temporary solution to clear the card when form submit. Will update submitData() to 
-    add the row to the table instead of calling this function ad recreating the entire table */
-    const noEntriesP = previousEntriesCard.querySelector('p');
-    if (noEntriesP) noEntriesP.remove();
-    const previousTable = document.getElementById('previous-entries-table');
-    if (previousTable) previousTable.remove();
-    /* End of temporary solution */
-    //Display loading message
-    const loadingDiv = displayLoadingMessage();
-    previousEntriesCard.appendChild(loadingDiv);
+async function loadPreviousEntries() {
+    let distributedInventoryData: InventoryEntry[] = [];
+    try {
+        distributedInventoryData = await getFilteredLogEntries('distributed');
+    } catch (error) {
+        createMessage("Error loading log entries. Please try reloading the page", 'main-message', 'error');
+    }
+
     if (distributedInventoryData.length === 0) {
         //Display no previous entries message
         let noEntriesP = document.createElement('p');
         let noEntries = document.createTextNode("No previous entries");
         noEntriesP.appendChild(noEntries);
-        loadingDiv.remove();
         previousEntriesCard.appendChild(noEntriesP);
     } else {
         //Create the previous entries table
@@ -91,24 +86,27 @@ function loadPreviousEntries() {
         }, document.createElement('tbody'));
         tableBody.setAttribute('id', 'distributedTableBody');
         previousEntriesTable.appendChild(tableBody);
-        loadingDiv.remove();
         previousEntriesCard.appendChild(previousEntriesTable);
     }
+    const newDistributedEntryButton = document.getElementById('newDistributedEntryButton') as HTMLElement;
+    const loadingCard = document.getElementById('loading');
+    //Remove the loading card and show the previous log entries and the distribute inventory button
+    if (loadingCard) loadingCard.remove();
+    if (newDistributedEntryButton.classList.contains('hide')) newDistributedEntryButton.classList.remove('hide');
+    if (previousEntriesCard.classList.contains('hide')) previousEntriesCard.classList.remove('hide');
 }
 
-function submitData() {
+async function submitData() {
     //Get the data from the form
     const distributedFormData: FormData = new FormData(distributeInventoryModal);
     //Create an object for the entry
     let newEntry: InventoryEntry = {
-        entryId: 0,
+        entryId: "",
         entryDate: Timestamp.fromDate(new Date(0)),
         componentType: "",
         quantity: 0,
         destination: ""
     }
-    //Get the next entryId. This shouldn't be needed when proper data storage is implemented
-    newEntry['entryId'] = getNextDistributedEntryId();
     //Validate date input
     const dateValue = distributedFormData.get('date');
     if (dateValue === null || dateValue === '') {
@@ -134,12 +132,8 @@ function submitData() {
         return;
     } else {
         const quantity: number = +quantityValue;
-        const checkInventory = CheckInventoryForDistribution(newEntry['componentType'], quantity);
         if (quantity < 1) {
             createMessage("Please enter a quantity greater that 0", "distribute-modal-message", "error");
-            return;
-        } else if (!checkInventory.hasEnough) {
-            createMessage(`Error: There are only ${checkInventory.quantity} ${newEntry['componentType']} currently in inventory`, "distribute-modal-message", "error");
             return;
         } else {
             newEntry['quantity'] = quantity;
@@ -154,44 +148,51 @@ function submitData() {
         newEntry['destination'] = destinationValue.toString();
     }
     //Submit the entry
-    addDistributedEntryLog(newEntry);
-    closeModal('distribute-inventory-backdrop');
-    createMessage("The inventory has successfully been updated", "main-message", "check_circle");
-    //Get the distributed log table body
-    const distributedTableBody = document.getElementById('distributedTableBody');
-    if (distributedTableBody) {
-        //If the table body exists, add the new row to the top of the table
-        const newRow = addNewRow(newEntry);
-        distributedTableBody.prepend(newRow);
-    } else {
-        //If the table body does not exist, create/load the table
-        loadPreviousEntries();
-    }
+    try {
+        await addLogEntry(newEntry);
+        closeModal('distribute-inventory-backdrop');
+        createMessage("The inventory has successfully been updated", "main-message", "check_circle");
+        //Clear the form
+        distributeInventoryModal.reset();
+        //Get the distributed log table body
+        const distributedTableBody = document.getElementById('distributedTableBody');
+        if (distributedTableBody) {
+            //If the table body exists, add the new row to the top of the table
+            const newRow = addNewRow(newEntry);
+            distributedTableBody.prepend(newRow);
+        } else {
+            //If the table body does not exist, create/load the table
+            loadPreviousEntries();
+        }
 
+    } catch (error: any) {
+        createMessage(error, 'distribute-modal-message', 'error');
+    }
 }
 
-initializeApp('Inventory', 'Distributed Inventory');
+initializeApp('Inventory', 'Distributed Inventory').then(async () => {
+    await loadPreviousEntries();
 
-//Event listener for distribute inventory form submit
-distributeInventoryModal.addEventListener('submit', (e) => {
-    e.preventDefault();
-    clearMessages();
-    submitData();
+    //Event listener for distribute inventory form submit
+    distributeInventoryModal.addEventListener('submit', (e) => {
+        e.preventDefault();
+        clearMessages();
+        submitData();
+
+        //Event listener to close the distribute inventory modal
+        const closeModalButton = document.getElementById('cancel') as HTMLElement;
+        closeModalButton.addEventListener('click', () => closeModal('distribute-inventory-backdrop'));
+    });
+
+    //Event listener to open the distribute inventory modal
+        const openModalButton = document.getElementById('newDistributedEntryButton') as HTMLElement;
+        openModalButton.addEventListener('click', () => {
+            console.log("button clicked")
+            populateComponteTypeSelect('componentType');
+            distributeInventoryBackdrop.style.display = 'flex';
+            distributeInventoryModal.setAttribute('aria-modal', 'true');
+            const dateInput = document.getElementById('date') as HTMLInputElement;
+            dateInput.focus();
+            trapFocus(distributeInventoryModal, distributeInventoryBackdrop);
+        });
 });
-
-//Event listener to open the distribute inventory modal
-const openModalButton = document.getElementById('open-distribute-modal-button') as HTMLElement;
-openModalButton.addEventListener('click', () => {
-    populateComponteTypeSelect('componentType');
-    distributeInventoryBackdrop.style.display = 'flex';
-    distributeInventoryModal.setAttribute('aria-modal', 'true');
-    const dateInput = document.getElementById('date') as HTMLInputElement;
-    dateInput.focus();
-    trapFocus(distributeInventoryModal, distributeInventoryBackdrop);
-});
-
-//Event listener to close the distribute inventory modal
-const closeModalButton = document.getElementById('cancel') as HTMLElement;
-closeModalButton.addEventListener('click', () => closeModal('distribute-inventory-backdrop'));
-
-loadPreviousEntries();

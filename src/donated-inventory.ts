@@ -1,17 +1,17 @@
 import { Timestamp } from "firebase/firestore";
 import {
-    createTableRow, 
-    createTable, 
-    createMessage, 
-    createDeleteModal, 
-    clearMessages, 
-    closeModal, 
+    createTableRow,
+    createTable,
+    createMessage,
+    createDeleteModal,
+    clearMessages,
+    closeModal,
     displayLoadingMessage,
-    fixDate, 
-    populateComponteTypeSelect, 
+    fixDate,
+    populateComponteTypeSelect,
     trapFocus
 } from "./utils.js";
-import { addDonatedEntryLog, deleteDonatedEntry, getDoantedInventoryLog, getNextDonatedEntryId } from "./controller.js";
+import { getFilteredLogEntries, addLogEntry, deleteLogEntry } from "./firebaseService.js";
 import { initializeApp } from "./app.js";
 import { InventoryEntry } from "./models.js";
 
@@ -35,15 +35,19 @@ function addNewRow(newEntry: InventoryEntry) {
                 const noButton = buttonRow.children[0];
                 const yesButton = buttonRow.children[1];
                 if (yesButton) {
-                    yesButton.addEventListener('click', () => {
+                    yesButton.addEventListener('click', async () => {
                         //Delete the log entry
-                        deleteDonatedEntry(newEntry['entryId']);
+                        const success = await deleteLogEntry(newEntry['entryId']);
                         //Close the delete modal
                         closeModal('delete-item-backdrop');
-                        //Create a message saying the log entry has been deleted
-                        createMessage(`Deleted entry ${fixDate(newEntry['entryDate'].toString(), 'shortDate')}: ${newEntry['quantity']} ${newEntry['componentType']} from ${newEntry['whoDonated']}`, "main-message", "delete");
-                        //Remove the entry from the table
-                        newRow.remove();
+                        if (success) {
+                            //Create a message saying the log entry has been deleted
+                            createMessage(`Deleted entry ${fixDate(newEntry['entryDate'].toString(), 'shortDate')}: ${newEntry['quantity']} ${newEntry['componentType']} to ${newEntry['destination']}`, "main-message", "delete");
+                            //Remove the entry from the table
+                            newRow.remove();
+                        } else {
+                            createMessage('Failed to delete log entry. Please try reloading the page.', 'main-message', 'error');
+                        }
                     });
                 }
                 if (noButton) {
@@ -57,51 +61,53 @@ function addNewRow(newEntry: InventoryEntry) {
     return newRow;
 }
 
-function loadPreviousEntries() {
-    const donateInventoryData: InventoryEntry[] = getDoantedInventoryLog();
-    /*Temporary solution to clear the card when form submit. Will update submitData() to 
-    add the row to the table instead of calling this function ad recreating the entire table */
-    const noEntriesP = previousEntriesCard.querySelector('p');
-    if (noEntriesP) noEntriesP.remove();
-    const previousTable = document.getElementById('previous-entries-table');
-    if (previousTable) previousTable.remove();
-    /* End of temporary solution */
-    //Display loading message
-    const loadingDiv = displayLoadingMessage();
+async function loadPreviousEntries() {
+    let donateInventoryData: InventoryEntry[] = [];
+    try {
+        donateInventoryData = await getFilteredLogEntries('donated');
+    } catch (error) {
+        createMessage("Error loading log entries. Please try reloading the page", 'main-message', 'error');
+    }
+
     if (donateInventoryData.length === 0) {
+        //Display no previous entries message
         let noEntriesP = document.createElement('p');
         let noEntries = document.createTextNode("No previous entries");
         noEntriesP.appendChild(noEntries);
-        loadingDiv.remove();
         previousEntriesCard.appendChild(noEntriesP);
     } else {
+        //Create the previous entries table
         const tableColumnHeaders: string[] = ['Date', 'Component', 'Quantity', 'Destination', 'Delete']
         const previousEntriesTable = createTable('previous-entries-table', tableColumnHeaders);
         let tableBody = donateInventoryData.reduceRight((acc: HTMLElement, currentItem: InventoryEntry) => {
+            //Create a row for the current item
             const newRow = addNewRow(currentItem);
             acc.appendChild(newRow);
             return acc;
         }, document.createElement('tbody'));
         tableBody.setAttribute('id', 'donatedTableBody');
         previousEntriesTable.appendChild(tableBody);
-        loadingDiv.remove();
         previousEntriesCard.appendChild(previousEntriesTable);
     }
+    const newDonatedEntryButton = document.getElementById('newDonatedEntryButton') as HTMLElement;
+    const loadingCard = document.getElementById('loading');
+    //Remove the loading card and show the previous log entries and the distribute inventory button
+    if (loadingCard) loadingCard.remove();
+    if (newDonatedEntryButton.classList.contains('hide')) newDonatedEntryButton.classList.remove('hide');
+    if (previousEntriesCard.classList.contains('hide')) previousEntriesCard.classList.remove('hide');
 }
 
-function submitData() {
+async function submitData() {
     //Get the data from the form
     const donatedFormData: FormData = new FormData(addInventoryModal);
     //Create an object for the entry
     let newEntry = {
-        entryId: 0,
+        entryId: "",
         entryDate: Timestamp.fromDate(new Date(0)),
         componentType: "",
         quantity: 0,
         whoDonated: ""
     }
-    //Get the next entryId. This shouldn't be needed when proper data storage is implemented
-    newEntry['entryId'] = getNextDonatedEntryId();
     //Validate date input
     const dateValue = donatedFormData.get('date');
     if (dateValue === null || dateValue === '') {
@@ -142,49 +148,53 @@ function submitData() {
         newEntry['whoDonated'] = whoDonatedValue.toString();
     }
     //Submit the entry
-    addDonatedEntryLog(newEntry);
-    //Close the modal
-    closeModal('add-inventory-backdrop');
-    //Clear the form
-    addInventoryModal.reset();
-    createMessage("The inventory has successfully been updated", "main-message", "check_circle");
-    //Get the donated log table body
-    const donatedTableBody = document.getElementById('donatedTableBody');
-    if (donatedTableBody) {
-        //If the table body exists, add the new row to the top of the table
-        const newRow = addNewRow(newEntry);
-        donatedTableBody.prepend(newRow);
-    } else {
-        //If the table body does not exist, create/load the table
-        loadPreviousEntries();
+    try {
+        await addLogEntry(newEntry);
+        //Close the modal
+        closeModal('add-inventory-backdrop');
+        //Clear the form
+        addInventoryModal.reset();
+        createMessage("The inventory has successfully been updated", "main-message", "check_circle");
+        //Get the donated log table body
+        const donatedTableBody = document.getElementById('donatedTableBody');
+        if (donatedTableBody) {
+            //If the table body exists, add the new row to the top of the table
+            const newRow = addNewRow(newEntry);
+            donatedTableBody.prepend(newRow);
+        } else {
+            //If the table body does not exist, create/load the table
+            loadPreviousEntries();
+        }
+    } catch (error: any) {
+        createMessage(error, 'donate-modal-message', 'error');
     }
+
 }
 
-initializeApp('Inventory', 'Donated Inventory');
+initializeApp('Inventory', 'Donated Inventory').then(async () => {
+    await loadPreviousEntries();
 
-//Event listener for add inventory form submit
-addInventoryModal.addEventListener('submit', (e) => {
-    e.preventDefault();
-    clearMessages();
-    submitData();
+    //Event listener for add inventory form submit
+    addInventoryModal.addEventListener('submit', (e) => {
+        e.preventDefault();
+        clearMessages();
+        submitData();
+    });
+
+    //Event listener to open the add inventory modal
+    const newDonatedEntryButton = document.getElementById('newDonatedEntryButton') as HTMLElement;
+    newDonatedEntryButton.addEventListener('click', () => {
+        populateComponteTypeSelect('componentType');
+        addInventoryModalBackdrop.style.display = 'flex';
+        addInventoryModal.setAttribute('aria-modal', 'true');
+        const dateInput = document.getElementById('date') as HTMLInputElement;
+        dateInput.focus();
+        trapFocus(addInventoryModal, addInventoryModalBackdrop);
+    });
+
+    //Event listener to close the add inventory modal
+    const closeModalButton = document.getElementById('cancel') as HTMLElement;
+    closeModalButton.addEventListener('click', () => {
+        closeModal('add-inventory-backdrop');
+    });
 });
-
-//Event listener to open the add inventory modal
-const addInventoryButton = document.getElementById('add-inventory-button') as HTMLElement;
-addInventoryButton.addEventListener('click', () => {
-    populateComponteTypeSelect('componentType');
-    addInventoryModalBackdrop.style.display = 'flex';
-    addInventoryModal.setAttribute('aria-modal', 'true');
-    const dateInput = document.getElementById('date') as HTMLInputElement;
-    dateInput.focus();
-    trapFocus(addInventoryModal, addInventoryModalBackdrop);
-});
-
-//Event listener to close the add inventory modal
-const closeModalButton = document.getElementById('cancel') as HTMLElement;
-closeModalButton.addEventListener('click', () => {
-    closeModal('add-inventory-backdrop');
-});
-
-
-loadPreviousEntries();

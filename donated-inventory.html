@@ -33,10 +33,14 @@
             <section class="form-row">
                 <a href="inventory.html" class="secondary">
                     <span class="material-symbols-outlined">arrow_back</span> Back to inventory</a>
-                <button class="primary" type="button" id="add-inventory-button">
+                <button class="primary hide" type="button" id="newDonatedEntryButton">
                     <span class="material-symbols-outlined">add</span> Add to inventory</button>
             </section>
-            <article class="card" id="previous-entries-card">
+            <article id="loading" class="card">
+                <div class="loader"></div>
+                <h2>Loading...</h2>
+            </article>
+            <article class="card hide" id="previous-entries-card">
                 <h3>Previous Entries</h3>
             </article>
         </main>

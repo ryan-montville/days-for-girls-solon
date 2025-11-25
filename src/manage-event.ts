@@ -11,7 +11,7 @@ import {
     fixDate,
     trapFocus
 } from "./utils.js";
-import { getEventById, deleteEvent, updateEvent, getSignUpEntriesForEventId, deleteSignUpEntry, updateNumberAttending } from "./firebaseService.js";
+import { getEventById, deleteEvent, updateEvent, getSignUpEntriesForEventId, deleteSignUpEntry } from "./firebaseService.js";
 import { initializeApp } from "./app.js";
 import { SignUpEntry, Event } from "./models.js";
 
@@ -187,11 +187,10 @@ function addNewRow(newEntry: SignUpEntry, eventObject: Event) {
                 if (yesButton) {
                     yesButton.addEventListener('click', async () => {
                         //Delete the sign up entry
-                        const updateNumAttendingSuccess = await updateNumberAttending(newEntry['eventId'], false);
                         const deleteEntrySuccess = await deleteSignUpEntry(newEntry['entryId']);
                         //Close the delete modal
                         closeModal('delete-item-backdrop');
-                        if (deleteEntrySuccess && updateNumAttendingSuccess) {
+                        if (deleteEntrySuccess) {
                             //Create a message saying the sign up entry has been deleted
                             createMessage(`Deleted entry from ${newEntry['fullName']}`, "main-message", "delete");
                             //Remove the entry from the table
@@ -202,8 +201,6 @@ function addNewRow(newEntry: SignUpEntry, eventObject: Event) {
                             //Create error message
                             createMessage("Error deleting entry. Please reload the page and try again", 'main-message', 'error');
                         }
-
-
                     });
                 }
                 if (noButton) {

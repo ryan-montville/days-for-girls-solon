@@ -11,118 +11,6 @@ function getArrayFromLocalStorgae(localStorageItem: string) {
     return JSON.parse(localStorageData);
 }
 
-/* Events */
-//Sorts and returns the events list
-export function getEventsList(): Event[] {
-    let eventsList: Event[] = getArrayFromLocalStorgae("events");
-    return eventsList.sort((a, b) => {
-        const dateA = a['eventDate'].toDate().getTime();
-        const dateB = b['eventDate'].toDate().getTime();
-        return dateA - dateB;
-    });
-}
-
-//Returns event matching eventId
-export function getEvent(eventId: number): Event | null {
-    const eventsList: Event[] = getArrayFromLocalStorgae("events");
-    const eventToReturn: Event | undefined = eventsList.find(eventObj => eventObj['eventId'] === eventId.toString());
-    if (eventToReturn) return eventToReturn;
-    //Return an empty event object if no event matching event ID
-    return null;
-}
-
-//Create a new event
-export function createNewEvent(newEvent: Event) {
-    let eventsList: Event[] = getArrayFromLocalStorgae("events");
-    eventsList.push(newEvent);
-    updateLocalStorage("events", eventsList);
-}
-
-//Update an event
-export function updateEvent(updatedEvent: Event) {
-    let eventsList: Event[] = getArrayFromLocalStorgae("events");
-    let eventObjIndex: number = eventsList.findIndex(item => item['eventId'] === updatedEvent['eventId']);
-    eventsList[eventObjIndex] = updatedEvent;
-    updateLocalStorage("events", eventsList);
-}
-
-//Update the number of people attending an event
-function updateNumberAttending(eventId: string, reason: string) {
-    let eventsList: Event[] = getArrayFromLocalStorgae("events");
-    const eventIndex = eventsList.findIndex(item => item['eventId'] === eventId.toString());
-    if (reason === "delete") {
-        eventsList[eventIndex]['numberAttending'] -= 1;
-    } else {
-        eventsList[eventIndex]['numberAttending'] += 1;
-    }
-    updateLocalStorage("events", eventsList);
-}
-
-//Delete an event
-export function deleteEvent(eventId: string) {
-    //Delete all sign up entries for the event
-    const signUpEntriesList: SignUpEntry[] = getArrayFromLocalStorgae("SignUpEntries");
-    const updatedSignUpList = signUpEntriesList.filter(entry => entry['eventId'] !== eventId);
-    updateLocalStorage("SignUpEntries", updatedSignUpList);
-    //Delete the event from local storage
-    let eventsList: Event[] = getArrayFromLocalStorgae("events");
-    const updatedList = eventsList.filter(eventObj => eventObj['eventId'] !== eventId.toString());
-    updateLocalStorage("events", updatedList);
-}
-
-//Get next event ID - Will be removed
-export function getNextEventId(): number {
-    let eventsList: Event[] = getArrayFromLocalStorgae("events");
-    if (eventsList.length === 0) {
-        return 1;
-    }
-    return 42;
-}
-
-/* Event sign ups */
-//Get all sign up entries matching eventId
-export function getSignUpsForEventId(eventId: string): SignUpEntry[] {
-    const signUpEntriesList: SignUpEntry[] = getArrayFromLocalStorgae("SignUpEntries");
-    return signUpEntriesList.filter(entry => entry['eventId'] === eventId);
-}
-
-//Returns sign up entry matching entry ID
-export function getSignUpEntry(entryId: string): SignUpEntry | null {
-    const signUpEntriesList: SignUpEntry[] = getArrayFromLocalStorgae("SignUpEntries");
-    const signUpEntry: SignUpEntry | undefined = signUpEntriesList.find(entry => entry['entryId'] === entryId);
-    if (signUpEntry) return signUpEntry;
-    return null;
-
-}
-
-//Add new sign up entry
-export function addSignUpEntry(newSignUp: SignUpEntry) {
-    let signUpEntriesList: SignUpEntry[] = getArrayFromLocalStorgae("SignUpEntries");
-    signUpEntriesList.push(newSignUp);
-    updateLocalStorage("SignUpEntries", signUpEntriesList);
-    updateNumberAttending(newSignUp['eventId'], "newSignUp");
-}
-
-//Delete a sign up entry
-export function deleteSignUpEntry(entryId: string) {
-    let signUpEntriesList: SignUpEntry[] = getArrayFromLocalStorgae("SignUpEntries");
-    let updateSignUpList = signUpEntriesList.filter(entry => entry['entryId'] !== entryId);
-    const signUpEntry = getSignUpEntry(entryId);
-    //Update the number attending the event
-    if (signUpEntry) updateNumberAttending(signUpEntry['eventId'], "delete");
-    updateLocalStorage("SignUpEntries", updateSignUpList);
-}
-
-//Returns the next Sign Up Entry ID - Will be removed
-export function getNextSignUpId() {
-    const signUpEntriesList: SignUpEntry[] = getArrayFromLocalStorgae("SignUpEntries");
-    if (signUpEntriesList.length === 0) {
-        return 1;
-    } else {
-        return signUpEntriesList[signUpEntriesList.length - 1]['entryId'] + 1;
-    }
-}
-
 /* Distributed Inventory */
 //Returns the distributed inventory log
 export function getDistributedInventoryLog(): InventoryEntry[] {
@@ -130,7 +18,7 @@ export function getDistributedInventoryLog(): InventoryEntry[] {
 }
 
 //Returns distributed log entry matching entry ID
-export function getDistributedLogEntry(entryId: number): InventoryEntry | null {
+export function getDistributedLogEntry(entryId: string): InventoryEntry | null {
     const distribtedInventoryLog: InventoryEntry[] = getArrayFromLocalStorgae("distributedInventory");
     const entry: InventoryEntry | undefined = distribtedInventoryLog.find(entry => entry['entryId'] === entryId);
     if (entry) return entry;
@@ -148,7 +36,7 @@ export function addDistributedEntryLog(logEntry: InventoryEntry) {
 }
 
 //Delete an entry from the distributed inventory log
-export function deleteDistributedEntry(entryId: number) {
+export function deleteDistributedEntry(entryId: string) {
     let distribtedInventoryLog: InventoryEntry[] = getArrayFromLocalStorgae("distributedInventory");
     const updatedDistributedLog = distribtedInventoryLog.filter(entry => entry['entryId'] !== entryId);
     const logEntry = getDistributedLogEntry(entryId);
@@ -158,12 +46,12 @@ export function deleteDistributedEntry(entryId: number) {
 }
 
 //Get next ID for distributed entry - Will be removed
-export function getNextDistributedEntryId(): number {
+export function getNextDistributedEntryId(): string {
     const distribtedInventoryLog: InventoryEntry[] = getArrayFromLocalStorgae("distributedInventory");
     if (distribtedInventoryLog.length === 0) {
-        return 1;
+        return "";
     }
-    return distribtedInventoryLog[distribtedInventoryLog.length - 1]['entryId'] + 1;
+    return "";
 }
 
 export function CheckInventoryForDistribution(componentTypeToCheck: string, quantityToDistribute: number): { hasEnough: boolean, quantity: number } {
@@ -190,7 +78,7 @@ export function getDoantedInventoryLog(): InventoryEntry[] {
 }
 
 //Returns donated log entry match entry ID
-export function getDonatedLogEntry(entryId: number): InventoryEntry | null {
+export function getDonatedLogEntry(entryId: string): InventoryEntry | null {
     const donatedInventoryLog: InventoryEntry[] = getArrayFromLocalStorgae("donatedInventory");
     const donatedEntry: InventoryEntry | undefined = donatedInventoryLog.find(entry => entry['entryId'] === entryId);
     if (donatedEntry) return donatedEntry;
@@ -208,7 +96,7 @@ export function addDonatedEntryLog(logEntry: InventoryEntry) {
 }
 
 //Delete an entry from the donated inventory log
-export function deleteDonatedEntry(entryId: number) {
+export function deleteDonatedEntry(entryId: string) {
     let donatedInventoryLog: InventoryEntry[] = getArrayFromLocalStorgae("donatedInventory");
     const updatedDonatedLog = donatedInventoryLog.filter(entry => entry['entryId'] !== entryId);
     const donatedEntry = getDonatedLogEntry(entryId);
@@ -218,12 +106,12 @@ export function deleteDonatedEntry(entryId: number) {
 }
 
 //Get next ID for donated Entry - Will be removed
-export function getNextDonatedEntryId(): number {
+export function getNextDonatedEntryId(): string {
     const donatedInventoryLog: InventoryEntry[] = getArrayFromLocalStorgae("donatedInventory");
     if (donatedInventoryLog.length === 0) {
-        return 1;
+        return "";
     }
-    return donatedInventoryLog[donatedInventoryLog.length - 1]['entryId'] + 1;
+    return "";
 }
 
 /* Current Inventory */
@@ -239,7 +127,7 @@ export function addComponentTypeToInventory(newComponent: ComponentItem) {
 }
 
 //Returns component matching id
-export function getComponent({componentId, componentType}: {componentId?: number, componentType?: string}): ComponentItem | null {
+export function getComponent({componentId, componentType}: {componentId?: string, componentType?: string}): ComponentItem | null {
     const currentInventoryList: ComponentItem[] = getArrayFromLocalStorgae("currentInventory");
     if (componentId) {
         let component = currentInventoryList.find(item => item['componentId'] === componentId);
@@ -256,7 +144,7 @@ export function getComponent({componentId, componentType}: {componentId?: number
 }
 
 //Delete component Type matching id and entry logs
-export function deleteComponentType(componentId: number) {
+export function deleteComponentType(componentId: string) {
     const componentToDelete: ComponentItem | null = getComponent({componentId: componentId});
     if (componentToDelete) {
         let distribtedInventoryLog = getDistributedInventoryLog();
@@ -284,12 +172,12 @@ function updateComponentInventoryQuantity(componentType: string, reason: string,
     updateLocalStorage("currentInventory", currentInventoryList);
 }
 //Returns the next current inventory id - Will be removed
-export function getNextCurrentInventoryId(): number {
+export function getNextCurrentInventoryId(): string {
     const currentInventoryList: ComponentItem[] = getArrayFromLocalStorgae("currentInventory");
     if (currentInventoryList.length === 0) {
-        return 1;
+        return "";
     }
-    return currentInventoryList[currentInventoryList.length - 1]['componentId'] + 1;
+    return "";
 }
 
 /* Component storage location */
