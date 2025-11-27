@@ -95,11 +95,11 @@ export async function initializeApp(partentPage: string, currentPage: string) {
             mobileNavToggle.innerText = 'menu';
             nav.classList.remove('open');
         }
-        createMessage("Opening Google window...", 'sign-in-message', 'info');
+        createMessage("Opening Google window...", 'main-message', 'info');
         try {
-            await signInWithGooglePopup();
+            const result = await signInWithGooglePopup();
             //If sucessful sign in with Google, close the modal and display the message
-            const user = getCurrentUser();
+            const user = result.user;
             if (user) {
                 //Close the sign in modal
                 createMessage(`Welcome ${user.displayName}`, 'main-message', 'check_circle');
@@ -113,7 +113,7 @@ export async function initializeApp(partentPage: string, currentPage: string) {
             } else {
                 errorMessage = `Error: ${error.message}`;
             }
-            createMessage(errorMessage, 'sign-in-message', 'error');
+            createMessage(errorMessage, 'main-message', 'error');
             console.error("Google sign-in error details:", error);
         }
     });

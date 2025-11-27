@@ -75,14 +75,8 @@ export async function signInWithGooglePopup() {
         const result = await signInWithPopup(auth, provider);
         // The signed-in user info is in the 'result.user'
         console.log("Successfully signed in with Google:", result.user.uid);
-        
-        // This is where you can get the Google Access Token if needed
-        // const credential = GoogleAuthProvider.credentialFromResult(result);
-        // const token = credential?.accessToken;
-
         return result;
     } catch (error: any) {
-        // createMessage(`Error during Google Sign-In: ${error}`, 'sign-in-message', 'error');
         throw error;
     }
 }
