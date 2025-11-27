@@ -9,7 +9,7 @@
     "noImplicitAny": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"], 
+    "lib": ["ES2020", "DOM", "DOM.Iterable", "webworker"], 
     "isolatedModules": true,
   },
   "include": [
