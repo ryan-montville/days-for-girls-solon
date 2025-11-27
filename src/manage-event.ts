@@ -221,7 +221,12 @@ function populateEntriesTable(eventObject: Event, eventSignUpEntries: SignUpEntr
         noEntriesP.appendChild(noEntriesText);
         signUpEntriesCard.appendChild(noEntriesP);
     } else {
+        const previousTableContainer = document.getElementById('table-container');
+        if (previousTableContainer) previousTableContainer.remove();
         //Create the table
+        const tableContainer = document.createElement('div');
+        tableContainer.setAttribute('id', 'entries-table-container');
+        tableContainer.setAttribute('class', 'table-container');
         const tableColumnHeaders: string[] = ['Name', 'Email', 'Comments', 'Delete'];
         const signUpTable = createTable('sign-up-table', tableColumnHeaders);
         let tableBody = eventSignUpEntries.reduce((acc: HTMLElement, currentEntry: SignUpEntry) => {
@@ -230,7 +235,8 @@ function populateEntriesTable(eventObject: Event, eventSignUpEntries: SignUpEntr
             return acc;
         }, document.createElement('tbody'));
         signUpTable.appendChild(tableBody);
-        signUpEntriesCard.appendChild(signUpTable);
+        tableContainer.appendChild(signUpTable);
+        signUpEntriesCard.appendChild(tableContainer);
     }
 }
 
