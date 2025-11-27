@@ -11,6 +11,11 @@ thead {
     background-color: var(--footer-background);
     color: white;
     text-align: left;
+    width: 100%;
+}
+
+tbody {
+    width: 100%;
 }
 
 td {

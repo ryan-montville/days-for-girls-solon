@@ -155,14 +155,14 @@ nav a:hover {
     color: white;
 }
 
-#open-sign-in-modal-button,
+#sign-in-button,
 #sign-out-button {
     background-color: var(--primary-accent);
     color: white;
     border: 0;
 }
 
-#open-sign-in-modal-button:hover,
+#sign-in-button:hover,
 #sign-out-button:hover {
     background-color: var(--primary-hover);
 }

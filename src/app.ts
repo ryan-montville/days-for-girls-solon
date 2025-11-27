@@ -23,11 +23,13 @@ function setUpAuthListener() {
             //Hide the sign in button and show the sign out button
             signInButton.style.display = 'none';
             signOutButton.style.display = 'block';
+            //Shower the inventory link
+            if (inventoryLink.classList.contains('hide')) inventoryLink.classList.remove('hide');
         } else {
             //User is not signed in
             console.log("User is not signed in");
             //Hide the inventory link
-            inventoryLink.style.display = 'none';
+            if (!inventoryLink.classList.contains('hide')) inventoryLink.classList.add('hide');
             //Make sure the sign in button is displayed and the sign out button is not displayed
             signInButton.style.display = 'block';
             signOutButton.style.display = 'none';
@@ -63,7 +65,7 @@ export async function initializeApp(partentPage: string, currentPage: string) {
     //Set the page elemenets once the header, footer, and modals are loaded and added to the DOM
     nav = document.querySelector('nav') as HTMLElement;
     inventoryLink = document.getElementById('inventory-link') as HTMLElement;
-    signInButton = document.getElementById('open-sign-in-modal-button') as HTMLElement;
+    signInButton = document.getElementById('sign-in-button') as HTMLElement;
     signOutButton = document.getElementById('sign-out-button') as HTMLElement;
 
     //User Authentication check
