@@ -93,7 +93,7 @@ async function loadCurrentInventory(userRole: string | null) {
         if (previousTableContainer) previousTableContainer.remove();
         const tableContainer = document.createElement('div');
         tableContainer.setAttribute('id', 'inventory-table-container');
-        tableContainer.setAttribute('class', 'table-container')
+        tableContainer.setAttribute('class', 'table-container');
         const currentInventoryTable = createTable('current-inventory-table', tableColumnHeaders);
         const tableBody = currrentInventoryArray.reduce((acc: HTMLElement, currentComponent: ComponentItem) => {
             const newRow = addNewRow(currentComponent, userRole);

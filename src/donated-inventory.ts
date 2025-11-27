@@ -79,7 +79,12 @@ async function loadPreviousEntries() {
         previousEntriesCard.appendChild(noEntriesP);
     } else {
         //Create the previous entries table
-        const tableColumnHeaders: string[] = ['Date', 'Component', 'Quantity', 'Destination', 'Delete']
+        const tableColumnHeaders: string[] = ['Date', 'Component', 'Quantity', 'Destination', 'Delete'];
+        const previousTableContainer = document.getElementById('inventory-table-container');
+        if (previousTableContainer) previousTableContainer.remove();
+        const tableContainer = document.createElement('div');
+        tableContainer.setAttribute('id', 'inventory-table-container');
+        tableContainer.setAttribute('class', 'table-container');
         const previousEntriesTable = createTable('previous-entries-table', tableColumnHeaders);
         let tableBody = donateInventoryData.reduceRight((acc: HTMLElement, currentItem: InventoryEntry) => {
             //Create a row for the current item
@@ -89,7 +94,8 @@ async function loadPreviousEntries() {
         }, document.createElement('tbody'));
         tableBody.setAttribute('id', 'donatedTableBody');
         previousEntriesTable.appendChild(tableBody);
-        previousEntriesCard.appendChild(previousEntriesTable);
+        tableContainer.appendChild(previousEntriesTable);
+        previousEntriesCard.appendChild(tableContainer);
     }
     const newDonatedEntryButton = document.getElementById('newDonatedEntryButton') as HTMLElement;
     const loadingCard = document.getElementById('loading');
