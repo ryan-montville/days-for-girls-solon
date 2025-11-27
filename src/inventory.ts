@@ -89,8 +89,11 @@ async function loadCurrentInventory(userRole: string | null) {
             tableColumnHeaders = ['Component', 'Quantity'];
         }
         //If the current inventory table already exists in the DOM, remove it
-        const previousCurrentInventoryTable = document.getElementById('current-inventory-table');
-        if (previousCurrentInventoryTable) previousCurrentInventoryTable.remove();
+        const previousTableContainer = document.getElementById('inventory-table-container');
+        if (previousTableContainer) previousTableContainer.remove();
+        const tableContainer = document.createElement('div');
+        tableContainer.setAttribute('id', 'inventory-table-container');
+        tableContainer.setAttribute('class', 'table-container')
         const currentInventoryTable = createTable('current-inventory-table', tableColumnHeaders);
         const tableBody = currrentInventoryArray.reduce((acc: HTMLElement, currentComponent: ComponentItem) => {
             const newRow = addNewRow(currentComponent, userRole);
@@ -99,7 +102,8 @@ async function loadCurrentInventory(userRole: string | null) {
         }, document.createElement('tbody'));
         tableBody.setAttribute('id', 'currentInventoryTableBody')
         currentInventoryTable.appendChild(tableBody);
-        currentInventoryCard.appendChild(currentInventoryTable);
+        tableContainer.appendChild(currentInventoryTable)
+        currentInventoryCard.appendChild(tableContainer);
     }
     //Hide the loading card and display the current inventory card
     const loadingCard = document.getElementById('loading');
