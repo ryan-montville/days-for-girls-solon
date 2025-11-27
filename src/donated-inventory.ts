@@ -4,9 +4,7 @@ import {
     createTable,
     createMessage,
     createDeleteModal,
-    clearMessages,
     closeModal,
-    displayLoadingMessage,
     fixDate,
     populateComponteTypeSelect,
     trapFocus
@@ -36,17 +34,17 @@ function addNewRow(newEntry: InventoryEntry) {
                 const yesButton = buttonRow.children[1];
                 if (yesButton) {
                     yesButton.addEventListener('click', async () => {
-                        //Delete the log entry
-                        const success = await deleteLogEntry(newEntry['entryId']);
                         //Close the delete modal
                         closeModal('delete-item-backdrop');
-                        if (success) {
-                            //Create a message saying the log entry has been deleted
+                        try {
+                            //Delete the log entry
+                        const success = await deleteLogEntry(newEntry['entryId']);
+                        //Create a message saying the log entry has been deleted
                             createMessage(`Deleted entry ${fixDate(newEntry['entryDate'].toString(), 'shortDate')}: ${newEntry['quantity']} ${newEntry['componentType']} to ${newEntry['destination']}`, "main-message", "delete");
                             //Remove the entry from the table
                             newRow.remove();
-                        } else {
-                            createMessage('Failed to delete log entry. Please try reloading the page.', 'main-message', 'error');
+                        } catch (error: any) {
+                            createMessage(error, 'main-message', 'error');
                         }
                     });
                 }
@@ -65,8 +63,9 @@ async function loadPreviousEntries() {
     let donateInventoryData: InventoryEntry[] = [];
     try {
         donateInventoryData = await getFilteredLogEntries('donated');
-    } catch (error) {
-        createMessage("Error loading log entries. Please try reloading the page", 'main-message', 'error');
+        console.log(donateInventoryData);
+    } catch (error: any) {
+        createMessage(error, 'main-message', 'error');
     }
 
     if (donateInventoryData.length === 0) {
@@ -98,6 +97,8 @@ async function loadPreviousEntries() {
 }
 
 async function submitData() {
+    //Create a 'submitting data' message while the app validates and submits the entry log
+    createMessage("Submitting entry log data...", "donate-modal-message", "info");
     //Get the data from the form
     const donatedFormData: FormData = new FormData(addInventoryModal);
     //Create an object for the entry
@@ -177,7 +178,6 @@ initializeApp('Inventory', 'Donated Inventory').then(async () => {
     //Event listener for add inventory form submit
     addInventoryModal.addEventListener('submit', (e) => {
         e.preventDefault();
-        clearMessages();
         submitData();
     });
 

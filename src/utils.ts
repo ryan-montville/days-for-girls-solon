@@ -74,6 +74,7 @@ export function clearMessages() {
 }
 
 export function storeMessage(message: string, messageContainer: string, icon: string) {
+    clearMessages();
     const messageToStore = { message: message, messageContainer: messageContainer, icon: icon };
     sessionStorage.setItem("message", JSON.stringify(messageToStore));
 }
@@ -97,8 +98,8 @@ export function closeModal(modalBackdropId: string) {
 }
 
 export function createMessage(message: string, location: string, type: string) {
+    clearMessages();
     const messageWrapper = document.getElementById(location) as HTMLElement;
-    messageWrapper.innerHTML = '';
     const messageDiv = document.createElement('div');
     if (type === 'check_circle') {
         messageDiv.setAttribute('class', 'success message');
@@ -273,9 +274,4 @@ export function trapFocus(modal: HTMLElement, backdrop: HTMLElement) {
             }
         }
     });
-}
-
-export function updateLocalStorage(itemName: string, data: Event[] | SignUpEntry[] | ComponentItem[] | InventoryEntry[] | string) {
-    const dataString: string = JSON.stringify(data);
-    localStorage.setItem(itemName, dataString);
 }

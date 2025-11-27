@@ -1,5 +1,5 @@
 import { initializeApp } from "./app.js";
-import { createButton, createMessage, clearMessages, fixDate } from "./utils.js";
+import { createButton, createMessage, fixDate } from "./utils.js";
 import { auth } from "./firebase.js";
 import { addDonatePageContent, updateDonatePageContent, getDonatePageContent } from "./firebaseService.js";
 import { DonatePageContent } from "./models.js";
@@ -15,7 +15,12 @@ let pageContentString: string = "";
 async function loadDonateContent() {
     const pageContentSection = document.getElementById('pageContentSection') as HTMLElement;
     pageContentSection.innerHTML = '';
-    let pageContentObject: DonatePageContent | null = await getDonatePageContent();
+    let pageContentObject: DonatePageContent | null = null;
+    try {
+        pageContentObject = await getDonatePageContent();
+    } catch (error: any) {
+        createMessage(error, 'main-message', 'error');
+    }
     let lastUpdated: string = "";
     if (!pageContentObject) {
         pageContentString = "## No content Found";
@@ -57,7 +62,10 @@ initializeApp('Donate', 'Donate').then(response => {
 });
 
 async function submitData() {
-    clearMessages();
+    //Close the cheat sheet card
+    markdownCheetSheetCard.classList.add('hide');
+    //Create a submitting data message while the app validates and submits the data
+    createMessage("Submitting data to update page content...", 'main-message', 'info');
     const editForm = document.getElementById('editForm') as HTMLFormElement;
     if (editForm) {
         const editFormData = new FormData(editForm)
@@ -66,23 +74,19 @@ async function submitData() {
         if (pageContent === null || pageContent.toString().trim() === '') {
             createMessage("Please enter the content for the donate page", 'main-message', 'error');
         } else {
-            let sucess: boolean;
-            if (hasDonateContent) {
-                sucess = await updateDonatePageContent(pageContent.toString());
-            } else {
-                sucess = await addDonatePageContent(pageContent.toString());
-            }
-            if (sucess) {
+            try {
+                if (hasDonateContent) {
+                    await updateDonatePageContent(pageContent.toString());
+                } else {
+                    await addDonatePageContent(pageContent.toString());
+                }
                 editForm.remove();
                 loadDonateContent();
-                markdownCheetSheetCard.classList.add('hide');
                 outputCard.classList.remove('hide');
                 createMessage("Content Sucessfully updated", 'main-message', 'check_circle');
-            } else {
-                editForm.remove();
-                markdownCheetSheetCard.classList.add('hide');
+            } catch (error: any) {
                 outputCard.classList.remove('hide');
-                createMessage("Failed to update content. Please try again.", 'main-message', 'error');
+                createMessage(error, 'main-message', 'error');
             }
         }
     } else {

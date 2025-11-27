@@ -4,10 +4,11 @@ import { createMessage, fixDate } from "./utils.js";
 import { getAllEvents } from "./firebaseService.js";
 import { Event } from "./models.js";
 import { auth } from "./firebase.js";
+import { getUserRole } from "./authService.js";
 
 let main = document.getElementById('maincontent') as HTMLElement;
 
-function addEventToPage(eventData: Event, user: User | null) {
+function addEventToPage(eventData: Event, userRole: string) {
     //Create a new event article to add to the accumulator
     let newEvent: HTMLElement = document.createElement('article');
     newEvent.setAttribute('id', eventData['eventId'].toString());
@@ -42,7 +43,7 @@ function addEventToPage(eventData: Event, user: User | null) {
     buttonRow.setAttribute('class', 'button-row left');
     let button: HTMLElement = document.createElement('a');
     button.setAttribute('class', 'secondary');
-    if (user) {
+    if (userRole === "admin") {
         //Add manage event button
         button.setAttribute('href', `./manage-event?id=${eventData['eventId']}`);
         button.textContent = 'Manage Event';
@@ -56,13 +57,14 @@ function addEventToPage(eventData: Event, user: User | null) {
     return newEvent;
 }
 
-async function loadEvents(user: User | null) {
+async function loadEvents(userRole: string) {
     let eventsList: Event[] = [];
     try {
         //Get the events list from the firestoreService
         eventsList = await getAllEvents();
-    } catch (error) {
-        createMessage("Failed to load events. Please try reloading the page", 'main-message', 'error');
+    } catch (error: any) {
+        createMessage(error, 'main-message', 'error');
+        return;
     }
 
     if (eventsList.length === 0) {
@@ -80,7 +82,7 @@ async function loadEvents(user: User | null) {
     } else {
         //Create the event elements
         const events = eventsList.reduce((acc: HTMLElement, currentEvent: Event) => {
-            const newEvent = addEventToPage(currentEvent, user);
+            const newEvent = addEventToPage(currentEvent, userRole);
             acc.appendChild(newEvent);
             return acc;
         }, document.createElement('section'));
@@ -91,13 +93,14 @@ async function loadEvents(user: User | null) {
     }
 }
 
-function updateUIbasedOnAuth(user: User | null) {
+async function updateUIbasedOnAuth(userRole: string) {
     const eventsHeader = document.getElementById('events-header') as HTMLElement;
     //Check to see if the events list element is already in the DOM and remove it
     const eventsList = document.getElementById('events-list');
     if (eventsList) eventsList.remove();
-    if (user) {
-        //Add the Create New Event link and add it to the DOM
+    //If the user is an admin, add the create event button
+    if (userRole === "admin") {
+        //Add the Create New Event link and add it to the DOM if the user is an admin
         const createNewEventLink = document.createElement('a');
         createNewEventLink.setAttribute('href', 'create-new-event.html');
         createNewEventLink.setAttribute('class', 'secondary');
@@ -118,9 +121,20 @@ function updateUIbasedOnAuth(user: User | null) {
 }
 
 initializeApp('Upcoming Events', 'Upcoming Events').then(() => {
-    auth.onAuthStateChanged(user => {
-        updateUIbasedOnAuth(user);
-        loadEvents(user);
+    auth.onAuthStateChanged(async user => {
+        let userRole: string = "";
+        if (user) {
+            const fbUserRole = await getUserRole(user.uid);
+            if (fbUserRole) {
+                userRole = fbUserRole;
+            } else {
+                userRole = "signedInUser";
+            }
+        } else {
+            userRole = "notSignedIn";
+        }
+        updateUIbasedOnAuth(userRole);
+        loadEvents(userRole);
     });
 
 });

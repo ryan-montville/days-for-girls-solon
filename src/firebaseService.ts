@@ -1,21 +1,21 @@
-import { initializeApp } from "firebase/app";
+import { FirebaseError, initializeApp } from "firebase/app";
 import {
+    addDoc,
     collection,
+    deleteDoc,
     doc,
+    DocumentSnapshot,
     getDoc,
     getDocs,
-    addDoc,
-    updateDoc,
-    deleteDoc,
-    query,
-    where,
-    Timestamp,
-    CollectionReference,
-    DocumentSnapshot,
-    setDoc,
+    limit,
     orderBy,
+    updateDoc,
+    query,
     runTransaction,
-    limit
+    serverTimestamp,
+    setDoc,
+    Timestamp,
+    where
 } from "firebase/firestore";
 import { ComponentItem, DonatePageContent, Event, InventoryEntry, SignUpEntry } from "./models.js";
 import { db } from "./firebase.js";
@@ -23,12 +23,6 @@ import { db } from "./firebase.js";
 //Global Firebase Variables
 declare const __app_id: string;
 const appId: string = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-
-// Helper function to get the base collection path
-function getCollectionRef(collectionName: string): CollectionReference<any> {
-    const path = `/artifacts/${appId}/public/data/${collectionName}`;
-    return collection(db, path);
-}
 
 /* Functions to map Doc to objects*/
 function mapDocToDonateContent(docSnap: DocumentSnapshot<any>): DonatePageContent {
@@ -71,7 +65,7 @@ function mapDocToInventoryEntry(docSnap: DocumentSnapshot<any>): InventoryEntry 
 export async function getAllEvents(): Promise<Event[]> {
     try {
         const events: Event[] = [];
-        const q = query(getCollectionRef('events'));
+        const q = query(collection(db, 'events'), orderBy('eventDate', 'asc'));
         const querySnapshot = await getDocs(q);
 
         querySnapshot.forEach((doc) => {
@@ -86,7 +80,7 @@ export async function getAllEvents(): Promise<Event[]> {
 
 export async function getEventById(eventId: string): Promise<Event | null> {
     try {
-        const docRef = doc(getCollectionRef('events'), eventId);
+        const docRef = doc(collection(db, 'events'), eventId);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
@@ -103,28 +97,35 @@ export async function getEventById(eventId: string): Promise<Event | null> {
 
 export async function addEvent(newEvent: Omit<Event, 'eventId'>): Promise<string> {
     try {
-        const docRef = await addDoc(getCollectionRef('events'), newEvent);
+        const docRef = await addDoc(collection(db, 'events'), newEvent);
         return docRef.id;
     } catch (error) {
         console.error("Error adding event:", error);
-        throw error;
+        if (error instanceof FirebaseError && error.code === 'permission-denied') {
+            throw new Error("Authorization Error: Only admins create events.");
+        } else {
+            throw new Error("Error adding event. Please try reloading the page.");
+        }
     }
 }
 
-export async function updateEvent(eventId: string, updatedEvent: Event): Promise<boolean> {
+export async function updateEvent(eventId: string, updatedEvent: Event) {
     try {
-        const docRef = doc(getCollectionRef('events'), eventId);
+        const docRef = doc(collection(db, 'events'), eventId);
         const { eventId: _, ...updateData } = updatedEvent;
         await updateDoc(docRef, updateData as any);
         console.log(`Event updated successfully: ${eventId}`);
-        return true;
     } catch (error) {
         console.error("Error updating event:", error);
-        return false;
+        if (error instanceof FirebaseError && error.code === 'permission-denied') {
+            throw new Error("Authorization Error: Only admins update events.");
+        } else {
+            throw new Error("Error updating event. Please try reloading the page.");
+        }
     }
 }
 
-export async function deleteEvent(eventId: string): Promise<boolean> {
+export async function deleteEvent(eventId: string) {
     try {
         //Get all sign-up entries for the event
         const entriesToDelete = await getSignUpEntriesForEventId(eventId);
@@ -133,13 +134,16 @@ export async function deleteEvent(eventId: string): Promise<boolean> {
         await Promise.all(deletePromises);
         console.log(`Successfully deleted ${entriesToDelete.length} sign-up entries for event: ${eventId}`);
         //Delete the event document itself
-        const docRef = doc(getCollectionRef('events'), eventId);
+        const docRef = doc(collection(db, 'events'), eventId);
         await deleteDoc(docRef);
         console.log(`Event deleted successfully: ${eventId}`);
-        return true;
     } catch (error) {
         console.error("Error deleting event and related sign-up entries:", error);
-        return false;
+        if (error instanceof FirebaseError && error.code === 'permission-denied') {
+            throw new Error("Authorization Error: Only admins delete events.");
+        } else {
+            throw new Error("Error deleting event. Please try reloading the page.");
+        }
     }
 }
 
@@ -148,13 +152,13 @@ export async function addSignUpEntry(newEntry: Omit<SignUpEntry, 'entryId'>): Pr
     const eventId = newEntry.eventId;
 
     //Get document reference to get its ID.
-    const newEntryRef = doc(getCollectionRef('signUpEntries'));
+    const newEntryRef = doc(collection(db, 'signUpEntries'));
     const entryId = newEntryRef.id;
 
     try {
         //Using Firestore transaction to make sure the entry is only added if it can update the event's number attending
         await runTransaction(db, async (txn) => {
-            const eventRef = doc(getCollectionRef('events'), eventId);
+            const eventRef = doc(collection(db, 'events'), eventId);
 
             //Read the Event document
             const eventSnap = await txn.get(eventRef);
@@ -179,7 +183,7 @@ export async function addSignUpEntry(newEntry: Omit<SignUpEntry, 'entryId'>): Pr
 
     } catch (error) {
         console.error("Error adding sign-up entry (Transaction aborted):", error);
-        throw error;
+        throw new Error("Failed to sign up for the event. Please try reloading the page");
     }
 }
 
@@ -187,7 +191,7 @@ export async function getSignUpEntriesForEventId(eventId: string): Promise<SignU
     try {
         const entries: SignUpEntry[] = [];
         //Create a query to filter documents where eventId matches the provided ID
-        const q = query(getCollectionRef('signUpEntries'), where('eventId', '==', eventId));
+        const q = query(collection(db, 'signUpEntries'), where('eventId', '==', eventId));
         const querySnapshot = await getDocs(q);
 
         querySnapshot.forEach((doc) => {
@@ -197,26 +201,26 @@ export async function getSignUpEntriesForEventId(eventId: string): Promise<SignU
         return entries;
     } catch (error) {
         console.error(`Error fetching sign-up entries for event ${eventId}:`, error);
-        throw error;
+        throw new Error("Failed to get the sign up entries for this event. Please try reloading the page.")
     }
 }
 
-export async function deleteSignUpEntry(entryId: string): Promise<boolean> {
+export async function deleteSignUpEntry(entryId: string) {
     try {
         //Using Firestore transaction to make sure the entry is only deleted if it can update the event's number attending
         await runTransaction(db, async (txn) => {
-            const entryRef = doc(getCollectionRef('signUpEntries'), entryId);
+            const entryRef = doc(collection(db, 'signUpEntries'), entryId);
 
             //Read the sign-up entry
             const entrySnap = await txn.get(entryRef);
             if (!entrySnap.exists()) {
                 console.warn(`Sign-up entry ${entryId} not found.`);
-                return;
+                throw new Error("Error. Sign up entry does not exist.");
             }
 
             const entryToDelete = mapDocToSignUpEntry(entrySnap);
             const eventId = entryToDelete.eventId;
-            const eventRef = doc(getCollectionRef('events'), eventId);
+            const eventRef = doc(collection(db, 'events'), eventId);
             //Read the Event document
             const eventSnap = await txn.get(eventRef);
 
@@ -236,33 +240,39 @@ export async function deleteSignUpEntry(entryId: string): Promise<boolean> {
         });
 
         console.log(`Sign-up entry deleted successfully: ${entryId}. Event attendance updated via transaction.`);
-        return true;
     } catch (error) {
         console.error(`Error deleting sign-up entry ${entryId} (Transaction aborted):`, error);
-        return false;
+        if (error instanceof FirebaseError && error.code === 'permission-denied') {
+            throw new Error("Authorization Error: Only admins delete sign up entries.");
+        } else {
+            throw new Error("Error deleting sign up entry. Please try reloading the page.");
+        }
     }
 }
 
 /* ---------------- Donate Page Content (Single Document) ---------------- */
-export async function addDonatePageContent(content: string): Promise<boolean> {
+export async function addDonatePageContent(content: string) {
     try {
-        const docRef = doc(getCollectionRef('donatePage'), 'donate-page-content');
+        const docRef = doc(collection(db, 'donatePage'), 'donate-page-content');
         const newContent: DonatePageContent = {
             content: content,
             lastUpdated: Timestamp.now()
         };
         await setDoc(docRef, newContent);
         console.log(`Initial donate page content added/set with ID: ${'donate-page-content'}`);
-        return true;
     } catch (error) {
         console.error("Error adding donate page content:", error);
-        return false;
+        if (error instanceof FirebaseError && error.code === 'permission-denied') {
+            throw new Error("Authorization Error: Only admins can update page content.");
+        } else {
+            throw new Error("Error updating page content. Please try reloading the page.");
+        }
     }
 }
 
 export async function getDonatePageContent(): Promise<DonatePageContent | null> {
     try {
-        const docRef = doc(getCollectionRef('donatePage'), 'donate-page-content');
+        const docRef = doc(collection(db, 'donatePage'), 'donate-page-content');
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
@@ -273,29 +283,32 @@ export async function getDonatePageContent(): Promise<DonatePageContent | null> 
         }
     } catch (error) {
         console.error("Error fetching donate page content:", error);
-        return null;
+        throw new Error("Failed to load page content. Please try reloading the page.")
     }
 }
 
-export async function updateDonatePageContent(content: string): Promise<boolean> {
+export async function updateDonatePageContent(content: string) {
     try {
-        const docRef = doc(getCollectionRef('donatePage'), 'donate-page-content');
+        const docRef = doc(collection(db, 'donatePage'), 'donate-page-content');
         await updateDoc(docRef, {
             content: content,
             lastUpdated: Timestamp.now()
         });
         console.log(`Donate page content updated at ID: ${'donate-page-content'}`);
-        return true;
     } catch (error) {
         console.error("Error updating donate page content:", error);
-        return false;
+        if (error instanceof FirebaseError && error.code === 'permission-denied') {
+            throw new Error("Authorization Error: Only admins can update page content.");
+        } else {
+            throw new Error("Error updating page content. Please try reloading the page.");
+        }
     }
 }
 
 /* ---------------- Inventory ---------------- */
 //Helper function for seedIfEmptyInventoryLog()
 async function getOrCreateDummyComponentId(): Promise<string> {
-    const inventoryRef = getCollectionRef('inventory');
+    const inventoryRef = collection(db, 'inventory');
     //Check if any component exists
     const q = query(inventoryRef, limit(1));
     const querySnapshot = await getDocs(q);
@@ -307,7 +320,7 @@ async function getOrCreateDummyComponentId(): Promise<string> {
     //Create a new dummy component since the inventory is empty
     console.log("Inventory is empty. Creating a dummy component for logging.");
     const dummyComponent: Omit<ComponentItem, 'componentId'> = {
-        componentType: "Placeholder component. Please delete",
+        componentType: "Placeholder component. Please delete after adding a real component",
         quantity: 9999
     };
 
@@ -317,7 +330,7 @@ async function getOrCreateDummyComponentId(): Promise<string> {
 export async function getAllComponents(): Promise<ComponentItem[]> {
     try {
         const components: ComponentItem[] = [];
-        const q = query(getCollectionRef('inventory'));
+        const q = query(collection(db, 'inventory'));
         const querySnapshot = await getDocs(q);
 
         querySnapshot.forEach((doc) => {
@@ -326,13 +339,13 @@ export async function getAllComponents(): Promise<ComponentItem[]> {
         return components;
     } catch (error) {
         console.error("Error fetching all components:", error);
-        throw error;
+        throw new Error("Failed to get inventory. Please try reloading the page.");
     }
 }
 
 export async function getComponentbyId(componentId: string): Promise<ComponentItem | null> {
     try {
-        const docRef = doc(getCollectionRef('inventory'), componentId);
+        const docRef = doc(collection(db, 'inventory'), componentId);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
@@ -343,16 +356,16 @@ export async function getComponentbyId(componentId: string): Promise<ComponentIt
         }
     } catch (error) {
         console.error("Error fetching component:", error);
-        throw error;
+        throw new Error("Failed to get component. Please try reloading the page.")
     }
 }
 
 export async function addComponent(newComponent: Omit<ComponentItem, 'componentId'>): Promise<string> {
     try {
-        const componentRef = getCollectionRef('inventory');
+        const componentRef = collection(db, 'inventory');
         //Use the componentType as the document ID
         const componentId = newComponent['componentType'];
-        const docRef = doc(componentRef, componentId); 
+        const docRef = doc(componentRef, componentId);
 
         const componentData: ComponentItem = {
             ...newComponent,
@@ -360,38 +373,23 @@ export async function addComponent(newComponent: Omit<ComponentItem, 'componentI
         };
 
         //Use setDoc to write the data with the specific componentType ID
-        await setDoc(docRef, componentData as any); 
+        await setDoc(docRef, componentData as any);
         console.log(`Component with id ${componentId} added to inventory`);
         return componentId;
     } catch (error) {
         console.error("Error adding component:", error);
-        throw error;
+        if (error instanceof FirebaseError && error.code === 'permission-denied') {
+            throw new Error("Authorization Error: Only admins can add components.");
+        } else {
+            throw new Error("Failed to update component. Please try reloading the page.");
+        }
     }
 }
 
-//Make sure this is not needed
-// export async function updateComponentQuantity(componentId: string, additionalCount: number, isIncrement: boolean): Promise<boolean> {
-//     try {
-//         //Get the reference for the component
-//         const docRef = doc(getCollectionRef('inventory'), componentId);
-//         //Determine whether add or subtract additionalCount
-//         const changeValue = isIncrement ? additionalCount : additionalCount * -1;
-//         //Update the quantity
-//         await updateDoc(docRef, {
-//             quantity: increment(changeValue)
-//         });
-//         return true;
-//     } catch (error) {
-//         console.error("Error updating quantity:", error);
-//         return false;
-//     }
-
-// }
-
-export async function deleteComponent(componentId: string): Promise<boolean> {
+export async function deleteComponent(componentId: string) {
     try {
         //Find all the log entries for the component
-        const logRef = getCollectionRef('inventoryLog');
+        const logRef = collection(db, 'inventoryLog');
         const q = query(logRef, where('componentType', '==', componentId));
         const querySnapshot = await getDocs(q);
 
@@ -408,13 +406,16 @@ export async function deleteComponent(componentId: string): Promise<boolean> {
         }
 
         //Delete the component
-        const docRef = doc(getCollectionRef('inventory'), componentId);
+        const docRef = doc(collection(db, 'inventory'), componentId);
         await deleteDoc(docRef);
         console.log(`Deleted component with id: ${componentId}`);
-        return true;
     } catch (error) {
         console.log("Error deleting component and related log entries:", error);
-        return false;
+        if (error instanceof FirebaseError && error.code === 'permission-denied') {
+            throw new Error("Authorization Error: Only admins can delete components.");
+        } else {
+            throw new Error("Failed to delete component. Please try reloading the page.");
+        }
     }
 }
 
@@ -422,13 +423,13 @@ export async function deleteComponent(componentId: string): Promise<boolean> {
 //If there are no log entries, create a donated and distributed entry to prevent errors in getFilteredLogEntries() 
 export async function seedIfEmptyInventoryLog(): Promise<void> {
     try {
-        const logRef = getCollectionRef('inventoryLog');
+        const logRef = collection(db, 'inventoryLog');
         const q = query(logRef, limit(1));
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
             console.log("Inventory Log is empty. Seeding with initial entries (Donated & Distributed).");
-            
+
             //Ensure a component exists to link the log entry to
             const componentId = await getOrCreateDummyComponentId();
             if (!componentId) {
@@ -467,7 +468,7 @@ export async function getAllLogEntires(): Promise<InventoryEntry[]> {
     try {
         const inventoryEntries: InventoryEntry[] = [];
         //Sort all entries by date
-        const q = query(getCollectionRef('inventoryLog'), orderBy("entryDate", "desc"));
+        const q = query(collection(db, 'inventoryLog'), orderBy("entryDate", "desc"));
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
             inventoryEntries.push(mapDocToInventoryEntry(doc));
@@ -475,7 +476,7 @@ export async function getAllLogEntires(): Promise<InventoryEntry[]> {
         return inventoryEntries;
     } catch (error) {
         console.error("Error fetching all inventory log entries:", error);
-        throw error;
+        throw new Error("Failed to load inventory log. Please try reloading the page.")
     }
 }
 
@@ -483,60 +484,38 @@ export async function getAllLogEntires(): Promise<InventoryEntry[]> {
 export async function getFilteredLogEntries(logType: string): Promise<InventoryEntry[]> {
     try {
         let q;
-        const logRef = getCollectionRef('inventoryLog');
-
+        const logRef = collection(db, 'inventoryLog');
         if (logType === 'donated') {
-            //If logType === donated, return all inventory log entries where "whoDonated" is not null
+            //If logType === donated, return all inventory log entries where "whoDonated" is NOT null/empty.
             q = query(
                 logRef,
-                where('whoDonated', '!=', null),
-                orderBy("whoDonated", "asc"), // Must be the first sort when using != filter
-                orderBy("entryDate", "desc")
+                where('whoDonated', '>', ''),
+                orderBy("entryDate", "desc"),
+                orderBy("whoDonated", "asc")
             );
         } else if (logType === 'distributed') {
-            //If logType === distributed, return all inventory log entries where "destination" is not null
+            //If logType === distributed, return all inventory log entries where "destination" is NOT null/empty.
             q = query(
                 logRef,
-                where('destination', '!=', null),
-                orderBy("destination", "asc"), // Must be the first sort when using != filter
-                orderBy("entryDate", "desc")
+                where('destination', '>', null),
+                orderBy("entryDate", "desc"),
+                orderBy("destination", "asc")
             );
         } else {
             console.warn(`Invalid logType provided: ${logType}. Returning all log entries.`);
             return getAllLogEntires();
         }
-
         const inventoryEntries: InventoryEntry[] = [];
         const querySnapshot = await getDocs(q);
-        
         querySnapshot.forEach((doc) => {
             inventoryEntries.push(mapDocToInventoryEntry(doc));
         });
-
         return inventoryEntries;
-
     } catch (error) {
         console.error(`Error fetching filtered inventory log entries for type ${logType}:`, error);
-        throw error;
+        throw new Error(`Failed to load ${logType} inventory log. Please try reloading the page.`)
     }
 }
-
-// export async function getLogEntryById(entryId: string): Promise<InventoryEntry | null> {
-//     try {
-//         const docRef = doc(getCollectionRef('inventoryLog'), entryId);
-//         const docSnap = await getDoc(docRef);
-
-//         if (docSnap.exists()) {
-//             return mapDocToInventoryEntry(docSnap);
-//         } else {
-//             console.warn("No such inventory log entry found!");
-//             return null;
-//         }
-//     } catch (error) {
-//         console.error("Error fetching inventory log entry:", error);
-//         throw error;
-//     }
-// }
 
 export async function addLogEntry(newLogEntry: Omit<InventoryEntry, 'entryId'>): Promise<string> {
     //Used to update the quantity of the component
@@ -556,13 +535,13 @@ export async function addLogEntry(newLogEntry: Omit<InventoryEntry, 'entryId'>):
     }
 
     //Create a new document reference first to get its ID
-    const newLogEntryRef = doc(getCollectionRef('inventoryLog'));
+    const newLogEntryRef = doc(collection(db, 'inventoryLog'));
     const entryId = newLogEntryRef.id;
 
     try {
         //Using Firestore transactions to make sure the log entry is only added if it updates the component quantity
         await runTransaction(db, async (txn) => {
-            const componentRef = doc(getCollectionRef('inventory'), componentId);
+            const componentRef = doc(collection( db, 'inventory'), componentId);
             const componentSnap = await txn.get(componentRef);
 
             if (!componentSnap.exists()) {
@@ -594,19 +573,19 @@ export async function addLogEntry(newLogEntry: Omit<InventoryEntry, 'entryId'>):
     }
 }
 
-export async function deleteLogEntry(entryId: string): Promise<boolean> {
+export async function deleteLogEntry(entryId: string) {
     try {
         //Using Firestore transactions to make sure the log entry is only deleted if it updates the component quantity
         await runTransaction(db, async (txn) => {
             //Document references
-            const logEntryRef = doc(getCollectionRef('inventoryLog'), entryId);
+            const logEntryRef = doc(collection(db, 'inventoryLog'), entryId);
 
             //Read the log entry to determine component and quantity
             const logEntrySnap = await txn.get(logEntryRef);
 
             if (!logEntrySnap.exists()) {
                 console.warn(`Log entry ${entryId} not found.`);
-                return;
+                throw new Error("Error: Inventory entry does not exist.")
             }
 
             const logEntryToDelete = mapDocToInventoryEntry(logEntrySnap);
@@ -626,7 +605,7 @@ export async function deleteLogEntry(entryId: string): Promise<boolean> {
                 return;
             }
 
-            const componentRef = doc(getCollectionRef('inventory'), componentId);
+            const componentRef = doc(collection(db, 'inventory'), componentId);
             const componentSnap = await txn.get(componentRef);
 
             if (!componentSnap.exists()) {
@@ -651,10 +630,12 @@ export async function deleteLogEntry(entryId: string): Promise<boolean> {
         });
 
         console.log(`Inventory log entry deleted successfully: ${entryId}. Inventory reversal guaranteed via transaction.`);
-        return true;
     } catch (error) {
         console.error(`Error deleting inventory log entry ${entryId} (Transaction aborted):`, error);
-        //Transactions automatically roll back
-        return false;
+        if (error instanceof FirebaseError && error.code === 'permission-denied') {
+            throw new Error("Authorization Error: Only admins can delete inventory entired.");
+        } else {
+            throw new Error("Failed to delete inventory entry. Please try reloading the page.");
+        }
     }
 }

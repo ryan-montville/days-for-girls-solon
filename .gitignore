@@ -29,7 +29,5 @@ Thumbs.db
 .vscode/
 
 dist/
-
-# Temp ignore for firebase until properly implemented
 dist/firebase.js
 src/firebase.ts

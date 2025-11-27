@@ -3,12 +3,14 @@ import { initializeApp } from "./app.js";
 import { addEvent } from "./firebaseService.js";
 import { Timestamp } from "firebase/firestore";
 import { Event } from "./models.js";
+import { getUserRole } from "./authService.js";
+import { auth } from "./firebase.js";
 
 const createForm = document.getElementById('create-event') as HTMLFormElement;
 
 async function submitData() {
-    //Clear any messages
-    clearMessages();
+    //Create a 'Submitting event data while the app validates and submits the event
+    createMessage("Submitting event data...", "main-message", "info");
     //Get the data from the form
     const formData: FormData = new FormData(createForm);
     //Create an object for the new event
@@ -70,16 +72,34 @@ async function submitData() {
         storeMessage(`Successfully created event '${newEventData.eventTitle}'`, 'main-message', 'check_circle');
         // Redirect to the events page
         window.location.href = 'events.html';
-    } catch (error) {
-        createMessage("Failed to create event. Please try again.", 'main-message', 'error');
+    } catch (error: any) {
+        createMessage(error, 'main-message', 'error');
     }
 }
 
-initializeApp('Upcoming Events', 'Create Event');
+initializeApp('Upcoming Events', 'Create Event').then(async () => {
+    auth.onAuthStateChanged(async user => {
+        if (user) {
+            //Check the user's role
+            const userRole = await getUserRole(user.uid);
+            if (userRole === "admin") {
+                //Currently only admins can create new events
+                //Create form submit event listener
+                createForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    clearMessages();
+                    submitData();
+                });
+            } else {
+                //If the user is not an admin, redirect them back to the event page
+            storeMessage("Only admins can create new events", 'main-message', 'error');
+            window.location.href = 'events.html';
+            }
+        } else {
+            //If not signed in, redirect them back to the event page
+            storeMessage("Only admins can create new events", 'main-message', 'error');
+            window.location.href = 'events.html';
+        }
+    })
+})
 
-//Create form submit event listener
-createForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    clearMessages();
-    submitData();
-});

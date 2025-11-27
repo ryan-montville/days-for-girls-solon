@@ -7,7 +7,8 @@ import {
     GoogleAuthProvider,
     signInWithPopup,
 } from "firebase/auth";
-import { auth } from "./firebase.js";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "./firebase.js";
 import { createMessage } from "./utils.js";
 
 //Register a new user and sign them in
@@ -42,6 +43,28 @@ export async function signOutUser(): Promise<void> {
 
 export function getCurrentUser(): User | null {
     return auth.currentUser;
+}
+
+export async function getUserRole(uid: string): Promise<string | null> {
+    //Create a reference to the specific user's document
+    const userDocRef = doc(db, 'users', uid);
+
+    try {
+        //Fetch the document
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists()) {
+            //Extract the 'role' field
+            const role = userDoc.data()?.role as string;
+            return role || null;
+        } else {
+            console.log("User role document not found for UID:", uid);
+            return null;
+        }
+    } catch (error) {
+        console.error("Error fetching user role from Firestore:", error);
+        throw error; 
+    }
 }
 
 export async function signInWithGooglePopup() {

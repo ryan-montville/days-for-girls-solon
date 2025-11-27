@@ -1,8 +1,8 @@
-import { createMessage, storeMessage, clearMessages, fixDate } from "./utils.js";
+import { createMessage, storeMessage, fixDate } from "./utils.js";
 import { getEventById, addSignUpEntry } from "./firebaseService.js";
 import { initializeApp } from "./app.js";
 import { SignUpEntry, Event } from "./models.js";
-
+import { auth } from "./firebase.js";
 
 //Page Elements
 const signUpForm = document.getElementById('sign-up-form') as HTMLFormElement;
@@ -26,9 +26,9 @@ async function initAppLogic() {
     //Try to get the event once the app initialization is complete
     try {
         eventObject = await getEventById(eventId);
-    } catch (error) {
+    } catch (error: any) {
         //If there is an error loading the event, store a message and redirect to the events page
-        storeMessage("Error loading event. Please try again.", "main-message", "error");
+        storeMessage(error, "main-message", "error");
         window.location.href = 'events.html';
         return;
     }
@@ -67,11 +67,22 @@ async function initAppLogic() {
         //Remove the loading card
         const loadingCard = document.getElementById('loading');
         if (loadingCard) loadingCard.remove();
+        //Populate inputs with user info if signed in
+        auth.onAuthStateChanged(user => {
+            if (user) {
+            const fullNameInput = document.getElementById('fullName') as HTMLFormElement;
+            fullNameInput.value = user.displayName;
+            const emailInput = document.getElementById('email') as HTMLFormElement;
+            emailInput.value = user.email;
+        }
+        });
         //show the event card
         signUpForm.classList.remove('hide');
     }
 
     async function submitData() {
+        //Create a submitting data message while the app validates and submits the data
+        createMessage("Submitting entry data...", "main-message", "info");
         //Get the form data
         const signUpFormData: FormData = new FormData(signUpForm);
         //Create an object for the entry
@@ -121,14 +132,13 @@ async function initAppLogic() {
             storeMessage(`You have sucessfully signed up for the event '${eventObject!['eventTitle']}'`, "main-message", "check_circle");
             // Redirect to the events page
             window.location.href = 'events.html';
-        } catch (error) {
-            createMessage("Failed to sign up for event. Please try again", 'main-message', 'error');
+        } catch (error: any) {
+            createMessage(error, 'main-message', 'error');
         }
     }
 
     signUpForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        clearMessages();
         submitData();
     });
 

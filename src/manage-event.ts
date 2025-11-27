@@ -4,12 +4,12 @@ import {
     createTableRow,
     createMessage,
     createDeleteModal,
-    clearMessages,
     storeMessage,
     createTable,
     closeModal,
     fixDate,
-    trapFocus
+    trapFocus,
+    clearMessages
 } from "./utils.js";
 import { getEventById, deleteEvent, updateEvent, getSignUpEntriesForEventId, deleteSignUpEntry } from "./firebaseService.js";
 import { initializeApp } from "./app.js";
@@ -95,8 +95,11 @@ function resetInfo(eventObject: Event) {
 }
 
 async function editEventInfo() {
+    //Create updating event message
+    createMessage("Updating event data...", "edit-event-modal-message", "info");
     //Check if the eventObject is loaded
     if (!eventObject) {
+        closeModal("edit-event-backdrop");
         createMessage("Cannot update event. Please try reloading the page.", 'main-message', 'error');
         return;
     }
@@ -156,19 +159,17 @@ async function editEventInfo() {
     } else {
         updatedEvent['eventDescription'] = eventDescriptionValue.toString();
     }
-    //Update event returns a boolean on wether the event update was successful or not
-    const success = await updateEvent(eventId, updatedEvent);
-    //Close the modal
-    closeModal("edit-event-backdrop");
-    if (success) {
-        //Update the eventObject
+    try {
+        //Try to update the event
+        await updateEvent(eventId, updatedEvent);
+        //If successful, close the modal
+        closeModal("edit-event-backdrop");
         eventObject = updatedEvent;
         displayEventInfo(updatedEvent);
         createMessage("The event was successfully updated", "main-message", "check_circle");
-    } else {
-        createMessage("Unable to update the event. Please reload the page and try again.", 'main-message', 'error');
+    } catch (error: any) {
+        createMessage(error, "edit-event-modal-message", "error");
     }
-
 }
 
 function addNewRow(newEntry: SignUpEntry, eventObject: Event) {
@@ -186,20 +187,19 @@ function addNewRow(newEntry: SignUpEntry, eventObject: Event) {
                 const yesButton = buttonRow.children[1];
                 if (yesButton) {
                     yesButton.addEventListener('click', async () => {
-                        //Delete the sign up entry
-                        const deleteEntrySuccess = await deleteSignUpEntry(newEntry['entryId']);
                         //Close the delete modal
                         closeModal('delete-item-backdrop');
-                        if (deleteEntrySuccess) {
+                        try {
+                            //Delete the sign up entry
+                            await deleteSignUpEntry(newEntry['entryId']);
                             //Create a message saying the sign up entry has been deleted
                             createMessage(`Deleted entry from ${newEntry['fullName']}`, "main-message", "delete");
                             //Remove the entry from the table
                             newRow.remove();
                             eventObject['numberAttending'] -= 1;
-                            displayEventInfo(eventObject)
-                        } else {
-                            //Create error message
-                            createMessage("Error deleting entry. Please reload the page and try again", 'main-message', 'error');
+                            displayEventInfo(eventObject);
+                        } catch (error: any) {
+                            createMessage(error, 'main-message', 'error');
                         }
                     });
                 }
@@ -246,9 +246,9 @@ async function initAppLogic() {
     //Try to get the event once the app initialization is complete
     try {
         eventObject = await getEventById(eventId);
-    } catch (error) {
+    } catch (error: any) {
         //If there is an error loading the event, store a message and redirect to the events page
-        storeMessage("Error loading event. Please try again.", "main-message", "error");
+        storeMessage(error, "main-message", "error");
         window.location.href = 'events.html';
         return;
     }
@@ -291,17 +291,16 @@ async function initAppLogic() {
                 const yesButton = buttonRow.children[1];
                 if (yesButton) {
                     yesButton.addEventListener('click', async () => {
-                        //Delete the event
-                        const success = await deleteEvent(eventId);
                         //Close the delete modal
                         closeModal('delete-item-backdrop');
-                        if (success) {
+                        try {
+                            await deleteEvent(eventId);
                             //Store the message saying the event was deleted. Will be displayed when redirected to the events page
                             storeMessage(`Deleted event ${eventObject!['eventTitle']} ${fixDate(eventObject!['eventDate'], 'shortDate')}`, "main-message", "delete");
                             //Redirect to the events page
                             window.location.href = 'events.html';
-                        } else {
-                            createMessage("Unable to delete event. Please reload the page and try agian.", 'main-message', 'error');
+                        } catch (error: any) {
+                            createMessage(error, 'main-message', 'error');
                         }
                     });
                 }

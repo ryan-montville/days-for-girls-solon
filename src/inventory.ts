@@ -32,17 +32,17 @@ function addNewRow(newComponent: ComponentItem) {
                 const yesButton = buttonRow.children[1];
                 if (yesButton) {
                     yesButton.addEventListener('click', async () => {
-                        //Delete the component
-                        const success = await deleteComponent(newComponent['componentId']);
                         //Close the delete modal
                         closeModal('delete-item-backdrop');
-                        if (success) {
+                        try {
+                            //Delete the component
+                            await deleteComponent(newComponent['componentId']);
                             //Create a message saying the component has been deleted
                             createMessage(`Deleted component "${newComponent['componentType']}"`, "main-message", "delete");
                             //Remove the component from the table
                             newRow.remove();
-                        } else {
-                            createMessage("Could not delete component. Please try again", 'main-message', 'error');
+                        } catch (error: any) {
+                            createMessage(error, 'main-message', 'error');
                         }
                     });
                 }
@@ -62,8 +62,9 @@ async function loadCurrentInventory() {
     try {
         //Get the current inventory from the firestore
         currrentInventoryArray = await getAllComponents();
-    } catch (error) {
-        createMessage("Error loading inventory. Please try reloading the page.", 'main-message', 'error');
+    } catch (error: any) {
+        createMessage(error, 'main-message', 'error');
+        return;
     }
     if (currrentInventoryArray.length === 0) {
         //Display no inventory message
@@ -96,6 +97,7 @@ async function filterDateRange(startDate: Date, endDate: Date) {
         logEntries = await getAllLogEntires();
     } catch (error) {
         createMessage("Error generating report. Please try reloading the page", 'main-message', 'error');
+        return;
     }
     //Filter allEntries array for entries within date range
     let filteredEntries: InventoryEntry[] = logEntries.filter(item => {
@@ -110,7 +112,13 @@ async function filterDateRange(startDate: Date, endDate: Date) {
 
 //Takes an array of inventory log entries and summarizes the array
 async function calculateInventoryTotals(filteredArray: InventoryEntry[]) {
-    const currrentInventoryArray: ComponentItem[] = await getAllComponents();
+    let currrentInventoryArray: ComponentItem[] = [];
+    try {
+        currrentInventoryArray = await getAllComponents();
+    } catch (error: any) {
+        createMessage(error, 'main-message', 'error');
+        return;
+    }
     const uniqueComponents: ComponentSummary[] = currrentInventoryArray.reduce((acc: ComponentSummary[], currentComponent: ComponentItem) => {
         const newComponent: ComponentSummary = {
             "componentType": currentComponent['componentType'],
@@ -179,6 +187,8 @@ function createEntriesTable(filteredResults: InventoryEntry[]) {
 }
 
 async function generateReport() {
+    //Create a generating report message
+    createMessage("Generating inventory report...", "main-message", "info");
     let formData: FormData = new FormData(generateForm);
     let startDateValue = formData.get('startDate');
     let endDateValue = formData.get('endDate');
@@ -212,42 +222,52 @@ async function generateReport() {
         reportCard.setAttribute('class', 'card');
         //Create list of entries within date range
         let filteredResults = await filterDateRange(startDate, endDate);
-        if (filteredResults.length === 0) {
-            //No results
-            let noResultsH2 = document.createElement('h2');
-            let noResults = document.createTextNode("No results");
-            noResultsH2.appendChild(noResults);
-            reportCard.appendChild(noResultsH2);
-            let noResultsP = document.createElement('p');
-            let noresultsText = document.createTextNode(`No items where donated or distributed ${fixDate(startDateValue.toString(), 'shortDate')} to ${fixDate(endDateValue.toString(), 'shortDate')}`);
-            noResultsP.appendChild(noresultsText);
-            reportCard.appendChild(noResultsP);
-        } else {
-            let reportH2 = document.createElement('h2');
-            let reportTitle = document.createTextNode(`${fixDate(startDateValue.toString(), 'shortDate')} to ${fixDate(endDateValue.toString(), 'shortDate')} Report`);
-            reportH2.appendChild(reportTitle);
-            reportCard.appendChild(reportH2);
-            //Generate donated and distributed totals within date range
-            let entriesSummary = await calculateInventoryTotals(filteredResults);
-            //create table to summarize all entries
-            const summaryTable = createSummaryTable(entriesSummary);
-            reportCard.appendChild(summaryTable);
-            //Generate table for all entries in date range
-            const entriesTable = createEntriesTable(filteredResults);
-            reportCard.appendChild(entriesTable);
+        if (filteredResults) {
+            if (filteredResults.length === 0) {
+                //No results
+                let noResultsH2 = document.createElement('h2');
+                let noResults = document.createTextNode("No results");
+                noResultsH2.appendChild(noResults);
+                reportCard.appendChild(noResultsH2);
+                let noResultsP = document.createElement('p');
+                let noresultsText = document.createTextNode(`No items where donated or distributed ${fixDate(startDateValue.toString(), 'shortDate')} to ${fixDate(endDateValue.toString(), 'shortDate')}`);
+                noResultsP.appendChild(noresultsText);
+                reportCard.appendChild(noResultsP);
+            } else {
+                let reportH2 = document.createElement('h2');
+                let reportTitle = document.createTextNode(`${fixDate(startDateValue.toString(), 'shortDate')} to ${fixDate(endDateValue.toString(), 'shortDate')} Report`);
+                reportH2.appendChild(reportTitle);
+                reportCard.appendChild(reportH2);
+                //Generate donated and distributed totals within date range
+                let entriesSummary = await calculateInventoryTotals(filteredResults);
+                if (entriesSummary) {
+                    //create table to summarize all entries
+                const summaryTable = createSummaryTable(entriesSummary);
+                reportCard.appendChild(summaryTable);
+                //Generate table for all entries in date range
+                const entriesTable = createEntriesTable(filteredResults);
+                reportCard.appendChild(entriesTable);
+                } else {
+                    return;
+                }
+            }
+            //Create button to generate new inventory report
+            const formRow = document.createElement('div');
+            formRow.setAttribute('class', 'form-row');
+            const newReportButton = createButton('Generate New Report', 'button', 'newReport', 'primary fulll');
+            newReportButton.addEventListener('click', () => {
+                reportCard.remove();
+                generateForm.style.display = 'block';
+            });
+            formRow.appendChild(newReportButton);
+            reportCard.appendChild(formRow);
+            clearMessages();
+            mainContent.appendChild(reportCard);
         }
-        //Create button to generate new inventory report
-        const formRow = document.createElement('div');
-        formRow.setAttribute('class', 'form-row');
-        const newReportButton = createButton('Generate New Report', 'button', 'newReport', 'primary fulll');
-        newReportButton.addEventListener('click', () => {
-            reportCard.remove();
-            generateForm.style.display = 'block';
-        });
-        formRow.appendChild(newReportButton);
-        reportCard.appendChild(formRow);
-        mainContent.appendChild(reportCard);
+    } else {
+        return;
     }
+
 }
 
 async function submitData(formData: FormData) {
@@ -283,8 +303,8 @@ async function submitData(formData: FormData) {
                 //The component was not added to the firestore
                 createMessage("Failed to add new component. Please try again.", 'main-message', 'error');
             }
-        } catch (error) {
-            createMessage("Failed to add new component. Please try again.", 'main-message', 'error');
+        } catch (error: any) {
+            createMessage(error, 'main-message', 'error');
         }
     }
 }
@@ -308,12 +328,11 @@ initializeApp('Inventory', 'Inventory').then(async () => {
     auth.onAuthStateChanged(user => {
         updateUIbasedOnAuth(user);
     });
-    
+
 
     //Event listener to generate inventory report
     generateForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        clearMessages();
         generateReport();
     });
 
@@ -352,7 +371,6 @@ initializeApp('Inventory', 'Inventory').then(async () => {
         buttonRow.appendChild(submitButton);
         addNewComponentTypeForm.appendChild(buttonRow);
         addNewComponentTypeForm.addEventListener('submit', (e) => {
-            clearMessages();
             e.preventDefault();
             const data = new FormData(addNewComponentTypeForm);
             submitData(data);

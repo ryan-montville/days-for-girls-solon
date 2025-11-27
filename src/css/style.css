@@ -224,9 +224,7 @@ nav a:hover {
 }
 
 /* messages */
-#sign-in-message,
-#distribute-modal-message,
-#donate-modal-message {
+.message-wrapper {
     height: 50px;
 }
 .message-wrapper {

@@ -4,7 +4,6 @@ import {
     createTable,
     createMessage,
     createDeleteModal,
-    clearMessages,
     closeModal,
     fixDate,
     populateComponteTypeSelect,
@@ -35,17 +34,17 @@ function addNewRow(newEntry: InventoryEntry) {
                 const yesButton = buttonRow.children[1];
                 if (yesButton) {
                     yesButton.addEventListener('click', async () => {
-                        //Delete the log entry
-                        const success = await deleteLogEntry(newEntry['entryId']);
                         //Close the delete modal
                         closeModal('delete-item-backdrop');
-                        if (success) {
+                        //Delete the log entry
+                        try {
+                            await deleteLogEntry(newEntry['entryId']);
                             //Create a message saying the log entry has been deleted
                             createMessage(`Deleted entry ${fixDate(newEntry['entryDate'].toString(), 'shortDate')}: ${newEntry['quantity']} ${newEntry['componentType']} to ${newEntry['destination']}`, "main-message", "delete");
                             //Remove the entry from the table
                             newRow.remove();
-                        } else {
-                            createMessage('Failed to delete log entry. Please try reloading the page.', 'main-message', 'error');
+                        } catch (error: any) {
+                            createMessage(error, 'main-message', 'error');
                         }
                     });
                 }
@@ -97,6 +96,8 @@ async function loadPreviousEntries() {
 }
 
 async function submitData() {
+    //Create a 'submitting data' message while the app validates and submits the entry log
+    createMessage("Submitting entry log data...", "distribute-modal-message", "info");
     //Get the data from the form
     const distributedFormData: FormData = new FormData(distributeInventoryModal);
     //Create an object for the entry
@@ -176,7 +177,6 @@ initializeApp('Inventory', 'Distributed Inventory').then(async () => {
     //Event listener for distribute inventory form submit
     distributeInventoryModal.addEventListener('submit', (e) => {
         e.preventDefault();
-        clearMessages();
         submitData();
 
         //Event listener to close the distribute inventory modal
