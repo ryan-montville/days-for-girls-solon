@@ -51,17 +51,19 @@ export function createTableRow(item: TableItem, keysToDisplay: string[], primary
         //Add the cell to the row
         newRow.appendChild(newCell);
     }
-
-    //Create a cell for the delete button
-    const deleteButtonCell = document.createElement('td');
-    //Get the itemId
-    const itemId = (item as any)[primaryIdKeyName]?.toString() || '';
-    //Create the delete button
-    const deleteButton = createButton('', 'button', itemId, 'delete-button-icon', 'delete');
-    //Add the delete button to the cell
-    deleteButtonCell.appendChild(deleteButton);
-    //Add the cell to the row
-    newRow.appendChild(deleteButtonCell);
+    //If numCells is greater than the keys to display, add a delete button (Only admins are allow to delete entries and components)
+    if (keysToDisplay.length !== numCells) {
+        //Create a cell for the delete button
+        const deleteButtonCell = document.createElement('td');
+        //Get the itemId
+        const itemId = (item as any)[primaryIdKeyName]?.toString() || '';
+        //Create the delete button
+        const deleteButton = createButton('', 'button', itemId, 'delete-button-icon', 'delete');
+        //Add the delete button to the cell
+        deleteButtonCell.appendChild(deleteButton);
+        //Add the cell to the row
+        newRow.appendChild(deleteButtonCell);
+    }
     //Return the new table row
     return newRow;
 }

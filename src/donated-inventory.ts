@@ -7,11 +7,14 @@ import {
     closeModal,
     fixDate,
     populateComponteTypeSelect,
-    trapFocus
+    trapFocus,
+    storeMessage
 } from "./utils.js";
 import { getFilteredLogEntries, addLogEntry, deleteLogEntry } from "./firebaseService.js";
 import { initializeApp } from "./app.js";
 import { InventoryEntry } from "./models.js";
+import { auth } from "./firebase.js";
+import { getUserRole } from "./authService.js";
 
 //Page Elements
 const addInventoryModalBackdrop = document.getElementById('add-inventory-backdrop') as HTMLElement;
@@ -173,6 +176,19 @@ async function submitData() {
 }
 
 initializeApp('Inventory', 'Donated Inventory').then(async () => {
+    //Only admins are allowed to manage the inventory logs. If the user is not an admin or not signed in, redirect them to the inventory page
+    auth.onAuthStateChanged(async user => {
+        if (user) {
+            let userRole = await getUserRole(user.uid);
+            if (userRole !== "admin") {
+                storeMessage("Only admins are allowed access to the inventory logs.", 'main-message', 'error');
+                window.location.href = 'inventory.html';
+            }
+        } else {
+            storeMessage("Only admins are allowed access to the inventory logs.", 'main-message', 'error');
+            window.location.href = 'inventory.html';
+        }
+    })
     await loadPreviousEntries();
 
     //Event listener for add inventory form submit

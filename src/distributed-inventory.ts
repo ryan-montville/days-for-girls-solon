@@ -3,6 +3,7 @@ import {
     createTableRow,
     createTable,
     createMessage,
+    storeMessage,
     createDeleteModal,
     closeModal,
     fixDate,
@@ -12,6 +13,8 @@ import {
 import { getFilteredLogEntries, addLogEntry, deleteLogEntry } from "./firebaseService.js";
 import { initializeApp } from "./app.js";
 import { InventoryEntry } from "./models.js";
+import { auth } from "./firebase.js";
+import { getUserRole } from "./authService.js";
 
 //Page Elements
 const distributeInventoryModal = document.getElementById('distribute-inventory-modal') as HTMLFormElement;
@@ -172,6 +175,19 @@ async function submitData() {
 }
 
 initializeApp('Inventory', 'Distributed Inventory').then(async () => {
+    //Only admins are allowed to manage the inventory logs. If the user is not an admin or not signed in, redirect them to the inventory page
+        auth.onAuthStateChanged(async user => {
+            if (user) {
+                let userRole = await getUserRole(user.uid);
+                if (userRole !== "admin") {
+                    storeMessage("Only admins are allowed access to the inventory logs.", 'main-message', 'error');
+                    window.location.href = 'inventory.html';
+                }
+            } else {
+                storeMessage("Only admins are allowed access to the inventory logs.", 'main-message', 'error');
+                window.location.href = 'inventory.html';
+            }
+        })
     await loadPreviousEntries();
 
     //Event listener for distribute inventory form submit

@@ -29,7 +29,7 @@
         <div id="header-placeholder"></div>
         <section class="message-wrapper" id="main-message"></section>
         <main id="maincontent">
-            <section class="button-row">
+            <section class="button-row hide" id="inventory-log-links">
                 <a href="donated-inventory.html" class="secondary">Donated Inventory</a>
                 <a href="distributed-inventory.html" class="secondary">Distributed inventory</a>
             </section>
@@ -74,25 +74,6 @@
     <div class="backdrop" id="manage-inventory-backdrop">
         <section class="message-wrapper" id="manage-inventory-message"></section>
         <div id="manage-inventory-modal" class="modal" aria-modal="false" role="dialog"></div>
-    </div>
-    <!--Sign In Modal-->
-    <div class="backdrop" id="sign-in-backdrop">
-        <form role="dialog" id="sign-in-modal" aria-modal="false" aria-labelledby="dialog-label" class="modal">
-            <section class="message-wrapper" id="sign-in-message"></section>
-            <h2 id="dialog-label">Sign In</h2>
-            <section class="form-row">
-                <label for="username">Username:</label>
-                <input type="email" id="username" name="username" />
-            </section>
-            <section class="form-row">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" />
-            </section>
-            <section class="form-row">
-                <button type="button" id="close-modal-button" class="secondary">Close</button>
-                <button type="submit" id="form-sign-in-button" class="primary">Sign In</button>
-            </section>
-        </form>
     </div>
     <script type="module" src="src/inventory.ts"></script>
 </body>

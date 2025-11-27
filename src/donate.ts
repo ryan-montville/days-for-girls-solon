@@ -4,6 +4,7 @@ import { auth } from "./firebase.js";
 import { addDonatePageContent, updateDonatePageContent, getDonatePageContent } from "./firebaseService.js";
 import { DonatePageContent } from "./models.js";
 import { marked } from 'marked';
+import { getUserRole } from "./authService.js";
 
 const outputCard = document.getElementById('output') as HTMLElement;
 const markdownCheetSheetCard = document.getElementById('markdown-cheat-sheet') as HTMLElement;
@@ -41,25 +42,6 @@ async function loadDonateContent() {
     outputCard.classList.remove('hide');
     pageContentSection.appendChild(lastUpdatedP);
 }
-
-initializeApp('Donate', 'Donate').then(response => {
-    loadDonateContent();
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            const editButton = createButton('Edit', 'button', 'editButton', 'secondary', 'edit');
-            editButton.addEventListener('click', async () => {
-                outputCard.classList.add('hide');
-                markdownCheetSheetCard.classList.remove('hide');
-                const editForm = createEditForm(pageContentString);
-                mainContent.appendChild(await editForm);
-            });
-            outputButtonRow.appendChild(editButton);
-        } else {
-            const editButton = document.getElementById('editButton');
-            if (editButton) editButton.remove();
-        }
-    });
-});
 
 async function submitData() {
     //Close the cheat sheet card
@@ -122,8 +104,32 @@ async function createEditForm(contentString: string) {
     return editform;
 }
 
-//Event listener to close the markdown cheat sheet card
-const cheatSheetCloseButton = document.getElementById('cheat-sheet-close') as HTMLElement;
-cheatSheetCloseButton.addEventListener('click', () => {
-    markdownCheetSheetCard.classList.add('hide');
+initializeApp('Donate', 'Donate').then(response => {
+    loadDonateContent();
+    auth.onAuthStateChanged(async user => {
+        //Only admins can edit the contents of the donate page
+        if (user) {
+            let userRole = await getUserRole(user.uid);
+            if (userRole === "admin") {
+                const editButton = createButton('Edit', 'button', 'editButton', 'secondary', 'edit');
+                editButton.addEventListener('click', async () => {
+                    outputCard.classList.add('hide');
+                    markdownCheetSheetCard.classList.remove('hide');
+                    const editForm = createEditForm(pageContentString);
+                    mainContent.appendChild(await editForm);
+                });
+                outputButtonRow.appendChild(editButton);
+                //Event listener to close the markdown cheat sheet card
+                const cheatSheetCloseButton = document.getElementById('cheat-sheet-close') as HTMLElement;
+                cheatSheetCloseButton.addEventListener('click', () => {
+                    markdownCheetSheetCard.classList.add('hide');
+                });
+            }
+
+        } else {
+            const editButton = document.getElementById('editButton');
+            if (editButton) editButton.remove();
+        }
+    });
 });
+

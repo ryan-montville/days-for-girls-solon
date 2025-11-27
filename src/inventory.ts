@@ -7,6 +7,7 @@ import { InventoryEntry, ComponentItem, ComponentSummary } from "./models.js";
 import { addComponent, getAllComponents, getComponentbyId, deleteComponent, seedIfEmptyInventoryLog, getAllLogEntires } from "./firebaseService.js";
 import { auth } from "./firebase.js";
 import { User } from "./authService.js";
+import { getUserRole } from "./authService.js";
 
 //Page elements
 const generateForm = document.getElementById('generateForm') as HTMLFormElement;
@@ -16,48 +17,54 @@ const manageInventoryCard = document.getElementById('manage-inventory-card') as 
 const manageInventoryBackdrop = document.getElementById('manage-inventory-backdrop') as HTMLElement;
 const manageInventoryModal = document.getElementById('manage-inventory-modal') as HTMLElement;
 
-function addNewRow(newComponent: ComponentItem) {
+function addNewRow(newComponent: ComponentItem, userRole: string | null) {
     //Create a new row for the table with the component details
     const keysToDisplay = ['componentType', 'quantity'];
     const idKeyName = 'componentId';
-    const newRow = createTableRow(newComponent, keysToDisplay, idKeyName, 3, "componentItem");
-    //Add an event listener to the components delete button
-    const deleteButton = newRow.querySelector("button");
-    if (deleteButton) {
-        deleteButton.addEventListener('click', () => {
-            //Create/open the modal and get the button row to add event lsiteners
-            const buttonRow = createDeleteModal(newComponent, `Are you sure you want to delete this component?`);
-            if (buttonRow) {
-                const noButton = buttonRow.children[0];
-                const yesButton = buttonRow.children[1];
-                if (yesButton) {
-                    yesButton.addEventListener('click', async () => {
-                        //Close the delete modal
-                        closeModal('delete-item-backdrop');
-                        try {
-                            //Delete the component
-                            await deleteComponent(newComponent['componentId']);
-                            //Create a message saying the component has been deleted
-                            createMessage(`Deleted component "${newComponent['componentType']}"`, "main-message", "delete");
-                            //Remove the component from the table
-                            newRow.remove();
-                        } catch (error: any) {
-                            createMessage(error, 'main-message', 'error');
-                        }
-                    });
+    //Only admins are allowed to delete components
+    if (userRole === "admin") {
+        const newRow = createTableRow(newComponent, keysToDisplay, idKeyName, 3, "componentItem");
+        //Add an event listener to the components delete button
+        const deleteButton = newRow.querySelector("button");
+        if (deleteButton) {
+            deleteButton.addEventListener('click', () => {
+                //Create/open the modal and get the button row to add event lsiteners
+                const buttonRow = createDeleteModal(newComponent, `Are you sure you want to delete this component?`);
+                if (buttonRow) {
+                    const noButton = buttonRow.children[0];
+                    const yesButton = buttonRow.children[1];
+                    if (yesButton) {
+                        yesButton.addEventListener('click', async () => {
+                            //Close the delete modal
+                            closeModal('delete-item-backdrop');
+                            try {
+                                //Delete the component
+                                await deleteComponent(newComponent['componentId']);
+                                //Create a message saying the component has been deleted
+                                createMessage(`Deleted component "${newComponent['componentType']}"`, "main-message", "delete");
+                                //Remove the component from the table
+                                newRow.remove();
+                            } catch (error: any) {
+                                createMessage(error, 'main-message', 'error');
+                            }
+                        });
+                    }
+                    if (noButton) {
+                        noButton.addEventListener('click', () => {
+                            closeModal('delete-item-backdrop');
+                        });
+                    }
                 }
-                if (noButton) {
-                    noButton.addEventListener('click', () => {
-                        closeModal('delete-item-backdrop');
-                    });
-                }
-            }
-        });
+            });
+        }
+        return newRow;
+    } else {
+        //If the user is not an admin, don't add the delete button to the table row
+        return createTableRow(newComponent, keysToDisplay, idKeyName, 2, "componentItem");
     }
-    return newRow;
 }
 
-async function loadCurrentInventory() {
+async function loadCurrentInventory(userRole: string | null) {
     let currrentInventoryArray: ComponentItem[] = []
     try {
         //Get the current inventory from the firestore
@@ -74,10 +81,19 @@ async function loadCurrentInventory() {
         currentInventoryCard.appendChild(noInventoryP);
     } else {
         //Create the current inventory table
-        const tableColumnHeaders: string[] = ['Component', 'Quantity', 'Delete'];
+        let tableColumnHeaders: string[] = [];
+        //Only admins can delete components
+        if (userRole === "admin") {
+            tableColumnHeaders = ['Component', 'Quantity', 'Delete'];
+        } else {
+            tableColumnHeaders = ['Component', 'Quantity'];
+        }
+        //If the current inventory table already exists in the DOM, remove it
+        const previousCurrentInventoryTable = document.getElementById('current-inventory-table');
+        if (previousCurrentInventoryTable) previousCurrentInventoryTable.remove();
         const currentInventoryTable = createTable('current-inventory-table', tableColumnHeaders);
         const tableBody = currrentInventoryArray.reduce((acc: HTMLElement, currentComponent: ComponentItem) => {
-            const newRow = addNewRow(currentComponent);
+            const newRow = addNewRow(currentComponent, userRole);
             acc.appendChild(newRow);
             return acc;
         }, document.createElement('tbody'));
@@ -242,11 +258,11 @@ async function generateReport() {
                 let entriesSummary = await calculateInventoryTotals(filteredResults);
                 if (entriesSummary) {
                     //create table to summarize all entries
-                const summaryTable = createSummaryTable(entriesSummary);
-                reportCard.appendChild(summaryTable);
-                //Generate table for all entries in date range
-                const entriesTable = createEntriesTable(filteredResults);
-                reportCard.appendChild(entriesTable);
+                    const summaryTable = createSummaryTable(entriesSummary);
+                    reportCard.appendChild(summaryTable);
+                    //Generate table for all entries in date range
+                    const entriesTable = createEntriesTable(filteredResults);
+                    reportCard.appendChild(entriesTable);
                 } else {
                     return;
                 }
@@ -293,11 +309,12 @@ async function submitData(formData: FormData) {
                 const currentInventoryTableBody = document.getElementById('currentInventoryTableBody');
                 if (currentInventoryTableBody) {
                     //If the table body exists, add the new row to the top of the table
-                    const newRow = addNewRow(newComponent);
+                    //We know the user is an admin, so just pass it as a string instead of from userRole = await getUserRole(user.uid);
+                    const newRow = addNewRow(newComponent, "admin");
                     currentInventoryTableBody.appendChild(newRow);
                 } else {
                     //If the table body does not exist, create/load the table
-                    loadCurrentInventory();
+                    loadCurrentInventory("admin");
                 }
             } else {
                 //The component was not added to the firestore
@@ -309,80 +326,88 @@ async function submitData(formData: FormData) {
     }
 }
 
-function updateUIbasedOnAuth(user: User | null) {
+async function updateUIbasedOnAuth(user: User | null) {
+    let userRole: string | null = null;
     if (user) {
-        //User is signed in, show the manage inventory card and generate report form
-        if (manageInventoryCard.classList.contains('hide')) manageInventoryCard.classList.remove('hide');
+        userRole = await getUserRole(user.uid);
+        //User is signed in, show the generate report form
         if (generateForm.classList.contains('hide')) generateForm.classList.remove('hide');
+        //If the user is an admin, show the links to the inventory entry logs and the manage inventory card
+        if (userRole === "admin") {
+            const inventoryLogLinks = document.getElementById('inventory-log-links') as HTMLElement;
+            if (inventoryLogLinks.classList.contains('hide')) inventoryLogLinks.classList.remove('hide');
+            if (manageInventoryCard.classList.contains('hide')) manageInventoryCard.classList.remove('hide');
+        }
     } else {
         //User is not signed in, hide the manage inventory card and generate report form
         if (!manageInventoryCard.classList.contains('hide')) manageInventoryCard.classList.add('hide');
         if (!generateForm.classList.contains('hide')) generateForm.classList.add('hide');
+    }
+    loadCurrentInventory(userRole);
+    //If user is an admin, allow the creation of new compoents
+    if (userRole === "admin") {
+        //Event listener to generate inventory report
+        generateForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            generateReport();
+        });
+
+        //Event listener for button to open Manage Inventory Modal
+        const openMangeInventoryButton = document.getElementById('add-new-type') as HTMLElement;
+        openMangeInventoryButton.addEventListener('click', () => {
+            manageInventoryModal.innerHTML = '';
+            //Create the form to add a new component type
+            const addNewComponentTypeForm = document.createElement('form');
+            const formHeaderH2 = document.createElement('h2');
+            const formHeader = document.createTextNode("Add a New Component Type");
+            formHeaderH2.appendChild(formHeader);
+            addNewComponentTypeForm.appendChild(formHeaderH2);
+            const nameInputRow = document.createElement('section');
+            nameInputRow.setAttribute('class', 'form-row');
+            const nameLabel = document.createElement('label');
+            nameLabel.setAttribute('for', 'nameInput');
+            const nameText = document.createTextNode("Name of new component type:");
+            nameLabel.appendChild(nameText);
+            nameInputRow.appendChild(nameLabel);
+            const nameInput = document.createElement("input");
+            nameInput.setAttribute('type', 'text');
+            nameInput.setAttribute('id', 'nameInput');
+            nameInput.setAttribute('name', 'nameInput');
+            nameInputRow.appendChild(nameInput);
+            addNewComponentTypeForm.appendChild(nameInputRow);
+            const buttonRow = document.createElement('section');
+            buttonRow.setAttribute('class', 'form-row');
+            const cancelButton = createButton('Cancel', 'button', 'cancelButton', 'secondary');
+            cancelButton.addEventListener('click', () => {
+                //Close the modal
+                closeModal('manage-inventory-backdrop')
+            });
+            buttonRow.appendChild(cancelButton);
+            const submitButton = createButton('Submit', 'submt', 'submitButton', 'primary');
+            buttonRow.appendChild(submitButton);
+            addNewComponentTypeForm.appendChild(buttonRow);
+            addNewComponentTypeForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const data = new FormData(addNewComponentTypeForm);
+                submitData(data);
+            })
+            //Add the form to the modal
+            manageInventoryModal.appendChild(addNewComponentTypeForm);
+            //Open the modal
+            manageInventoryBackdrop.style.display = 'flex';
+            manageInventoryModal.classList.add('opening');
+            manageInventoryModal.setAttribute('aria-modal', 'true');
+            //Trap keyboard focus to modal form
+            nameInput.focus();
+            trapFocus(addNewComponentTypeForm, manageInventoryBackdrop);
+        });
     }
 }
 
 initializeApp('Inventory', 'Inventory').then(async () => {
     //Check to see in inventory log is empty. donated and distributed inventory pages will throw errors if the log is empty
     await seedIfEmptyInventoryLog();
-    loadCurrentInventory();
-    auth.onAuthStateChanged(user => {
-        updateUIbasedOnAuth(user);
-    });
-
-
-    //Event listener to generate inventory report
-    generateForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        generateReport();
-    });
-
-    //Event listener for button to open Manage Inventory Modal
-    const openMangeInventoryButton = document.getElementById('add-new-type') as HTMLElement;
-    openMangeInventoryButton.addEventListener('click', () => {
-        manageInventoryModal.innerHTML = '';
-        //Create the form to add a new component type
-        const addNewComponentTypeForm = document.createElement('form');
-        const formHeaderH2 = document.createElement('h2');
-        const formHeader = document.createTextNode("Add a New Component Type");
-        formHeaderH2.appendChild(formHeader);
-        addNewComponentTypeForm.appendChild(formHeaderH2);
-        const nameInputRow = document.createElement('section');
-        nameInputRow.setAttribute('class', 'form-row');
-        const nameLabel = document.createElement('label');
-        nameLabel.setAttribute('for', 'nameInput');
-        const nameText = document.createTextNode("Name of new component type:");
-        nameLabel.appendChild(nameText);
-        nameInputRow.appendChild(nameLabel);
-        const nameInput = document.createElement("input");
-        nameInput.setAttribute('type', 'text');
-        nameInput.setAttribute('id', 'nameInput');
-        nameInput.setAttribute('name', 'nameInput');
-        nameInputRow.appendChild(nameInput);
-        addNewComponentTypeForm.appendChild(nameInputRow);
-        const buttonRow = document.createElement('section');
-        buttonRow.setAttribute('class', 'form-row');
-        const cancelButton = createButton('Cancel', 'button', 'cancelButton', 'secondary');
-        cancelButton.addEventListener('click', () => {
-            //Close the modal
-            closeModal('manage-inventory-backdrop')
-        });
-        buttonRow.appendChild(cancelButton);
-        const submitButton = createButton('Submit', 'submt', 'submitButton', 'primary');
-        buttonRow.appendChild(submitButton);
-        addNewComponentTypeForm.appendChild(buttonRow);
-        addNewComponentTypeForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const data = new FormData(addNewComponentTypeForm);
-            submitData(data);
-        })
-        //Add the form to the modal
-        manageInventoryModal.appendChild(addNewComponentTypeForm);
-        //Open the modal
-        manageInventoryBackdrop.style.display = 'flex';
-        manageInventoryModal.classList.add('opening');
-        manageInventoryModal.setAttribute('aria-modal', 'true');
-        //Trap keyboard focus to modal form
-        nameInput.focus();
-        trapFocus(addNewComponentTypeForm, manageInventoryBackdrop);
+    auth.onAuthStateChanged(async user => {
+        await updateUIbasedOnAuth(user);
     });
 });
