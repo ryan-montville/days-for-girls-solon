@@ -8,6 +8,7 @@ table {
 }
 
 thead {
+    display: block;
     background-color: var(--footer-background);
     color: white;
     text-align: left;
@@ -15,11 +16,18 @@ thead {
 }
 
 tbody {
+    display: block;
     width: 100%;
 }
 
 td {
     padding: 5px;
+}
+
+thead tr,
+tbody tr {
+  display: block;
+  width: 100%;
 }
 
 tr:nth-child(even) {
