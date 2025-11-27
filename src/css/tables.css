@@ -1,4 +1,5 @@
 table {
+    display: block;
     border-collapse: collapse;
     border: 1px solid var(--footer-background);
     width: 100%;
