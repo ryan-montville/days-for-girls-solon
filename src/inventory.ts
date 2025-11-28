@@ -293,6 +293,7 @@ async function generateReport() {
             reportCard.appendChild(formRow);
             clearMessages();
             mainContent.appendChild(reportCard);
+            reportCard.scrollIntoView({ behavior: 'smooth' });
         }
     } else {
         return;

@@ -12,25 +12,25 @@ import { auth, db } from "./firebase.js";
 import { createMessage } from "./utils.js";
 
 //Register a new user and sign them in
-export async function registerUser(email: string, password: string): Promise<UserCredential> {
-    try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        return userCredential;
-    } catch (error) {
-        createMessage(`Error during user registration: ${error}`, 'sign-in-message', 'error');
-        throw error;
-    }
-}
+// export async function registerUser(email: string, password: string): Promise<UserCredential> {
+//     try {
+//         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+//         return userCredential;
+//     } catch (error) {
+//         createMessage(`Error during user registration: ${error}`, 'sign-in-message', 'error');
+//         throw error;
+//     }
+// }
 
-export async function signInUsers(email: string, password: string): Promise<UserCredential> {
-    try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        return userCredential;
-    } catch (error) {
-        createMessage(`Error during user login: ${error}`, 'sign-in-message', 'error');
-        throw error;
-    }
-}
+// export async function signInUsers(email: string, password: string): Promise<UserCredential> {
+//     try {
+//         const userCredential = await signInWithEmailAndPassword(auth, email, password);
+//         return userCredential;
+//     } catch (error) {
+//         createMessage(`Error during user login: ${error}`, 'sign-in-message', 'error');
+//         throw error;
+//     }
+// }
 
 export async function signOutUser(): Promise<void> {
     try {
@@ -48,11 +48,9 @@ export function getCurrentUser(): User | null {
 export async function getUserRole(uid: string): Promise<string | null> {
     //Create a reference to the specific user's document
     const userDocRef = doc(db, 'users', uid);
-
     try {
         //Fetch the document
         const userDoc = await getDoc(userDocRef);
-
         if (userDoc.exists()) {
             //Extract the 'role' field
             const role = userDoc.data()?.role as string;

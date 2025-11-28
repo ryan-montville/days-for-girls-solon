@@ -62,6 +62,10 @@ function mapDocToInventoryEntry(docSnap: DocumentSnapshot<any>): InventoryEntry 
 }
 
 /* ---------------- Events ---------------- */
+/**
+ * Returns all the events stored in the firestore
+ * @returns - An array of events
+ */
 export async function getAllEvents(): Promise<Event[]> {
     try {
         const events: Event[] = [];
@@ -78,6 +82,11 @@ export async function getAllEvents(): Promise<Event[]> {
     }
 }
 
+/**
+ * Returns the event for the given eventId
+ * @param eventId - The event ID
+ * @returns - The event or null if no event matched eventId
+ */
 export async function getEventById(eventId: string): Promise<Event | null> {
     try {
         const docRef = doc(collection(db, 'events'), eventId);
@@ -95,6 +104,11 @@ export async function getEventById(eventId: string): Promise<Event | null> {
     }
 }
 
+/**
+ * 
+ * @param newEvent 
+ * @returns - The eventId that the firestore created
+ */
 export async function addEvent(newEvent: Omit<Event, 'eventId'>): Promise<string> {
     try {
         const docRef = await addDoc(collection(db, 'events'), newEvent);
@@ -109,6 +123,11 @@ export async function addEvent(newEvent: Omit<Event, 'eventId'>): Promise<string
     }
 }
 
+/**
+ * Update an event in the firestore
+ * @param eventId - The event ID of the event to update
+ * @param updatedEvent - The event to update
+ */
 export async function updateEvent(eventId: string, updatedEvent: Event) {
     try {
         const docRef = doc(collection(db, 'events'), eventId);
@@ -125,6 +144,10 @@ export async function updateEvent(eventId: string, updatedEvent: Event) {
     }
 }
 
+/**
+ * Delete an event from the firestore
+ * @param eventId - The event ID of the event to delete
+ */
 export async function deleteEvent(eventId: string) {
     try {
         //Get all sign-up entries for the event
@@ -148,6 +171,11 @@ export async function deleteEvent(eventId: string) {
 }
 
 /* ---------------- Event Sign Up ---------------- */
+/**
+ * Add a new sign up entry to the firestore
+ * @param newEntry - The new sign up entry
+ * @returns - The entry ID that the firestore created
+ */
 export async function addSignUpEntry(newEntry: Omit<SignUpEntry, 'entryId'>): Promise<string> {
     const eventId = newEntry.eventId;
 
@@ -187,6 +215,11 @@ export async function addSignUpEntry(newEntry: Omit<SignUpEntry, 'entryId'>): Pr
     }
 }
 
+/**
+ * Get all the sign up entries for an event
+ * @param eventId - The event ID
+ * @returns - An array of sign up entries
+ */
 export async function getSignUpEntriesForEventId(eventId: string): Promise<SignUpEntry[]> {
     try {
         const entries: SignUpEntry[] = [];
@@ -205,6 +238,10 @@ export async function getSignUpEntriesForEventId(eventId: string): Promise<SignU
     }
 }
 
+/**
+ * Delete a sign up entry from the firestore
+ * @param entryId - The entry ID of the event to delete
+ */
 export async function deleteSignUpEntry(entryId: string) {
     try {
         //Using Firestore transaction to make sure the entry is only deleted if it can update the event's number attending
@@ -242,6 +279,7 @@ export async function deleteSignUpEntry(entryId: string) {
         console.log(`Sign-up entry deleted successfully: ${entryId}. Event attendance updated via transaction.`);
     } catch (error) {
         console.error(`Error deleting sign-up entry ${entryId} (Transaction aborted):`, error);
+        //Only admins can delete sign up entries
         if (error instanceof FirebaseError && error.code === 'permission-denied') {
             throw new Error("Authorization Error: Only admins delete sign up entries.");
         } else {
@@ -251,17 +289,24 @@ export async function deleteSignUpEntry(entryId: string) {
 }
 
 /* ---------------- Donate Page Content (Single Document) ---------------- */
+/**
+ * Add content to the Donate page
+ * @param content - The markdown content for the Donate page
+ */
 export async function addDonatePageContent(content: string) {
     try {
+        //Create a reference for the page content doc
         const docRef = doc(collection(db, 'donatePage'), 'donate-page-content');
         const newContent: DonatePageContent = {
             content: content,
             lastUpdated: Timestamp.now()
         };
+        //Add the page content object
         await setDoc(docRef, newContent);
         console.log(`Initial donate page content added/set with ID: ${'donate-page-content'}`);
     } catch (error) {
         console.error("Error adding donate page content:", error);
+        //Only admins can add page content
         if (error instanceof FirebaseError && error.code === 'permission-denied') {
             throw new Error("Authorization Error: Only admins can update page content.");
         } else {
@@ -270,11 +315,17 @@ export async function addDonatePageContent(content: string) {
     }
 }
 
+/**
+ * Get the markdown content for the Donate page
+ * @returns - The markdown content
+ */
 export async function getDonatePageContent(): Promise<DonatePageContent | null> {
     try {
+        //Get the reference to the content doc
         const docRef = doc(collection(db, 'donatePage'), 'donate-page-content');
         const docSnap = await getDoc(docRef);
 
+        //If the doc exists, map it to the conent object
         if (docSnap.exists()) {
             return mapDocToDonateContent(docSnap);
         } else {
@@ -287,9 +338,15 @@ export async function getDonatePageContent(): Promise<DonatePageContent | null> 
     }
 }
 
+/**
+ * Update the content of the Donate page
+ * @param content - The updated page content
+ */
 export async function updateDonatePageContent(content: string) {
     try {
+        //Get the reference to the content doc
         const docRef = doc(collection(db, 'donatePage'), 'donate-page-content');
+        //Update the doc
         await updateDoc(docRef, {
             content: content,
             lastUpdated: Timestamp.now()
@@ -306,7 +363,10 @@ export async function updateDonatePageContent(content: string) {
 }
 
 /* ---------------- Inventory ---------------- */
-//Helper function for seedIfEmptyInventoryLog()
+/**
+ * Helper function for seedIfEmptyInventoryLog() which creates placeholder log entires
+ * @returns - A componet ID 
+ */
 async function getOrCreateDummyComponentId(): Promise<string> {
     const inventoryRef = collection(db, 'inventory');
     //Check if any component exists
@@ -327,12 +387,19 @@ async function getOrCreateDummyComponentId(): Promise<string> {
     //Add the component and return the generated ID
     return addComponent(dummyComponent);
 }
+
+/**
+ * Get all the components from the firestore
+ * @returns - An array of components
+ */
 export async function getAllComponents(): Promise<ComponentItem[]> {
     try {
+        //Create an emtpy arrray
         const components: ComponentItem[] = [];
+        //Search for all docs in the inventory collection
         const q = query(collection(db, 'inventory'));
         const querySnapshot = await getDocs(q);
-
+        //Map the docs to component objects
         querySnapshot.forEach((doc) => {
             components.push(mapDocToComponent(doc));
         });
@@ -343,6 +410,11 @@ export async function getAllComponents(): Promise<ComponentItem[]> {
     }
 }
 
+/**
+ * 
+ * @param componentId 
+ * @returns 
+ */
 export async function getComponentbyId(componentId: string): Promise<ComponentItem | null> {
     try {
         const docRef = doc(collection(db, 'inventory'), componentId);

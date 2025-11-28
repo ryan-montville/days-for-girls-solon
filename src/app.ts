@@ -12,6 +12,7 @@ let signInButton: HTMLElement;
 let signOutButton: HTMLElement;
 let inventoryLink: HTMLElement;
 
+//Used to detect when a user signs in or out
 function setUpAuthListener() {
     auth.onAuthStateChanged(user => {
         //Don't continue if these elements haven't loaded
@@ -38,6 +39,8 @@ function setUpAuthListener() {
 }
 
 export async function initializeApp(partentPage: string, currentPage: string) {
+    //Set the page title
+    document.title = `${currentPage} - Days for Girls Solon`;
     //Wait for the DOM to load
     await new Promise<void>(resolve => {
         if (document.readyState === 'loading') {
