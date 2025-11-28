@@ -204,9 +204,6 @@ initializeApp('Inventory', 'Distributed Inventory').then(async () => {
             e.preventDefault();
             submitData();
 
-            //Event listener to close the distribute inventory modal
-            const closeModalButton = document.getElementById('cancel') as HTMLElement;
-            closeModalButton.addEventListener('click', () => closeModal('distribute-inventory-backdrop'));
         });
 
         //Event listener to open the distribute inventory modal
@@ -220,5 +217,9 @@ initializeApp('Inventory', 'Distributed Inventory').then(async () => {
             dateInput.focus();
             trapFocus(distributeInventoryModal, distributeInventoryBackdrop);
         });
-    })
+
+        //Event listener to close the distribute inventory modal
+        const closeModalButton = document.getElementById('cancel') as HTMLElement;
+        closeModalButton.addEventListener('click', () => closeModal('distribute-inventory-backdrop'));
+    });
 });

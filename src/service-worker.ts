@@ -6,7 +6,9 @@ const urlsToCache: string[] = [
   'https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/images/logo-dark.png',
   'https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/042cd220b042844a13dc28b4d30403b2d9584288/images/mobile-logo-light.svg',
   'https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/042cd220b042844a13dc28b4d30403b2d9584288/images/mobile-logo-dark.svg',
-  '',
+  'https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/header.html',
+  'https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/footer.html',
+  'https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/modal.html',
   '/',
 ];
 

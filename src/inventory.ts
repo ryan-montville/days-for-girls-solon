@@ -160,6 +160,10 @@ async function calculateInventoryTotals(filteredArray: InventoryEntry[]) {
 }
 
 function createSummaryTable(entriesSummary: ComponentSummary[]) {
+    //Table container
+    const tableContainer = document.createElement('div');
+    tableContainer.setAttribute('id', 'summary-table-container');
+    tableContainer.setAttribute('class', 'table-container');
     //Create the table
     const summaryTable = createTable('summary-table', ['Total Donated', 'Total Distributed'])
     //table body
@@ -177,10 +181,15 @@ function createSummaryTable(entriesSummary: ComponentSummary[]) {
         return acc;
     }, document.createElement('tbody'));
     summaryTable.appendChild(summaryBody);
-    return summaryTable;
+    tableContainer.appendChild(summaryTable);
+    return tableContainer;
 }
 
 function createEntriesTable(filteredResults: InventoryEntry[]) {
+    //Table container
+    const tableContainer = document.createElement('div');
+    tableContainer.setAttribute('id', 'entries-table-container');
+    tableContainer.setAttribute('class', 'table-container');
     //Create the table
     const entriesTable = createTable('entries-table', ['Date', 'Entry']);
     //table body
@@ -203,12 +212,13 @@ function createEntriesTable(filteredResults: InventoryEntry[]) {
         return acc;
     }, document.createElement('tbody'));
     entriesTable.appendChild(entiresBody);
-    return entriesTable;
+    tableContainer.appendChild(entriesTable);
+    return tableContainer;
 }
 
 async function generateReport() {
     //Create a generating report message
-    createMessage("Generating inventory report...", "main-message", "info");
+    createMessage("Generating inventory report...", "report-message", "info");
     let formData: FormData = new FormData(generateForm);
     let startDateValue = formData.get('startDate');
     let endDateValue = formData.get('endDate');
@@ -216,20 +226,20 @@ async function generateReport() {
     if (startDateValue && endDateValue) {
         if (new Date(startDateValue.toString()) > new Date(endDateValue.toString())) {
             //Checking that the end date is a later date than the start date
-            createMessage("Please make sure the end date is a later date than the start date", "main-message", "error");
+            createMessage("Please make sure the end date is a later date than the start date", "report-message", "error");
             return;
         }
     } else if (!startDateValue && !endDateValue) {
         //Checking if both date inputs are not filled in
-        createMessage("Please select start and end dates", "main-message", "error");
+        createMessage("Please select start and end dates", "report-message", "error");
         return;
     } else if (!startDateValue && endDateValue) {
         //Checking if only the start date is not filled in
-        createMessage("Please select a start date", "main-message", "error");
+        createMessage("Please select a start date", "report-message", "error");
         return;
     } else if (startDateValue && !endDateValue) {
         //Checking if only the end date is not filled in
-        createMessage("Please select an end date", "main-message", "error");
+        createMessage("Please select an end date", "report-message", "error");
         return;
     }
     //Hide the form
