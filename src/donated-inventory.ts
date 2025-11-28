@@ -78,7 +78,7 @@ async function loadPreviousEntries() {
         previousEntriesCard.appendChild(noEntriesP);
     } else {
         //Create the previous entries table
-        const tableColumnHeaders: string[] = ['Date', 'Component', 'Quantity', 'Destination', 'Delete'];
+        const tableColumnHeaders: string[] = ['Date', 'Component', 'Quantity', 'Who Donated', 'Delete'];
         const previousTableContainer = document.getElementById('inventory-table-container');
         if (previousTableContainer) previousTableContainer.remove();
         const tableContainer = document.createElement('div');

@@ -346,10 +346,9 @@ async function updateUIbasedOnAuth(user: User | null) {
     let userRole: string | null = null;
     if (user) {
         userRole = await getUserRole(user.uid);
-        //User is signed in, show the generate report form
-        if (generateForm.classList.contains('hide')) generateForm.classList.remove('hide');
-        //If the user is an admin, show the links to the inventory entry logs and the manage inventory card
+        //If the user is an admin, show the links to the inventory entry logs, the manage inventory card, and the generate report card
         if (userRole === "admin") {
+            if (generateForm.classList.contains('hide')) generateForm.classList.remove('hide');
             const inventoryLogLinks = document.getElementById('inventory-log-links') as HTMLElement;
             if (inventoryLogLinks.classList.contains('hide')) inventoryLogLinks.classList.remove('hide');
             if (manageInventoryCard.classList.contains('hide')) manageInventoryCard.classList.remove('hide');
