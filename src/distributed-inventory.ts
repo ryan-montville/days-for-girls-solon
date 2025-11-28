@@ -10,7 +10,7 @@ import {
     populateComponteTypeSelect,
     trapFocus
 } from "./utils.js";
-import { getFilteredLogEntries, addLogEntry, deleteLogEntry } from "./firebaseService.js";
+import { getFilteredLogEntries, addLogEntry, deleteLogEntry, getAllLogEntires } from "./firebaseService.js";
 import { initializeApp } from "./app.js";
 import { InventoryEntry } from "./models.js";
 import { auth } from "./firebase.js";
@@ -66,6 +66,7 @@ async function loadPreviousEntries() {
     let distributedInventoryData: InventoryEntry[] = [];
     try {
         distributedInventoryData = await getFilteredLogEntries('distributed');
+        // distributedInventoryData = await getAllLogEntires();
     } catch (error) {
         createMessage("Error loading log entries. Please try reloading the page", 'main-message', 'error');
     }
@@ -159,7 +160,10 @@ async function submitData() {
     }
     //Submit the entry
     try {
-        await addLogEntry(newEntry);
+        let entryId = await addLogEntry(newEntry);
+        if (entryId) {
+            newEntry['entryId'] = entryId;
+        }
         closeModal('distribute-inventory-backdrop');
         createMessage("The inventory has successfully been updated", "main-message", "check_circle");
         //Clear the form
@@ -182,31 +186,30 @@ async function submitData() {
 
 initializeApp('Inventory', 'Distributed Inventory').then(async () => {
     //Only admins are allowed to manage the inventory logs. If the user is not an admin or not signed in, redirect them to the inventory page
-        auth.onAuthStateChanged(async user => {
-            if (user) {
-                let userRole = await getUserRole(user.uid);
-                if (userRole !== "admin") {
-                    storeMessage("Only admins are allowed access to the inventory logs.", 'main-message', 'error');
-                    window.location.href = 'inventory.html';
-                }
-            } else {
+    auth.onAuthStateChanged(async user => {
+        if (user) {
+            let userRole = await getUserRole(user.uid);
+            if (userRole !== "admin") {
                 storeMessage("Only admins are allowed access to the inventory logs.", 'main-message', 'error');
                 window.location.href = 'inventory.html';
             }
-        })
-    await loadPreviousEntries();
+        } else {
+            storeMessage("Only admins are allowed access to the inventory logs.", 'main-message', 'error');
+            window.location.href = 'inventory.html';
+        }
+        await loadPreviousEntries();
 
-    //Event listener for distribute inventory form submit
-    distributeInventoryModal.addEventListener('submit', (e) => {
-        e.preventDefault();
-        submitData();
+        //Event listener for distribute inventory form submit
+        distributeInventoryModal.addEventListener('submit', (e) => {
+            e.preventDefault();
+            submitData();
 
-        //Event listener to close the distribute inventory modal
-        const closeModalButton = document.getElementById('cancel') as HTMLElement;
-        closeModalButton.addEventListener('click', () => closeModal('distribute-inventory-backdrop'));
-    });
+            //Event listener to close the distribute inventory modal
+            const closeModalButton = document.getElementById('cancel') as HTMLElement;
+            closeModalButton.addEventListener('click', () => closeModal('distribute-inventory-backdrop'));
+        });
 
-    //Event listener to open the distribute inventory modal
+        //Event listener to open the distribute inventory modal
         const openModalButton = document.getElementById('newDistributedEntryButton') as HTMLElement;
         openModalButton.addEventListener('click', () => {
             console.log("button clicked")
@@ -217,4 +220,5 @@ initializeApp('Inventory', 'Distributed Inventory').then(async () => {
             dateInput.focus();
             trapFocus(distributeInventoryModal, distributeInventoryBackdrop);
         });
+    })
 });

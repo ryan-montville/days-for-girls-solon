@@ -65,7 +65,7 @@ function mapDocToInventoryEntry(docSnap: DocumentSnapshot<any>): InventoryEntry 
 export async function getAllEvents(): Promise<Event[]> {
     try {
         const events: Event[] = [];
-        const q = query(collection(db, 'events'), orderBy('eventDate', 'asc'));
+        const q = query(collection(db, 'events'), orderBy('eventDate', 'desc'));
         const querySnapshot = await getDocs(q);
 
         querySnapshot.forEach((doc) => {
@@ -490,15 +490,15 @@ export async function getFilteredLogEntries(logType: string): Promise<InventoryE
             q = query(
                 logRef,
                 where('whoDonated', '>', ''),
-                orderBy("entryDate", "desc"),
+                orderBy("entryDate", "asc"),
                 orderBy("whoDonated", "asc")
             );
         } else if (logType === 'distributed') {
             //If logType === distributed, return all inventory log entries where "destination" is NOT null/empty.
             q = query(
                 logRef,
-                where('destination', '>', null),
-                orderBy("entryDate", "desc"),
+                where('destination', '>', ''),
+                orderBy("entryDate", "asc"),
                 orderBy("destination", "asc")
             );
         } else {
@@ -568,7 +568,7 @@ export async function addLogEntry(newLogEntry: Omit<InventoryEntry, 'entryId'>):
         console.log(`Inventory log entry and component quantity updated successfully: ${entryId}`);
         return entryId;
     } catch (error) {
-        console.error("Error adding inventory log entry (Transaction aborted):", error);
+        console.error("Error adding inventory log entry:", error);
         throw error;
     }
 }

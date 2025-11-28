@@ -209,11 +209,13 @@ export function fixDate(dateString: string | Timestamp, dateFormat: string): str
         console.error("fixDate received an invalid date object after parsing:", dateString);
         return "Invalid Date";
     }
+    //Add timezone to fix date off by one error
+    let dateTimezoneFixed: Date = new Date(dateObj.getTime() - dateObj.getTimezoneOffset() * -60000);
     //Define formatting options
     const options: Intl.DateTimeFormatOptions = (dateFormat === 'shortDate') ?
         { month: '2-digit', day: '2-digit', year: 'numeric' } :
         { month: 'long', day: '2-digit', year: 'numeric' };
-    return dateObj.toLocaleDateString('en-US', options);
+    return dateTimezoneFixed.toLocaleDateString('en-US', options);
 }
 
 export function displayLoadingMessage() {

@@ -306,6 +306,7 @@ async function submitData(formData: FormData) {
             const componentId = await addComponent(newComponent);
             closeModal('manage-inventory-backdrop');
             if (componentId) {
+                newComponent['componentId'] = componentId;
                 //The component was added successfully to the firestore
                 createMessage(`Added '${newComponent['componentType']}' to inventory`, "main-message", "check_circle");
                 newComponent['componentId'] = componentId;

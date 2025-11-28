@@ -66,7 +66,6 @@ async function loadPreviousEntries() {
     let donateInventoryData: InventoryEntry[] = [];
     try {
         donateInventoryData = await getFilteredLogEntries('donated');
-        console.log(donateInventoryData);
     } catch (error: any) {
         createMessage(error, 'main-message', 'error');
     }
@@ -159,7 +158,10 @@ async function submitData() {
     }
     //Submit the entry
     try {
-        await addLogEntry(newEntry);
+        let entryId = await addLogEntry(newEntry);
+        if (entryId) {
+            newEntry['entryId'] = entryId;
+        }
         //Close the modal
         closeModal('add-inventory-backdrop');
         //Clear the form
