@@ -2,7 +2,6 @@
   "name": "days-for-girls-solon",
   "version": "1.0.0",
   "description": "A web app for the Days for Girls Solon Ohio team",
-  "main": "dist/main.js",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

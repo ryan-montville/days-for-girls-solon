@@ -1,0 +1,1 @@
+import{i as o,o as n,e as s}from"./app-W-6V0bhc.js";o("test","test").then(()=>{const t=document.getElementById("test-modal"),e=document.getElementById("test-backdrop");document.getElementById("test-button").addEventListener("click",()=>{n(e,t,"testInput1")}),document.getElementById("close").addEventListener("click",()=>{s("test-backdrop")})});
