@@ -56,6 +56,10 @@ body {
     background-color: var(--body-background);
 }
 
+.noScroll {
+    overflow: hidden;
+}
+
 /* Loading animation from https://css-loaders.com */
 .loader {
   width: 50px;
@@ -112,17 +116,6 @@ body {
     text-decoration: none;
     border: 3px solid white;
 }
-
-/* header
-    The header contains two elements: 
-    - The logo as a picture tag (to change image based on dark mode preference)
-    - The nav menu (On desktop, its inline with the logo. On mobile, its postion absolute)
-*/
-/*
-header {
-}
- Not sure if needed here. All rules are currently in the medai breakpoints */
-
 
 /* navbar */
 nav {
@@ -191,7 +184,7 @@ nav a:hover {
 .backdrop {
     display: none;
     background-color: rgba(0, 0, 0, 0.80);
-    position: absolute;
+    position: fixed;
     left: 0;
     right: 0;
     top: 0;

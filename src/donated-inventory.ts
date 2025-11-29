@@ -4,6 +4,7 @@ import {
     createTable,
     createMessage,
     createDeleteModal,
+    openModal,
     closeModal,
     fixDate,
     populateComponteTypeSelect,
@@ -209,11 +210,7 @@ initializeApp('Inventory', 'Donated Inventory').then(async () => {
     const newDonatedEntryButton = document.getElementById('newDonatedEntryButton') as HTMLElement;
     newDonatedEntryButton.addEventListener('click', () => {
         populateComponteTypeSelect('componentType');
-        addInventoryModalBackdrop.style.display = 'flex';
-        addInventoryModal.setAttribute('aria-modal', 'true');
-        const dateInput = document.getElementById('date') as HTMLInputElement;
-        dateInput.focus();
-        trapFocus(addInventoryModal, addInventoryModalBackdrop);
+        openModal(addInventoryModalBackdrop, addInventoryModal, 'date');
     });
 
     //Event listener to close the add inventory modal

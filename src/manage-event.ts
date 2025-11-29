@@ -6,10 +6,10 @@ import {
     createDeleteModal,
     storeMessage,
     createTable,
+    openModal,
     closeModal,
     fixDate,
-    trapFocus,
-    clearMessages
+    trapFocus
 } from "./utils.js";
 import { getEventById, deleteEvent, updateEvent, getSignUpEntriesForEventId, deleteSignUpEntry } from "./firebaseService.js";
 import { initializeApp } from "./app.js";
@@ -65,11 +65,7 @@ function displayEventInfo(eventObject: Event) {
     //Event listener for the edit event button
     editButton.addEventListener('click', () => {
         //Open the edit event modal
-        editModalBackdrop.style.display = 'flex';
-        editEventModal.setAttribute('aria-modal', 'true');
-        const eventTitleInput = document.getElementById('eventTitle') as HTMLInputElement;
-        eventTitleInput.focus();
-        trapFocus(editEventModal, editModalBackdrop);
+        openModal(editModalBackdrop, editEventModal, 'eventTitle');
     });
     buttonRow.appendChild(editButton);
     eventInfoCard.appendChild(buttonRow);

@@ -90,13 +90,35 @@ export function retrieveMessage() {
     }
 }
 
+export function openModal(modalBackdrop: HTMLElement, modal: HTMLElement, firstFocusElementId: string) {
+    //Prevent the page from scrolling
+    const body = document.querySelector('body') as HTMLElement;
+    body.classList.add('noScroll');
+    //Display the modal by changing the display of the modal backdrop
+    modalBackdrop.style.display = 'flex';
+    //Change the modal's aria attribute
+    modal.setAttribute('aria-modal', 'true');
+    //Trap keyboard focus on the first input or button
+    const firstFocusElement = document.getElementById(firstFocusElementId);
+    if (firstFocusElement) {
+        firstFocusElement.focus();
+    }
+    //Set up the keyboard trap for all focusable elements
+    trapFocus(modal, modalBackdrop);
+}
+
 export function closeModal(modalBackdropId: string) {
     const modalBackdrop = document.getElementById(modalBackdropId) as HTMLElement;
     const modal = modalBackdrop.getElementsByClassName('modal');
+    //Change the modal's aria attribute
     if (modal) {
         modal[0].setAttribute('aria-modal', 'false');
     }
+    //Hide the modal by changing the display of the backdrop
     modalBackdrop.style.display = 'none';
+    //Remove the noScroll class to let the page scroll again
+    const body = document.querySelector('body') as HTMLElement;
+    body.classList.remove('noScroll');
 }
 
 export function createMessage(message: string, location: string, type: string) {
@@ -148,6 +170,9 @@ export function createTable(tableId: string, columnHeaders: string[]) {
 }
 
 export function createDeleteModal(itemToDelete: InventoryEntry | ComponentItem | SignUpEntry | Event, modalTitle: string): HTMLElement | null {
+    //Prevent the page from scrolling
+    const body = document.querySelector('body') as HTMLElement;
+    body.classList.add('noScroll');
     //Open delete item modal by changing the display of the backdrop
     const deleteItemBackdrop = document.getElementById('delete-item-backdrop') as HTMLElement;
     const deleteForm = document.getElementById('delete-item-modal') as HTMLFormElement;

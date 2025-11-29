@@ -1,7 +1,15 @@
 import { initializeApp } from "./app.js";
 import {
-    createButton, createTableRow, createTable, createMessage, createDeleteModal, clearMessages,
-    closeModal, fixDate, trapFocus
+    createButton, 
+    createTableRow, 
+    createTable, 
+    createMessage, 
+    createDeleteModal, 
+    clearMessages,
+    openModal,
+    closeModal, 
+    fixDate, 
+    trapFocus
 } from "./utils.js";
 import { InventoryEntry, ComponentItem, ComponentSummary } from "./models.js";
 import { addComponent, getAllComponents, getComponentbyId, deleteComponent, seedIfEmptyInventoryLog, getAllLogEntires } from "./firebaseService.js";
@@ -409,12 +417,7 @@ async function updateUIbasedOnAuth(user: User | null) {
             //Add the form to the modal
             manageInventoryModal.appendChild(addNewComponentTypeForm);
             //Open the modal
-            manageInventoryBackdrop.style.display = 'flex';
-            manageInventoryModal.classList.add('opening');
-            manageInventoryModal.setAttribute('aria-modal', 'true');
-            //Trap keyboard focus to modal form
-            nameInput.focus();
-            trapFocus(addNewComponentTypeForm, manageInventoryBackdrop);
+            openModal(manageInventoryBackdrop, manageInventoryModal, 'nameInput');
         });
     }
 }

@@ -11,27 +11,6 @@ import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "./firebase.js";
 import { createMessage } from "./utils.js";
 
-//Register a new user and sign them in
-// export async function registerUser(email: string, password: string): Promise<UserCredential> {
-//     try {
-//         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-//         return userCredential;
-//     } catch (error) {
-//         createMessage(`Error during user registration: ${error}`, 'sign-in-message', 'error');
-//         throw error;
-//     }
-// }
-
-// export async function signInUsers(email: string, password: string): Promise<UserCredential> {
-//     try {
-//         const userCredential = await signInWithEmailAndPassword(auth, email, password);
-//         return userCredential;
-//     } catch (error) {
-//         createMessage(`Error during user login: ${error}`, 'sign-in-message', 'error');
-//         throw error;
-//     }
-// }
-
 export async function signOutUser(): Promise<void> {
     try {
         await signOut(auth);

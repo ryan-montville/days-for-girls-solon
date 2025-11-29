@@ -5,6 +5,7 @@ import {
     createMessage,
     storeMessage,
     createDeleteModal,
+    openModal,
     closeModal,
     fixDate,
     populateComponteTypeSelect,
@@ -209,13 +210,8 @@ initializeApp('Inventory', 'Distributed Inventory').then(async () => {
         //Event listener to open the distribute inventory modal
         const openModalButton = document.getElementById('newDistributedEntryButton') as HTMLElement;
         openModalButton.addEventListener('click', () => {
-            console.log("button clicked")
             populateComponteTypeSelect('componentType');
-            distributeInventoryBackdrop.style.display = 'flex';
-            distributeInventoryModal.setAttribute('aria-modal', 'true');
-            const dateInput = document.getElementById('date') as HTMLInputElement;
-            dateInput.focus();
-            trapFocus(distributeInventoryModal, distributeInventoryBackdrop);
+            openModal(distributeInventoryBackdrop, distributeInventoryModal, 'date');
         });
 
         //Event listener to close the distribute inventory modal
