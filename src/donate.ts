@@ -116,8 +116,7 @@ async function openQuillEditor(delta: string) {
         [{ header: [1, 2, 3, 4] }],
         ["bold", "italic", "underline", "strike"],
         [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
-        ["blockquote"],
-        ["link", "image"],
+        ["blockquote", "link"],
     ];
     //Create the Quill text editor
     const quill = new Quill("#editor", {
