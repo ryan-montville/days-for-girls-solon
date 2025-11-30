@@ -15,6 +15,7 @@ button {
     justify-content: space-around;
     align-items: center;
     gap: 5px;
+    margin: 10px 0;
 }
 
 .left {

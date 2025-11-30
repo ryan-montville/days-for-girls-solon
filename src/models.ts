@@ -40,6 +40,7 @@ export interface SignUpEntry {
 }
 
 export interface DonatePageContent {
-    content: string;
+    delta: string;
+    html: string;
     lastUpdated: Timestamp;
 }

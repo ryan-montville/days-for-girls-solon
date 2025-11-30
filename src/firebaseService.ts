@@ -291,18 +291,15 @@ export async function deleteSignUpEntry(entryId: string) {
 /* ---------------- Donate Page Content (Single Document) ---------------- */
 /**
  * Add content to the Donate page
- * @param content - The markdown content for the Donate page
+ * @param html - The html code to be displayed on the page
+ * @param delta - The delta object to populate the quill editor
  */
-export async function addDonatePageContent(content: string) {
+export async function addDonatePageContent(newPageContnte: DonatePageContent) {
     try {
         //Create a reference for the page content doc
         const docRef = doc(collection(db, 'donatePage'), 'donate-page-content');
-        const newContent: DonatePageContent = {
-            content: content,
-            lastUpdated: Timestamp.now()
-        };
         //Add the page content object
-        await setDoc(docRef, newContent);
+        await setDoc(docRef, newPageContnte);
         console.log(`Initial donate page content added/set with ID: ${'donate-page-content'}`);
     } catch (error) {
         console.error("Error adding donate page content:", error);
@@ -317,7 +314,7 @@ export async function addDonatePageContent(content: string) {
 
 /**
  * Get the markdown content for the Donate page
- * @returns - The markdown content
+ * @returns - The page content object
  */
 export async function getDonatePageContent(): Promise<DonatePageContent | null> {
     try {
@@ -329,7 +326,7 @@ export async function getDonatePageContent(): Promise<DonatePageContent | null> 
         if (docSnap.exists()) {
             return mapDocToDonateContent(docSnap);
         } else {
-            console.warn(`No donate page content found at ID: ${'donate-page-content'}`);
+            console.warn(`No donate page content found at ID: donate-page-content'`);
             return null;
         }
     } catch (error) {
@@ -342,16 +339,13 @@ export async function getDonatePageContent(): Promise<DonatePageContent | null> 
  * Update the content of the Donate page
  * @param content - The updated page content
  */
-export async function updateDonatePageContent(content: string) {
+export async function updateDonatePageContent(updatedPageContent: DonatePageContent) {
     try {
         //Get the reference to the content doc
         const docRef = doc(collection(db, 'donatePage'), 'donate-page-content');
         //Update the doc
-        await updateDoc(docRef, {
-            content: content,
-            lastUpdated: Timestamp.now()
-        });
-        console.log(`Donate page content updated at ID: ${'donate-page-content'}`);
+        await updateDoc(docRef, updatedPageContent as any);
+        console.log(`Donate page content updated at ID: donate-page-content`);
     } catch (error) {
         console.error("Error updating donate page content:", error);
         if (error instanceof FirebaseError && error.code === 'permission-denied') {

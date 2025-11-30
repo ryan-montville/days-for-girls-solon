@@ -6,6 +6,6 @@ This app was created for the Days for Girls Solon team to convert their current 
 
 [view my presentation](research-and-development/Dev-Week-Presentation.pdf) for the halfway dev week.
 
-[View the user testing](research-and-development/User%20Testing.pdf) I conducted while developong the app.
+[View the user testing](research-and-development/User-Testing.pdf) I conducted while developong the app.
 
 [View Live Demo](https://ryan-montville.github.io/days-for-girls-solon/)

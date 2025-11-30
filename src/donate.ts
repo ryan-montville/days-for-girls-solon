@@ -3,127 +3,170 @@ import { createButton, createMessage, fixDate } from "./utils.js";
 import { auth } from "./firebase.js";
 import { addDonatePageContent, updateDonatePageContent, getDonatePageContent } from "./firebaseService.js";
 import { DonatePageContent } from "./models.js";
-import { marked } from 'marked';
 import { getUserRole } from "./authService.js";
+import { Timestamp } from "firebase/firestore";
+import Quill from 'quill';
+import 'quill/dist/quill.snow.css';
 
 const outputCard = document.getElementById('output') as HTMLElement;
-const markdownCheetSheetCard = document.getElementById('markdown-cheat-sheet') as HTMLElement;
 const mainContent = document.getElementById('maincontent') as HTMLElement;
 const outputButtonRow = document.getElementById('outputButtonRow') as HTMLElement;
-let hasDonateContent: boolean;
-let pageContentString: string = "";
+const pageContentSection = document.getElementById('pageContentSection') as HTMLElement;
+let donatePageContent: DonatePageContent | null = null;
+let hasDonateContent: boolean = false;
 
 async function loadDonateContent() {
-    const pageContentSection = document.getElementById('pageContentSection') as HTMLElement;
+    //Get the page content from the firestore
+    
     pageContentSection.innerHTML = '';
-    let pageContentObject: DonatePageContent | null = null;
     try {
-        pageContentObject = await getDonatePageContent();
+        donatePageContent = await getDonatePageContent();
     } catch (error: any) {
         createMessage(error, 'main-message', 'error');
     }
-    let lastUpdated: string = "";
-    if (!pageContentObject) {
-        pageContentString = "## No content Found";
-        hasDonateContent = false;
+    if (!donatePageContent) {
+        //If there is no page content in the firestore, create a placeholder object
+        donatePageContent = {
+            html: "<h2>No Content Found</h2>",
+            delta: "",
+            lastUpdated: Timestamp.now()
+        }
     } else {
         hasDonateContent = true;
-        pageContentString = pageContentObject['content'];
-        lastUpdated = fixDate(pageContentObject['lastUpdated'], 'longDate');
     }
-    //Use Marked.js to convert the markdown to HTML
-    const contentHTML = await marked.parse(pageContentString);
-    pageContentSection.innerHTML = contentHTML;
+    //Add the page content html to the output card
+    pageContentSection.innerHTML = donatePageContent['html'];
     const lastUpdatedP = document.createElement('p');
-    const lastUpdatedText = document.createTextNode(`Last updated: ${lastUpdated}`);
+    const lastUpdatedText = document.createTextNode(`Last updated: ${fixDate(donatePageContent['lastUpdated'], 'longDate')}`);
     lastUpdatedP.appendChild(lastUpdatedText);
     const loadingCard = document.getElementById('loading');
+    //Remove the loading card if it exists on the DOM
     if (loadingCard) loadingCard.remove();
     outputCard.classList.remove('hide');
     pageContentSection.appendChild(lastUpdatedP);
 }
 
-async function submitData() {
-    //Close the cheat sheet card
-    markdownCheetSheetCard.classList.add('hide');
+async function submitData(quill: any, editorCard: HTMLElement) {
     //Create a submitting data message while the app validates and submits the data
     createMessage("Submitting data to update page content...", 'main-message', 'info');
-    const editForm = document.getElementById('editForm') as HTMLFormElement;
-    if (editForm) {
-        const editFormData = new FormData(editForm)
-        const pageContent = editFormData.get('donateContentTextArea');
-        //Validate pageContent
-        if (pageContent === null || pageContent.toString().trim() === '') {
-            createMessage("Please enter the content for the donate page", 'main-message', 'error');
+    const htmlContent = quill.root.innerHTML;
+        const deltaContent = quill.getContents();
+        const updatedContent: DonatePageContent = {
+            html: htmlContent,
+            delta: JSON.stringify(deltaContent),
+            lastUpdated: Timestamp.now()
+        }
+        if (hasDonateContent) {
+            try {
+                await updateDonatePageContent(updatedContent);
+                createMessage("Successfully update the page contents", 'main-message', 'check_circle');
+            } catch (error: any) {
+                createMessage(error, 'main-message', 'error');
+            }
+            editorCard.remove();
+            pageContentSection.innerHTML = updatedContent['html'];
+            donatePageContent = updatedContent;
+            const lastUpdatedP = document.createElement('p');
+            const lastUpdatedText = document.createTextNode(`Last Updated: ${fixDate(updatedContent['lastUpdated'], 'longDate')}`);
+            lastUpdatedP.appendChild(lastUpdatedText);
+            pageContentSection.appendChild(lastUpdatedP);
         } else {
             try {
-                if (hasDonateContent) {
-                    await updateDonatePageContent(pageContent.toString());
-                } else {
-                    await addDonatePageContent(pageContent.toString());
-                }
-                editForm.remove();
-                loadDonateContent();
-                outputCard.classList.remove('hide');
-                createMessage("Content Sucessfully updated", 'main-message', 'check_circle');
+                await addDonatePageContent(updatedContent);
+                createMessage("Successfully update the page contents", 'main-message', 'check_circle');
             } catch (error: any) {
-                outputCard.classList.remove('hide');
                 createMessage(error, 'main-message', 'error');
             }
         }
-    } else {
-        console.error("Form not found");
-    }
+        outputCard.classList.remove('hide');
+
 }
 
-async function createEditForm(contentString: string) {
-    const editform = document.createElement('form');
-    editform.setAttribute('id', 'editForm');
-    editform.setAttribute('class', 'card');
-    const textArea = document.createElement('textarea');
-    textArea.setAttribute('id', 'donateContentTextArea');
-    textArea.setAttribute('name', 'donateContentTextArea');
-    textArea.value = contentString
-    editform.appendChild(textArea);
+async function openQuillEditor(delta: string) {
+    //Create the Editor card
+    const editorCard = document.createElement('article');
+    editorCard.setAttribute('id', 'editor-card');
+    editorCard.setAttribute('class', 'card hide');
+    const quillSection = document.createElement('section');
+    quillSection.setAttribute('id', 'editor');
+    editorCard.appendChild(quillSection);
+    //Create the button row
     const buttonRow = document.createElement('section');
-    buttonRow.setAttribute('class', 'form-row');
-    const cancelButton = createButton('Cancel', 'button', 'cancelButton', 'secondary');
+    buttonRow.setAttribute('class', 'button-row');
+    //Create the cancel button
+    const cancelButton = createButton('Cancel', 'button', 'cancel-button', 'secondary');
     cancelButton.addEventListener('click', () => {
-        editform.remove();
-        markdownCheetSheetCard.classList.add('hide');
+        //Show the output card
         outputCard.classList.remove('hide');
+        //Remove the editor card from the DOM
+        editorCard.remove();
     });
     buttonRow.appendChild(cancelButton);
-    const submitButton = createButton('Submit', 'submit', 'submitButton', 'primary');
-    editform.addEventListener('submit', (e) => {
-        e.preventDefault();
-        submitData();
-    })
-    buttonRow.appendChild(submitButton);
-    editform.appendChild(buttonRow);
-    return editform;
+    //Create the update button
+    const updateButton = createButton('Update', 'button', 'update-button', 'primary');
+    updateButton.addEventListener('click', async () => {
+        submitData(quill, editorCard);
+    });
+    buttonRow.appendChild(updateButton);
+    editorCard.appendChild(buttonRow);
+    //Add the editor card to the DOM
+    mainContent.appendChild(editorCard);
+    //Define the Quill toolbar options
+    const toolbarOptions = [
+        [{ header: [1, 2, 3, 4] }],
+        ["bold", "italic", "underline", "strike"],
+        [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
+        ["blockquote"],
+        ["link", "image"],
+    ];
+    //Create the Quill text editor
+    const quill = new Quill("#editor", {
+        theme: "snow",
+        modules: {
+            toolbar: toolbarOptions,
+        },
+    });
+    quill.setContents(JSON.parse(delta));
+    //Hide the output card
+    outputCard.classList.add('hide');
+    //Show the editor card
+    editorCard.classList.remove('hide');
 }
 
-initializeApp('Donate', 'Donate').then(response => {
+initializeApp('Donate', 'Donate').then(() => {
     loadDonateContent();
     auth.onAuthStateChanged(async user => {
         //Only admins can edit the contents of the donate page
         if (user) {
             let userRole = await getUserRole(user.uid);
             if (userRole === "admin") {
+                //If admin, add the edit button to the DOM
                 const editButton = createButton('Edit', 'button', 'editButton', 'secondary', 'edit');
+                //Event listener for the edit button
                 editButton.addEventListener('click', async () => {
                     outputCard.classList.add('hide');
-                    markdownCheetSheetCard.classList.remove('hide');
-                    const editForm = createEditForm(pageContentString);
-                    mainContent.appendChild(await editForm);
+                    if (donatePageContent) {
+                        openQuillEditor(donatePageContent['delta']);
+                    }
                 });
                 outputButtonRow.appendChild(editButton);
-                //Event listener to close the markdown cheat sheet card
-                const cheatSheetCloseButton = document.getElementById('cheat-sheet-close') as HTMLElement;
-                cheatSheetCloseButton.addEventListener('click', () => {
-                    markdownCheetSheetCard.classList.add('hide');
-                });
+                //Check to make sure don't need, then remove all this
+                // //Event listener for the cancel button
+                // const cancelButton = document.getElementById('cancel-button') as HTMLElement;
+                // cancelButton.addEventListener('click', () => {
+                //     //Remove the editor from the DOM
+                //     const editor = document.getElementById('editor');
+                //     if (editor) editor.remove();
+                //     //Hide the editor card
+                //     editorCard.classList.add('hide');
+                //     //Show the output card
+                //     outputCard.classList.remove('hide');
+                // });
+                // //Event listener for the update buttton
+                // const updateButton = document.getElementById('update-button') as HTMLElement;
+                // updateButton.addEventListener('click', () => {
+
+                // })
             }
 
         } else {
