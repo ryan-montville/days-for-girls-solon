@@ -8,8 +8,7 @@ import {
     openModal,
     closeModal,
     fixDate,
-    populateComponteTypeSelect,
-    trapFocus
+    populateComponteTypeSelect
 } from "./utils.js";
 import { getFilteredLogEntries, addLogEntry, deleteLogEntry, getAllLogEntires } from "./firebaseService.js";
 import { initializeApp } from "./app.js";

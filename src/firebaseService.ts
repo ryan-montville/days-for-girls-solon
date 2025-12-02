@@ -405,7 +405,7 @@ export async function getAllComponents(): Promise<ComponentItem[]> {
 }
 
 /**
- * 
+ * Get a component from the current inventory by its component ID
  * @param componentId 
  * @returns 
  */
@@ -426,6 +426,11 @@ export async function getComponentbyId(componentId: string): Promise<ComponentIt
     }
 }
 
+/**
+ * Add a new component type to the inventory to track its current inventory count
+ * @param newComponent - The new type of component to add to the inventory
+ * @returns 
+ */
 export async function addComponent(newComponent: Omit<ComponentItem, 'componentId'>): Promise<string> {
     try {
         const componentRef = collection(db, 'inventory');
@@ -452,6 +457,12 @@ export async function addComponent(newComponent: Omit<ComponentItem, 'componentI
     }
 }
 
+/**
+ * Delete a component from the inventory. This will also delete all the inventory entry
+ * logs for the component.
+ * @param componentId - The ID of the component to delete from the inventory. This will also delete all the inventory entry
+ * logs for the component
+ */
 export async function deleteComponent(componentId: string) {
     try {
         //Find all the log entries for the component
@@ -485,9 +496,11 @@ export async function deleteComponent(componentId: string) {
     }
 }
 
-/* Inventory log entries */
-//If there are no log entries, create a donated and distributed entry to prevent errors in getFilteredLogEntries() 
-export async function seedIfEmptyInventoryLog(): Promise<void> {
+/**
+ * Create a donated and distributed entry log if the inventory log is empty so the app doesn't throw
+ * any error when getFilteredLogEntries() is called
+ */
+export async function seedIfEmptyInventoryLog() {
     try {
         const logRef = collection(db, 'inventoryLog');
         const q = query(logRef, limit(1));
@@ -530,6 +543,10 @@ export async function seedIfEmptyInventoryLog(): Promise<void> {
     }
 }
 
+/**
+ * Get all the inventory entry logs
+ * @returns - An array of inventory log entries
+ */
 export async function getAllLogEntires(): Promise<InventoryEntry[]> {
     try {
         const inventoryEntries: InventoryEntry[] = [];
@@ -546,7 +563,11 @@ export async function getAllLogEntires(): Promise<InventoryEntry[]> {
     }
 }
 
-//Get all donated or distributed inventory log entries based on logtype
+/**
+ * Get all the donated log entires or all the distributed log entries
+ * @param logType - Determines whether to return the donated log or the distributed log
+ * @returns - An array of filtered inventory log entries
+ */
 export async function getFilteredLogEntries(logType: string): Promise<InventoryEntry[]> {
     try {
         let q;
@@ -583,6 +604,11 @@ export async function getFilteredLogEntries(logType: string): Promise<InventoryE
     }
 }
 
+/**
+ * Add a new inventory log entry
+ * @param newLogEntry - The inventory entry log to add
+ * @returns - The entry ID
+ */
 export async function addLogEntry(newLogEntry: Omit<InventoryEntry, 'entryId'>): Promise<string> {
     //Used to update the quantity of the component
     let isIncrement: boolean;
@@ -639,6 +665,10 @@ export async function addLogEntry(newLogEntry: Omit<InventoryEntry, 'entryId'>):
     }
 }
 
+/**
+ * Delete an inventory log entry
+ * @param entryId - The entry ID of the entry log to delete
+ */
 export async function deleteLogEntry(entryId: string) {
     try {
         //Using Firestore transactions to make sure the log entry is only deleted if it updates the component quantity

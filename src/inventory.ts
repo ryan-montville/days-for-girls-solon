@@ -8,11 +8,10 @@ import {
     clearMessages,
     openModal,
     closeModal, 
-    fixDate, 
-    trapFocus
+    fixDate
 } from "./utils.js";
 import { InventoryEntry, ComponentItem, ComponentSummary } from "./models.js";
-import { addComponent, getAllComponents, getComponentbyId, deleteComponent, seedIfEmptyInventoryLog, getAllLogEntires } from "./firebaseService.js";
+import { addComponent, getAllComponents, deleteComponent, seedIfEmptyInventoryLog, getAllLogEntires } from "./firebaseService.js";
 import { auth } from "./firebase.js";
 import { User } from "./authService.js";
 import { getUserRole } from "./authService.js";

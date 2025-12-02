@@ -1,5 +1,4 @@
 import { initializeApp } from "./app.js";
-import { User } from "./authService.js";
 import { createMessage, fixDate } from "./utils.js";
 import { getAllEvents } from "./firebaseService.js";
 import { Event } from "./models.js";

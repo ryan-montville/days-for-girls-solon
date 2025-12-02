@@ -8,7 +8,6 @@ import {
     closeModal,
     fixDate,
     populateComponteTypeSelect,
-    trapFocus,
     storeMessage
 } from "./utils.js";
 import { getFilteredLogEntries, addLogEntry, deleteLogEntry } from "./firebaseService.js";

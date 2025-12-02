@@ -8,8 +8,7 @@ import {
     createTable,
     openModal,
     closeModal,
-    fixDate,
-    trapFocus
+    fixDate
 } from "./utils.js";
 import { getEventById, deleteEvent, updateEvent, getSignUpEntriesForEventId, deleteSignUpEntry } from "./firebaseService.js";
 import { initializeApp } from "./app.js";

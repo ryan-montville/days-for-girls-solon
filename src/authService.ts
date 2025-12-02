@@ -1,8 +1,5 @@
 import {
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
     signOut,
-    UserCredential,
     User,
     GoogleAuthProvider,
     signInWithPopup,
