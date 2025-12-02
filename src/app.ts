@@ -66,16 +66,6 @@ export async function initializeApp(partentPage: string, currentPage: string) {
     }
   });
 
-  //Register the servide worker
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker
-        .register("/sw.js")
-        .then((registration) => console.log("SW registered:", registration))
-        .catch((error) => console.log("SW registration failed:", error));
-    });
-  }
-
   //Load the header and wait for it to be added to the DOM
   await loadHeader(partentPage, currentPage);
   //Load the footer
