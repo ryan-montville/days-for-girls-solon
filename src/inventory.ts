@@ -515,7 +515,7 @@ async function updateUIbasedOnAuth(user: User | null) {
       nameInputRow.appendChild(nameInput);
       addNewComponentTypeForm.appendChild(nameInputRow);
       const buttonRow = document.createElement("section");
-      buttonRow.setAttribute("class", "form-row");
+      buttonRow.setAttribute("class", "button-row");
       const cancelButton = createButton(
         "Cancel",
         "button",

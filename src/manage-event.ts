@@ -83,7 +83,7 @@ function displayEventInfo(eventObject: Event) {
   eventInfoCard.appendChild(eventDescriptionP);
   //Add the edit event button
   const buttonRow: HTMLElement = document.createElement("section");
-  buttonRow.setAttribute("class", "form-row");
+  buttonRow.setAttribute("class", "button-row left");
   const editButton = createButton(
     "Edit Event Info",
     "button",

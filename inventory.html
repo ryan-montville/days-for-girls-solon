@@ -26,16 +26,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      rel="preload"
+      rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Solway:wght@300;400;500;700;800&display=swap"
-      as="font"
-      type="font/woff2"
     />
     <link
-      rel="preload"
+      rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-      as="font"
-      type="font/woff2"
     />
   </head>
 
@@ -65,7 +61,7 @@
         </article>
         <article class="card hide" id="manage-inventory-card">
           <h2>Manage Inventory</h2>
-          <div class="form-row">
+          <div class="button-row left">
             <button class="secondary" id="add-new-type">
               <span class="material-symbols-outlined">add</span> Add new
               component type
@@ -75,14 +71,10 @@
         <section class="message-wrapper" id="report-message"></section>
         <form id="generateForm" class="card hide">
           <div class="form-row">
-            <span>
               <label for="startDate">Start Date:</label>
               <input type="date" id="startDate" name="startDate" />
-            </span>
-            <span>
               <label for="endDate">End Date:</label>
               <input type="date" id="endDate" name="endDate" />
-            </span>
           </div>
           <div class="form-row">
             <button type="submit" id="generate-button" class="primary full">

@@ -5,9 +5,14 @@ button {
 
 .form-row {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: center;
   gap: 5px;
+  margin: 5px 0;
+}
+
+.form-row input[type=text] {
+  flex-grow: 1;
 }
 
 .button-row {
@@ -106,4 +111,10 @@ fieldset {
 }
 fieldset legend {
   padding: 5px;
+}
+
+@media (max-width: 460px) {
+.button-row {
+  margin: 10px;
+}
 }

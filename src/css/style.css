@@ -49,11 +49,10 @@
 }
 
 body {
-  overscroll-behavior: none;
   position: relative;
   z-index: 1;
-  width: 100vw;
   background-color: var(--body-background);
+  overflow-x: hidden;
 }
 
 .noScroll {
@@ -125,6 +124,7 @@ nav {
   justify-content: center;
   align-items: center;
   z-index: 1;
+  transition: max-width 0.4s ease-in-out;
 }
 
 nav a,
@@ -471,7 +471,7 @@ footer .social-icon {
 
   main {
     margin: 20px 0;
-    width: 100vw;
+    width: 100%;
   }
 
   h2 {
@@ -517,7 +517,6 @@ footer .social-icon {
   }
 
   nav {
-    display: none;
     padding-top: 110px;
     flex-direction: column;
     justify-content: flex-start;
@@ -525,6 +524,13 @@ footer .social-icon {
     box-shadow:
       0 3px 6px rgba(0, 0, 0, 0.16),
       0 3px 6px rgba(0, 0, 0, 0.23);
+    width: 80%; 
+    height: 100vh;
+    max-width: 0; 
+    visibility: hidden;
+    width: 80%; 
+    height: 100vh;
+    overflow: hidden;
   }
 
   nav a,
@@ -534,12 +540,18 @@ footer .social-icon {
     padding: 5px 10px;
   }
 
+  nav button {
+    margin: 10px 0;
+  }
+
   nav.open {
     display: flex;
     position: fixed;
     top: 0;
     right: 0;
     bottom: 0;
+    max-width: 1000px;
+    visibility: visible;
   }
 
   .backdrop {
@@ -553,7 +565,7 @@ footer .social-icon {
   }
 
   .card {
-    width: calc(99vw - 60px);
+    width: 85%;
   }
 
   footer {
