@@ -9,13 +9,9 @@
     "noImplicitAny": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable", "webworker"], 
-    "isolatedModules": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable", "webworker"],
+    "isolatedModules": true
   },
-  "include": [
-    "./src/**/*.ts"
-, "vite.config.ts"  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["./src/**/*.ts", "vite.config.ts"],
+  "exclude": ["node_modules"]
 }
