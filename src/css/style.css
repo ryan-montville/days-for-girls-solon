@@ -279,6 +279,7 @@ h2,
 h3,
 h4 {
   font-family: "Solway", serif;
+  font-display: swap;
 }
 
 /* hr with text code with help from https://codepen.io/scottzirkel/pen/yNxNME */
