@@ -6,6 +6,7 @@ import { Event } from "./models.js";
 import { getUserRole } from "./authService.js";
 import { auth } from "./firebase.js";
 
+//DOM elements
 const createForm = document.getElementById("create-event") as HTMLFormElement;
 
 async function submitData() {

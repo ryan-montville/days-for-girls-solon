@@ -20,7 +20,7 @@ import {
 import { initializeApp } from "./app.js";
 import { SignUpEntry, Event } from "./models.js";
 
-// Page Elements
+//DOM Elements
 const signUpEntriesCard = document.getElementById(
   "sign-up-entires-card",
 ) as HTMLElement;

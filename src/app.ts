@@ -2,34 +2,33 @@ import {
   createMessage,
   closeModal,
   retrieveMessage,
-  trapFocus,
 } from "./utils.js";
 import {
   signInWithGooglePopup,
-  getCurrentUser,
   signOutUser,
 } from "./authService.js";
 import { auth } from "./firebase.js";
 
-const pageWrapper = document.getElementById("page-wrapper") as HTMLElement;
-let mobileNavToggle = document.getElementById(
-  "mobile-nav-toggle",
-) as HTMLElement;
 const githubTemplateBaseURL =
   "https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/";
 
-//Global DOM elements
+//DOM elements
 let nav: HTMLElement;
 let signInButton: HTMLElement;
 let signOutButton: HTMLElement;
 let inventoryLink: HTMLElement;
+const pageWrapper = document.getElementById("page-wrapper") as HTMLElement;
+let mobileNavToggle = document.getElementById(
+  "mobile-nav-toggle",
+) as HTMLElement;
 
-//Used to detect when a user signs in or out
+/**
+ * Used to detect when a user signs in or out and allows the page to be updated without reload
+ */
 function setUpAuthListener() {
   auth.onAuthStateChanged((user) => {
     //Don't continue if these elements haven't loaded
     if (!inventoryLink || !signInButton || !signOutButton) return;
-
     if (user) {
       //User is signed in
       console.log("User is signed in");
@@ -52,6 +51,11 @@ function setUpAuthListener() {
   });
 }
 
+/**
+ * Loads all the core funtions and elements for the page
+ * @param partentPage - Used for "aria-current", passed to loadheader()
+ * @param currentPage - Used to update the page title inside the <title> tag
+ */
 export async function initializeApp(partentPage: string, currentPage: string) {
   //Set the page title
   document.title = `${currentPage} - Days for Girls Solon`;
@@ -67,7 +71,7 @@ export async function initializeApp(partentPage: string, currentPage: string) {
   });
 
   //Load the header and wait for it to be added to the DOM
-  await loadHeader(partentPage, currentPage);
+  await loadHeader(partentPage);
   //Load the footer
   await loadFooter();
   //Load the modals
@@ -77,13 +81,10 @@ export async function initializeApp(partentPage: string, currentPage: string) {
   inventoryLink = document.getElementById("inventory-link") as HTMLElement;
   signInButton = document.getElementById("sign-in-button") as HTMLElement;
   signOutButton = document.getElementById("sign-out-button") as HTMLElement;
-
   //User Authentication check
   setUpAuthListener();
-
   //Check to see if there is a message waiting to be displayed
   retrieveMessage();
-
   //Mobile Nav toggle
   mobileNavToggle.addEventListener("click", () => {
     console.log("toggling nav menu");
@@ -98,7 +99,6 @@ export async function initializeApp(partentPage: string, currentPage: string) {
       mobileNavToggle.innerText = "menu";
     }
   });
-
   //event listener for sign in button to open sign in modal
   signInButton.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -110,10 +110,9 @@ export async function initializeApp(partentPage: string, currentPage: string) {
     createMessage("Opening Google window...", "main-message", "info");
     try {
       const result = await signInWithGooglePopup();
-      //If sucessful sign in with Google, close the modal and display the message
+      //If sucessful sign in with Google, display the message
       const user = result.user;
       if (user) {
-        //Close the sign in modal
         createMessage(
           `Welcome ${user.displayName}`,
           "main-message",
@@ -188,9 +187,12 @@ export async function initializeApp(partentPage: string, currentPage: string) {
   });
 }
 
+/**
+ * Loads the header from header.html and replaces the header placeholder in the DOM
+ * @param partentPage - Used to set "aria-current"
+ */
 async function loadHeader(
   partentPage: string,
-  currentPage: string,
 ): Promise<void> {
   const headerPlaceholder = document.getElementById(
     "header-placeholder",
@@ -222,6 +224,9 @@ async function loadHeader(
   }
 }
 
+/**
+ * Loads the footer from footer.html as replaces the footer placeholder in the DOM
+ */
 async function loadFooter(): Promise<void> {
   const footerPlaceholder = document.getElementById(
     "footer-placeholder",
@@ -245,6 +250,9 @@ async function loadFooter(): Promise<void> {
   }
 }
 
+/**
+ * Loads the modals from modal.html and replaces the modal placeholder in the DOM
+ */
 async function loadModals() {
   const body = document.querySelector("body") as HTMLElement;
   const modalPlaceholder = document.getElementById(
@@ -269,6 +277,9 @@ async function loadModals() {
   }
 }
 
+/**
+ * Signs out the user
+ */
 function signOut() {
   signOutUser();
   //Change the mobile nav button back to the menu icon

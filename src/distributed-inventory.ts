@@ -14,14 +14,13 @@ import {
   getFilteredLogEntries,
   addLogEntry,
   deleteLogEntry,
-  getAllLogEntires,
 } from "./firebaseService.js";
 import { initializeApp } from "./app.js";
 import { InventoryEntry } from "./models.js";
 import { auth } from "./firebase.js";
 import { getUserRole } from "./authService.js";
 
-//Page Elements
+//DOM Elements
 const distributeInventoryModal = document.getElementById(
   "distribute-inventory-modal",
 ) as HTMLFormElement;

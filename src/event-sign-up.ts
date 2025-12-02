@@ -4,10 +4,10 @@ import { initializeApp } from "./app.js";
 import { SignUpEntry, Event } from "./models.js";
 import { auth } from "./firebase.js";
 
-//Page Elements
+//DOM Elements
 const signUpForm = document.getElementById("sign-up-form") as HTMLFormElement;
 
-// Get event id from url
+//Get event id from url
 const urlParams = new URLSearchParams(window.location.search);
 const idString: string | null = urlParams.get("id");
 const eventId: string = idString ? idString : "";

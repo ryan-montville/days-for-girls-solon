@@ -44,11 +44,13 @@
       <div id="header-placeholder"></div>
       <section class="message-wrapper" id="main-message"></section>
       <main id="maincontent">
+        <!--The links above the cards-->
         <section class="button-row">
           <a href="inventory.html" class="secondary">
             <span class="material-symbols-outlined">arrow_back</span> Back to
             inventory</a
           >
+          <!--The distribute inventory button is hidden with .hide until the page is fully loaded-->
           <button
             type="button"
             class="primary hide"
@@ -62,6 +64,7 @@
           <div class="loader"></div>
           <h2>Loading Distributed Inventory Log</h2>
         </article>
+        <!--Hide the card with .hide until the page had fully loaded-->
         <article class="card hide" id="previous-entries-card">
           <h3>Previous Entries</h3>
         </article>

@@ -1,3 +1,5 @@
+/* These css rules are used to change the colors of the quill editor in light mode vs dark mode.
+Quill.js does not seem to have a dark mode in their predefined css */
 #editor {
   height: 400px;
 }

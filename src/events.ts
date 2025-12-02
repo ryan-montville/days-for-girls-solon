@@ -5,6 +5,7 @@ import { Event } from "./models.js";
 import { auth } from "./firebase.js";
 import { getUserRole } from "./authService.js";
 
+//DOM elements
 let main = document.getElementById("maincontent") as HTMLElement;
 
 function addEventToPage(eventData: Event, userRole: string) {

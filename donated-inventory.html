@@ -44,11 +44,13 @@
       <div id="header-placeholder"></div>
       <section class="message-wrapper" id="main-message"></section>
       <main id="maincontent">
+        <!--The links above the cards-->
         <section class="button-row">
           <a href="inventory.html" class="secondary">
             <span class="material-symbols-outlined">arrow_back</span> Back to
             inventory</a
           >
+          <!--The add to inventory is hidden with .hide until the page fully loads-->
           <button class="primary hide" type="button" id="newDonatedEntryButton">
             <span class="material-symbols-outlined">add</span> Add to inventory
           </button>
@@ -57,6 +59,7 @@
           <div class="loader"></div>
           <h2>Loading Donated Inventory Log</h2>
         </article>
+        <!--Hide the card with .hide until the page had fully loaded-->
         <article class="card hide" id="previous-entries-card">
           <h3>Previous Entries</h3>
         </article>

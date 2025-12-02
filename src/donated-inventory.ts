@@ -20,7 +20,7 @@ import { InventoryEntry } from "./models.js";
 import { auth } from "./firebase.js";
 import { getUserRole } from "./authService.js";
 
-//Page Elements
+//DOM Elements
 const addInventoryModalBackdrop = document.getElementById(
   "add-inventory-backdrop",
 ) as HTMLElement;

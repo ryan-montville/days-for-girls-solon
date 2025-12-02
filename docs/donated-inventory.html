@@ -29,8 +29,8 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
     />
-    <script type="module" crossorigin src="/days-for-girls-solon/assets/donatedInventory-0gzcS4UH.js"></script>
-    <link rel="modulepreload" crossorigin href="/days-for-girls-solon/assets/app-CUxNDULc.js">
+    <script type="module" crossorigin src="/days-for-girls-solon/assets/donatedInventory-3S92d3jZ.js"></script>
+    <link rel="modulepreload" crossorigin href="/days-for-girls-solon/assets/app-DSFmZZlq.js">
     <link rel="stylesheet" crossorigin href="/days-for-girls-solon/assets/app-j-8AL7im.css">
   <link rel="manifest" href="/days-for-girls-solon/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/days-for-girls-solon/registerSW.js"></script></head>
 
@@ -43,11 +43,13 @@
       <div id="header-placeholder"></div>
       <section class="message-wrapper" id="main-message"></section>
       <main id="maincontent">
+        <!--The links above the cards-->
         <section class="button-row">
           <a href="inventory.html" class="secondary">
             <span class="material-symbols-outlined">arrow_back</span> Back to
             inventory</a
           >
+          <!--The add to inventory is hidden with .hide until the page fully loads-->
           <button class="primary hide" type="button" id="newDonatedEntryButton">
             <span class="material-symbols-outlined">add</span> Add to inventory
           </button>
@@ -56,6 +58,7 @@
           <div class="loader"></div>
           <h2>Loading Donated Inventory Log</h2>
         </article>
+        <!--Hide the card with .hide until the page had fully loaded-->
         <article class="card hide" id="previous-entries-card">
           <h3>Previous Entries</h3>
         </article>

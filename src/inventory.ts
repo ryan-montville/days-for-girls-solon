@@ -22,7 +22,7 @@ import { auth } from "./firebase.js";
 import { User } from "./authService.js";
 import { getUserRole } from "./authService.js";
 
-//Page elements
+//DOM elements
 const generateForm = document.getElementById("generateForm") as HTMLFormElement;
 const mainContent = document.getElementById("maincontent") as HTMLElement;
 const currentInventoryCard = document.getElementById(

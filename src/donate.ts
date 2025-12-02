@@ -12,6 +12,7 @@ import { Timestamp } from "firebase/firestore";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 
+//DOM elements
 const outputCard = document.getElementById("output") as HTMLElement;
 const mainContent = document.getElementById("maincontent") as HTMLElement;
 const outputButtonRow = document.getElementById(
@@ -25,7 +26,6 @@ let hasDonateContent: boolean = false;
 
 async function loadDonateContent() {
   //Get the page content from the firestore
-
   pageContentSection.innerHTML = "";
   try {
     donatePageContent = await getDonatePageContent();
