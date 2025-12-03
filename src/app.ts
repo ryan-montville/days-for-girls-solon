@@ -1,12 +1,5 @@
-import {
-  createMessage,
-  closeModal,
-  retrieveMessage,
-} from "./utils.js";
-import {
-  signInWithGooglePopup,
-  signOutUser,
-} from "./authService.js";
+import { createMessage, closeModal, retrieveMessage } from "./utils.js";
+import { signInWithGooglePopup, signOutUser } from "./authService.js";
 import { auth } from "./firebase.js";
 
 const githubTemplateBaseURL =
@@ -191,9 +184,7 @@ export async function initializeApp(partentPage: string, currentPage: string) {
  * Loads the header from header.html and replaces the header placeholder in the DOM
  * @param partentPage - Used to set "aria-current"
  */
-async function loadHeader(
-  partentPage: string,
-): Promise<void> {
+async function loadHeader(partentPage: string): Promise<void> {
   const headerPlaceholder = document.getElementById(
     "header-placeholder",
   ) as HTMLElement;
@@ -219,6 +210,57 @@ async function loadHeader(
         link.setAttribute("aria-current", "page");
       }
     });
+    //Light mode / Dark Mode toggle
+    const rootElement = document.documentElement;
+    const darkModeToggle = document.getElementById("dark-mode-toggle-button");
+    const desktopLogo = document.getElementById(
+      "desktop-header-logo",
+    ) as HTMLElement;
+    const mobileLogo = document.getElementById(
+      "mobile-header-logo",
+    ) as HTMLElement;
+    const baseURL: string =
+      "https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/images/";
+    if (darkModeToggle) {
+      const prefersDarkMode = window.matchMedia(
+        "(prefers-color-scheme: dark)",
+      ).matches;
+      if (prefersDarkMode) {
+        desktopLogo.setAttribute("src", baseURL + "logo-light.svg");
+        mobileLogo.setAttribute("src", baseURL + "mobile-logo-light.svg");
+        const darkIconName = document.createTextNode("dark_mode");
+        darkModeToggle.appendChild(darkIconName);
+        rootElement.classList.add("dark-mode");
+      } else {
+        desktopLogo.setAttribute("src", baseURL + "logo-dark.svg");
+        mobileLogo.setAttribute("src", baseURL + "mobile-logo-dark.svg");
+        const lightIconName = document.createTextNode("light_mode");
+        darkModeToggle.appendChild(lightIconName);
+        rootElement.classList.add("light-mode");
+      }
+      darkModeToggle.addEventListener("click", () => {
+        console.log(
+          `Toggle pressed. ${rootElement.classList.contains("light-mode")}`,
+        );
+        if (rootElement.classList.contains("light-mode")) {
+          desktopLogo.setAttribute("src", baseURL + "logo-dark.svg");
+          mobileLogo.setAttribute("src", baseURL + "mobile-logo-dark.svg");
+          const darkIconName = document.createTextNode("dark_mode");
+          darkModeToggle.innerHTML = "";
+          darkModeToggle.appendChild(darkIconName);
+          rootElement.classList.remove("light-mode");
+          rootElement.classList.add("dark-mode");
+        } else {
+          desktopLogo.setAttribute("src", baseURL + "logo-light.svg");
+          mobileLogo.setAttribute("src", baseURL + "mobile-logo-light.svg");
+          const lightIconName = document.createTextNode("light_mode");
+          darkModeToggle.innerHTML = "";
+          darkModeToggle.appendChild(lightIconName);
+          rootElement.classList.remove("dark-mode");
+          rootElement.classList.add("light-mode");
+        }
+      });
+    }
   } catch (error) {
     console.error(`Failed to load the header: ${error}`);
   }
