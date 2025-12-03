@@ -1,27 +1,35 @@
-import { createMessage, closeModal, retrieveMessage } from "./utils.js";
-import { signInWithGooglePopup, signOutUser } from "./authService.js";
+import {
+  createMessage,
+  closeModal,
+  retrieveMessage,
+  trapFocus,
+} from "./utils.js";
+import {
+  signInWithGooglePopup,
+  getCurrentUser,
+  signOutUser,
+} from "./authService.js";
 import { auth } from "./firebase.js";
 
-const githubTemplateBaseURL =
-  "https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/";
-
-//DOM elements
-let nav: HTMLElement;
-let signInButton: HTMLElement;
-let signOutButton: HTMLElement;
-let inventoryLink: HTMLElement;
 const pageWrapper = document.getElementById("page-wrapper") as HTMLElement;
 let mobileNavToggle = document.getElementById(
   "mobile-nav-toggle",
 ) as HTMLElement;
+const githubTemplateBaseURL =
+  "https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/";
 
-/**
- * Used to detect when a user signs in or out and allows the page to be updated without reload
- */
+//Global DOM elements
+let nav: HTMLElement;
+let signInButton: HTMLElement;
+let signOutButton: HTMLElement;
+let inventoryLink: HTMLElement;
+
+//Used to detect when a user signs in or out
 function setUpAuthListener() {
   auth.onAuthStateChanged((user) => {
     //Don't continue if these elements haven't loaded
     if (!inventoryLink || !signInButton || !signOutButton) return;
+
     if (user) {
       //User is signed in
       console.log("User is signed in");
@@ -44,11 +52,6 @@ function setUpAuthListener() {
   });
 }
 
-/**
- * Loads all the core funtions and elements for the page
- * @param partentPage - Used for "aria-current", passed to loadheader()
- * @param currentPage - Used to update the page title inside the <title> tag
- */
 export async function initializeApp(partentPage: string, currentPage: string) {
   //Set the page title
   document.title = `${currentPage} - Days for Girls Solon`;
@@ -63,34 +66,8 @@ export async function initializeApp(partentPage: string, currentPage: string) {
     }
   });
 
-   /* Dark Mode Toggle */
-    let darkModePreference: boolean = false;
-    //Check if the user has previously toggle the dark mode, setting the preference in local storage
-    const appDarkModePreferenceLS = localStorage.getItem("darkModePreference");
-    if (appDarkModePreferenceLS) {
-      const appDarkModePreference: boolean = JSON.parse(
-        appDarkModePreferenceLS
-      );
-      console.log(`Prefers dark mode: ${appDarkModePreference}`);
-      if (appDarkModePreference) {
-        darkModePreference = true;
-      } else {
-        darkModePreference = false;
-      }
-    } else {
-      //If there is no preference stored in local storage, check the device dark mode preference
-      const deviceDarkModePreference = window.matchMedia(
-        "(prefers-color-scheme: dark)",
-      ).matches;
-      if (deviceDarkModePreference) {
-        darkModePreference = true;
-      } else {
-        darkModePreference = false;
-      }
-    }
-    toggleDarkMode(darkModePreference);
   //Load the header and wait for it to be added to the DOM
-  await loadHeader(partentPage, darkModePreference);
+  await loadHeader(partentPage, currentPage);
   //Load the footer
   await loadFooter();
   //Load the modals
@@ -100,10 +77,13 @@ export async function initializeApp(partentPage: string, currentPage: string) {
   inventoryLink = document.getElementById("inventory-link") as HTMLElement;
   signInButton = document.getElementById("sign-in-button") as HTMLElement;
   signOutButton = document.getElementById("sign-out-button") as HTMLElement;
+
   //User Authentication check
   setUpAuthListener();
+
   //Check to see if there is a message waiting to be displayed
   retrieveMessage();
+
   //Mobile Nav toggle
   mobileNavToggle.addEventListener("click", () => {
     console.log("toggling nav menu");
@@ -118,6 +98,7 @@ export async function initializeApp(partentPage: string, currentPage: string) {
       mobileNavToggle.innerText = "menu";
     }
   });
+
   //event listener for sign in button to open sign in modal
   signInButton.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -129,9 +110,10 @@ export async function initializeApp(partentPage: string, currentPage: string) {
     createMessage("Opening Google window...", "main-message", "info");
     try {
       const result = await signInWithGooglePopup();
-      //If sucessful sign in with Google, display the message
+      //If sucessful sign in with Google, close the modal and display the message
       const user = result.user;
       if (user) {
+        //Close the sign in modal
         createMessage(
           `Welcome ${user.displayName}`,
           "main-message",
@@ -206,11 +188,10 @@ export async function initializeApp(partentPage: string, currentPage: string) {
   });
 }
 
-/**
- * Loads the header from header.html and replaces the header placeholder in the DOM
- * @param partentPage - Used to set "aria-current"
- */
-async function loadHeader(partentPage: string, darkModePreference: boolean): Promise<void> {
+async function loadHeader(
+  partentPage: string,
+  currentPage: string,
+): Promise<void> {
   const headerPlaceholder = document.getElementById(
     "header-placeholder",
   ) as HTMLElement;
@@ -236,24 +217,11 @@ async function loadHeader(partentPage: string, darkModePreference: boolean): Pro
         link.setAttribute("aria-current", "page");
       }
     });
-   
-    
-    //Event listener for the dark mode toggle button
-    const darkModeToggle = document.getElementById(
-      "dark-mode-toggle-button",
-    ) as HTMLElement;
-    darkModeToggle.addEventListener("click", () => {
-      darkModePreference = !darkModePreference
-      toggleDarkMode(darkModePreference);
-    });
   } catch (error) {
     console.error(`Failed to load the header: ${error}`);
   }
 }
 
-/**
- * Loads the footer from footer.html as replaces the footer placeholder in the DOM
- */
 async function loadFooter(): Promise<void> {
   const footerPlaceholder = document.getElementById(
     "footer-placeholder",
@@ -277,50 +245,6 @@ async function loadFooter(): Promise<void> {
   }
 }
 
-function toggleDarkMode(prefersDarkMode: boolean) {
-  console.log(`Inside toggle function: ${prefersDarkMode}`);
-  const rootElement = document.documentElement;
-  // const darkModeToggle = document.getElementById(
-  //   "dark-mode-toggle-button",
-  // ) as HTMLElement;
-  // const desktopLogo = document.getElementById(
-  //   "desktop-header-logo",
-  // ) as HTMLElement;
-  // const mobileLogo = document.getElementById(
-  //   "mobile-header-logo",
-  // ) as HTMLElement;
-  const baseURL: string =
-    "https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/images/";
-  if (prefersDarkMode) {
-    // //Change the desktop and mobile logo image sources to dark
-    // desktopLogo.setAttribute("src", baseURL + "logo-dark.svg");
-    // mobileLogo.setAttribute("src", baseURL + "mobile-logo-dark.svg");
-    // //Change the icon in the toggle button to moon
-    // const darkIconName = document.createTextNode("dark_mode");
-    // darkModeToggle.appendChild(darkIconName);
-    //Remove .dark-mode and add .light-mode to the root element
-    rootElement.classList.remove("light-mode");
-    rootElement.classList.add("dark-mode");
-    //Set the preference in local storage
-    localStorage.setItem("darkModePreference", "true");
-  } else {
-    // //Change the desktop and mobile logo image sources to light
-    // desktopLogo.setAttribute("src", baseURL + "logo-light.svg");
-    // mobileLogo.setAttribute("src", baseURL + "mobile-logo-light.svg");
-    // //Change the icon in the toggle button to sun
-    // const lightIconName = document.createTextNode("light_mode");
-    // darkModeToggle.appendChild(lightIconName);
-    //Remove .light-mode and add .dark-mode to the root element
-    rootElement.classList.remove("dark-mode");
-    rootElement.classList.add("light-mode");
-    //Set the preference in local storage
-    localStorage.setItem("darkModePreference", "false");
-  }
-}
-
-/**
- * Loads the modals from modal.html and replaces the modal placeholder in the DOM
- */
 async function loadModals() {
   const body = document.querySelector("body") as HTMLElement;
   const modalPlaceholder = document.getElementById(
@@ -345,9 +269,6 @@ async function loadModals() {
   }
 }
 
-/**
- * Signs out the user
- */
 function signOut() {
   signOutUser();
   //Change the mobile nav button back to the menu icon
