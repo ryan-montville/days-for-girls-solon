@@ -1,4 +1,4 @@
-/* Color variables for dark and light mode */
+/* Color variables for dark and light mode, setting the class dark-mode or light-mode on the html element */
 @media (prefers-color-scheme: light) {
   :root {
     --body-background: #e7e9f1;
@@ -42,7 +42,7 @@
   }
 }
 
-/* Override for javascript toggle*/
+/*Overrides for javascript toggle */
 :root.light-mode {
   --body-background: #e7e9f1;
   --primary-accent: #cc7f00;

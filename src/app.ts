@@ -63,8 +63,34 @@ export async function initializeApp(partentPage: string, currentPage: string) {
     }
   });
 
+   /* Dark Mode Toggle */
+    let darkModePreference: boolean = false;
+    //Check if the user has previously toggle the dark mode, setting the preference in local storage
+    const appDarkModePreferenceLS = localStorage.getItem("darkModePreference");
+    if (appDarkModePreferenceLS) {
+      const appDarkModePreference: boolean = JSON.parse(
+        appDarkModePreferenceLS
+      );
+      console.log(`Prefers dark mode: ${appDarkModePreference}`);
+      if (appDarkModePreference) {
+        darkModePreference = true;
+      } else {
+        darkModePreference = false;
+      }
+    } else {
+      //If there is no preference stored in local storage, check the device dark mode preference
+      const deviceDarkModePreference = window.matchMedia(
+        "(prefers-color-scheme: dark)",
+      ).matches;
+      if (deviceDarkModePreference) {
+        darkModePreference = true;
+      } else {
+        darkModePreference = false;
+      }
+    }
+    toggleDarkMode(darkModePreference);
   //Load the header and wait for it to be added to the DOM
-  await loadHeader(partentPage);
+  await loadHeader(partentPage, darkModePreference);
   //Load the footer
   await loadFooter();
   //Load the modals
@@ -184,7 +210,7 @@ export async function initializeApp(partentPage: string, currentPage: string) {
  * Loads the header from header.html and replaces the header placeholder in the DOM
  * @param partentPage - Used to set "aria-current"
  */
-async function loadHeader(partentPage: string): Promise<void> {
+async function loadHeader(partentPage: string, darkModePreference: boolean): Promise<void> {
   const headerPlaceholder = document.getElementById(
     "header-placeholder",
   ) as HTMLElement;
@@ -210,57 +236,16 @@ async function loadHeader(partentPage: string): Promise<void> {
         link.setAttribute("aria-current", "page");
       }
     });
-    //Light mode / Dark Mode toggle
-    const rootElement = document.documentElement;
-    const darkModeToggle = document.getElementById("dark-mode-toggle-button");
-    const desktopLogo = document.getElementById(
-      "desktop-header-logo",
+   
+    
+    //Event listener for the dark mode toggle button
+    const darkModeToggle = document.getElementById(
+      "dark-mode-toggle-button",
     ) as HTMLElement;
-    const mobileLogo = document.getElementById(
-      "mobile-header-logo",
-    ) as HTMLElement;
-    const baseURL: string =
-      "https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/images/";
-    if (darkModeToggle) {
-      const prefersDarkMode = window.matchMedia(
-        "(prefers-color-scheme: dark)",
-      ).matches;
-      if (prefersDarkMode) {
-        desktopLogo.setAttribute("src", baseURL + "logo-light.svg");
-        mobileLogo.setAttribute("src", baseURL + "mobile-logo-light.svg");
-        const darkIconName = document.createTextNode("dark_mode");
-        darkModeToggle.appendChild(darkIconName);
-        rootElement.classList.add("dark-mode");
-      } else {
-        desktopLogo.setAttribute("src", baseURL + "logo-dark.svg");
-        mobileLogo.setAttribute("src", baseURL + "mobile-logo-dark.svg");
-        const lightIconName = document.createTextNode("light_mode");
-        darkModeToggle.appendChild(lightIconName);
-        rootElement.classList.add("light-mode");
-      }
-      darkModeToggle.addEventListener("click", () => {
-        console.log(
-          `Toggle pressed. ${rootElement.classList.contains("light-mode")}`,
-        );
-        if (rootElement.classList.contains("light-mode")) {
-          desktopLogo.setAttribute("src", baseURL + "logo-dark.svg");
-          mobileLogo.setAttribute("src", baseURL + "mobile-logo-dark.svg");
-          const darkIconName = document.createTextNode("dark_mode");
-          darkModeToggle.innerHTML = "";
-          darkModeToggle.appendChild(darkIconName);
-          rootElement.classList.remove("light-mode");
-          rootElement.classList.add("dark-mode");
-        } else {
-          desktopLogo.setAttribute("src", baseURL + "logo-light.svg");
-          mobileLogo.setAttribute("src", baseURL + "mobile-logo-light.svg");
-          const lightIconName = document.createTextNode("light_mode");
-          darkModeToggle.innerHTML = "";
-          darkModeToggle.appendChild(lightIconName);
-          rootElement.classList.remove("dark-mode");
-          rootElement.classList.add("light-mode");
-        }
-      });
-    }
+    darkModeToggle.addEventListener("click", () => {
+      darkModePreference = !darkModePreference
+      toggleDarkMode(darkModePreference);
+    });
   } catch (error) {
     console.error(`Failed to load the header: ${error}`);
   }
@@ -289,6 +274,47 @@ async function loadFooter(): Promise<void> {
     pageWrapper.replaceChild(footer, footerPlaceholder);
   } catch (error) {
     console.error(`Failed to load the footer: ${error}`);
+  }
+}
+
+function toggleDarkMode(prefersDarkMode: boolean) {
+  console.log(`Inside toggle function: ${prefersDarkMode}`);
+  const rootElement = document.documentElement;
+  // const darkModeToggle = document.getElementById(
+  //   "dark-mode-toggle-button",
+  // ) as HTMLElement;
+  // const desktopLogo = document.getElementById(
+  //   "desktop-header-logo",
+  // ) as HTMLElement;
+  // const mobileLogo = document.getElementById(
+  //   "mobile-header-logo",
+  // ) as HTMLElement;
+  const baseURL: string =
+    "https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/images/";
+  if (prefersDarkMode) {
+    // //Change the desktop and mobile logo image sources to dark
+    // desktopLogo.setAttribute("src", baseURL + "logo-dark.svg");
+    // mobileLogo.setAttribute("src", baseURL + "mobile-logo-dark.svg");
+    // //Change the icon in the toggle button to moon
+    // const darkIconName = document.createTextNode("dark_mode");
+    // darkModeToggle.appendChild(darkIconName);
+    //Remove .dark-mode and add .light-mode to the root element
+    rootElement.classList.remove("light-mode");
+    rootElement.classList.add("dark-mode");
+    //Set the preference in local storage
+    localStorage.setItem("darkModePreference", "true");
+  } else {
+    // //Change the desktop and mobile logo image sources to light
+    // desktopLogo.setAttribute("src", baseURL + "logo-light.svg");
+    // mobileLogo.setAttribute("src", baseURL + "mobile-logo-light.svg");
+    // //Change the icon in the toggle button to sun
+    // const lightIconName = document.createTextNode("light_mode");
+    // darkModeToggle.appendChild(lightIconName);
+    //Remove .light-mode and add .dark-mode to the root element
+    rootElement.classList.remove("dark-mode");
+    rootElement.classList.add("light-mode");
+    //Set the preference in local storage
+    localStorage.setItem("darkModePreference", "false");
   }
 }
 

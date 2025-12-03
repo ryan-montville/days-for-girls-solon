@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="manifest" href="/manifest.json" />
     <link href="src/css/style.css" rel="stylesheet" />
+    <!--This script needs to run before the DOM loads so the page doesn't flash white when the app is in dark mode-->
+    <script>
+      (function () {
+        //Check is dark mode preference is stored in local storage
+        const appDarkModePreferenceLS = localStorage.getItem("darkModePreference");
+        const rootElement = document.documentElement;
+        if (appDarkModePreferenceLS) {
+          if (appDarkModePreferenceLS === "true") {
+            rootElement.classList.add('dark-mode');
+          } else {
+            rootElement.classList.add('light-mode');
+          }
+        }
+      })
+    </script>
     <link href="src/css/forms.css" rel="stylesheet" />
     <link href="src/css/grid.css" rel="stylesheet" />
     <link href="src/css/tables.css" rel="stylesheet" />
