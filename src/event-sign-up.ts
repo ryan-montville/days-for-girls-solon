@@ -1,4 +1,4 @@
-import { createMessage, storeMessage, fixDate } from "./utils.js";
+import { createMessage, storeMessage, fixDate, capitalizeFirstLetter } from "./utils.js";
 import { getEventById, addSignUpEntry } from "./firebaseService.js";
 import { initializeApp } from "./app.js";
 import { SignUpEntry, Event } from "./models.js";
@@ -121,7 +121,7 @@ async function initAppLogic() {
         );
         return;
       } else {
-        newSignUp["fullName"] = fullNameValue.toString();
+        newSignUp["fullName"] = capitalizeFirstLetter(fullNameValue.toString());
       }
     }
     //Validate email

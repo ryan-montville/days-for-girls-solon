@@ -9,6 +9,7 @@ import {
   openModal,
   closeModal,
   fixDate,
+  capitalizeFirstLetter
 } from "./utils.js";
 import {
   getEventById,
@@ -161,7 +162,7 @@ async function editEventInfo() {
     );
     return;
   } else {
-    updatedEvent["eventTitle"] = TitleValue.toString();
+    updatedEvent["eventTitle"] = capitalizeFirstLetter(TitleValue.toString());
   }
   //Validate the event date input
   const dateValue = formData.get("eventDate");
@@ -187,7 +188,7 @@ async function editEventInfo() {
     );
     return;
   } else {
-    updatedEvent["eventLocation"] = locationValue.toString();
+    updatedEvent["eventLocation"] = capitalizeFirstLetter(locationValue.toString());
   }
   //Validate event time input
   let timeValue = formData.get("eventTime");

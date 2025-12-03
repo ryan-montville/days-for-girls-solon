@@ -9,6 +9,7 @@ import {
   fixDate,
   populateComponteTypeSelect,
   storeMessage,
+  capitalizeFirstLetter
 } from "./utils.js";
 import {
   getFilteredLogEntries,
@@ -223,7 +224,7 @@ async function submitData() {
     );
     return;
   } else {
-    newEntry["whoDonated"] = whoDonatedValue.toString();
+    newEntry["whoDonated"] = capitalizeFirstLetter(whoDonatedValue.toString());
   }
   //Submit the entry
   try {

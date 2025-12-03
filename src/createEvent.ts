@@ -1,4 +1,4 @@
-import { clearMessages, createMessage, storeMessage } from "./utils.js";
+import { clearMessages, createMessage, storeMessage, capitalizeFirstLetter } from "./utils.js";
 import { initializeApp } from "./app.js";
 import { addEvent } from "./firebaseService.js";
 import { Timestamp } from "firebase/firestore";
@@ -34,7 +34,7 @@ async function submitData() {
     );
     return;
   } else {
-    newEventData["eventTitle"] = TitleValue.toString();
+    newEventData["eventTitle"] = capitalizeFirstLetter(TitleValue.toString());
   }
   //Validate and set the event data
   const dateValue = formData.get("eventDate");
@@ -59,7 +59,7 @@ async function submitData() {
     );
     return;
   } else {
-    newEventData["eventLocation"] = locationValue.toString();
+    newEventData["eventLocation"] = capitalizeFirstLetter(locationValue.toString());
   }
   //Validate and set the event time
   const timeValue = formData.get("eventTime");

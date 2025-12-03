@@ -446,3 +446,13 @@ export function trapFocus(modal: HTMLElement, backdrop: HTMLElement) {
     }
   });
 }
+
+export function capitalizeFirstLetter(originalString: string) {
+  const wordsArray = originalString.split(" ");
+  wordsArray.forEach((word, index) => {
+    const firstLetter = word.charAt(0).toUpperCase();
+    const restOfWord = word.slice(1);
+    wordsArray[index] = firstLetter + restOfWord;
+  });
+  return wordsArray.join(" ");
+}
