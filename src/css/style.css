@@ -221,6 +221,22 @@ nav a:hover {
   height: 25px;
 }
 
+#dark-mode-toggle {
+  background-color: transparent;
+}
+
+/* Transition for taggling dark mode */
+body, 
+nav, 
+footer,
+main,
+button,
+.card {
+  transition: 
+    color 0.5s ease, 
+    background-color 0.5s ease;
+}
+
 /* Modals */
 .backdrop {
   display: none;

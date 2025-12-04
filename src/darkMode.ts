@@ -1,12 +1,11 @@
 const docElm = document.documentElement;
 let preference = false;
-const preferenceLS = localStorage.getItem("darkMode");
+const preferenceLS = sessionStorage.getItem("darkMode");
 if (preferenceLS) {
   preference = JSON.parse(preferenceLS);
 } else {
   preference = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  console.log(`Got device preference: ${preference}`);
-  localStorage.setItem("darkMode", JSON.stringify(preference));
+  sessionStorage.setItem("darkMode", JSON.stringify(preference));
 }
 setDarkMode(preference);
 
