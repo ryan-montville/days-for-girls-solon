@@ -42,6 +42,45 @@
   }
 }
 
+/* class overrides to toggle dark mode */
+:root.light {
+    --body-background: #e7e9f1;
+    --primary-accent: #cc7f00;
+    --primary-hover: #c45a00;
+    --secondary-accent: #006270;
+    --secondary-hover: #006a79;
+    --message-text: white;
+    --error-background: #b81f24;
+    --error-hover: #a51b20;
+    --success-background: green;
+    --delete-background: #fc6a03;
+    --nav-text: #4f4b4e;
+    --nav-hover: #f0f0f0;
+    --main-background: #ffffff;
+    --main-text: #000000;
+    --footer-background: #676486;
+}
+
+:root.dark {
+    --body-background: #000000;
+    --primary-accent: #cc7f00;
+    --primary-hover: #c45a00;
+    --secondary-accent: #006270;
+    --secondary-hover: #006a79;
+    --message-text: white;
+    --error-background: #b81f24;
+    --error-hover: #a51b20;
+    --success-background: green;
+    --delete-background: #fc6a03;
+    --error-text: #fff;
+    --nav-text: #ccc;
+    --nav-hover: #222222;
+    --main-background: #333;
+    --main-text: #ccc;
+    --footer-background: #676486;
+    --footer-text: #fff;
+  }
+
 /* CSS reset to remove default padding and margin */
 * {
   padding: 0;
