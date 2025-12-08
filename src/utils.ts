@@ -447,6 +447,11 @@ export function trapFocus(modal: HTMLElement, backdrop: HTMLElement) {
   });
 }
 
+/**
+ * Capitalizes the first letter of every word in the string
+ * @param originalString - The original string
+ * @returns - The string with the the first letter of every word capitalized
+ */
 export function capitalizeFirstLetter(originalString: string) {
   const wordsArray = originalString.split(" ");
   wordsArray.forEach((word, index) => {

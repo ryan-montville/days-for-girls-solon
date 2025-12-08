@@ -58,7 +58,7 @@ button {
 
 .secondary {
   background-color: var(--secondary-accent);
-  color: white;
+  color: var(--secondary-text);
 }
 
 .secondary:hover {
