@@ -189,7 +189,6 @@ export function createMessage(message: string, location: string, type: string) {
   if (type === "check_circle") {
     messageDiv.setAttribute("class", "success message");
     messageDiv.setAttribute("aria-live", "polite");
-    console.log(message);
   } else if (type === "error") {
     messageDiv.setAttribute("class", "error message");
     messageDiv.setAttribute("role", "alert");
@@ -201,7 +200,6 @@ export function createMessage(message: string, location: string, type: string) {
   } else {
     messageDiv.setAttribute("class", "info message");
     messageDiv.setAttribute("aria-live", "polite");
-    console.log(message);
   }
   const icon = document.createElement("span");
   icon.setAttribute("class", "material-symbols-outlined");
@@ -398,7 +396,6 @@ export async function populateComponteTypeSelect(selctId: string) {
         selectElement.appendChild(newOption);
       });
     } catch (error) {
-      console.log(error);
       throw error;
     }
   }

@@ -32,7 +32,6 @@ function setUpAuthListener() {
 
     if (user) {
       //User is signed in
-      console.log("User is signed in");
       //Hide the sign in button and show the sign out button
       signInButton.style.display = "none";
       signOutButton.style.display = "block";
@@ -41,7 +40,6 @@ function setUpAuthListener() {
         inventoryLink.classList.remove("hide");
     } else {
       //User is not signed in
-      console.log("User is not signed in");
       //Hide the inventory link
       if (!inventoryLink.classList.contains("hide"))
         inventoryLink.classList.add("hide");
@@ -136,7 +134,6 @@ export async function initializeApp(partentPage: string, currentPage: string) {
 
   //Mobile Nav toggle
   mobileNavToggle.addEventListener("click", () => {
-    console.log("toggling nav menu");
     //Toggle to class 'open' on nav's classList
     nav.classList.toggle("open");
     //Check if 'open' is in nav's classList
@@ -232,7 +229,7 @@ export async function initializeApp(partentPage: string, currentPage: string) {
       ) {
         closeModal("manage-inventory-backdrop");
       } else {
-        console.log("No modals are open");
+        console.warn("Esc key pressed, but no modals are open");
       }
     }
   });

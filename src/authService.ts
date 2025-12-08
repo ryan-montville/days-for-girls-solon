@@ -69,7 +69,6 @@ export async function signInWithGooglePopup() {
     //Open the pop-up window and wait for the user to sign in
     const result = await signInWithPopup(auth, provider);
     // The signed-in user info is in the 'result.user'
-    console.log("Successfully signed in with Google:", result.user.uid);
     return result;
   } catch (error: any) {
     throw error;

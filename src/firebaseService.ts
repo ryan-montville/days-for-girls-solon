@@ -145,7 +145,6 @@ export async function updateEvent(eventId: string, updatedEvent: Event) {
     const docRef = doc(collection(db, "events"), eventId);
     const { eventId: _, ...updateData } = updatedEvent;
     await updateDoc(docRef, updateData as any);
-    console.log(`Event updated successfully: ${eventId}`);
   } catch (error) {
     console.error("Error updating event:", error);
     if (error instanceof FirebaseError && error.code === "permission-denied") {
@@ -169,13 +168,9 @@ export async function deleteEvent(eventId: string) {
       deleteSignUpEntry(entry.entryId),
     );
     await Promise.all(deletePromises);
-    console.log(
-      `Successfully deleted ${entriesToDelete.length} sign-up entries for event: ${eventId}`,
-    );
     //Delete the event document itself
     const docRef = doc(collection(db, "events"), eventId);
     await deleteDoc(docRef);
-    console.log(`Event deleted successfully: ${eventId}`);
   } catch (error) {
     console.error("Error deleting event and related sign-up entries:", error);
     if (error instanceof FirebaseError && error.code === "permission-denied") {
@@ -223,10 +218,6 @@ export async function addSignUpEntry(
         entryId: entryId,
       });
     });
-
-    console.log(
-      `Sign-up entry and event attendance updated successfully: ${entryId}`,
-    );
     return entryId;
   } catch (error) {
     console.error("Error adding sign-up entry (Transaction aborted):", error);
@@ -308,10 +299,6 @@ export async function deleteSignUpEntry(entryId: string) {
       //Delete the sign-up entry document
       txn.delete(entryRef);
     });
-
-    console.log(
-      `Sign-up entry deleted successfully: ${entryId}. Event attendance updated via transaction.`,
-    );
   } catch (error) {
     console.error(
       `Error deleting sign-up entry ${entryId} (Transaction aborted):`,
@@ -342,9 +329,6 @@ export async function addDonatePageContent(newPageContnte: DonatePageContent) {
     const docRef = doc(collection(db, "donatePage"), "donate-page-content");
     //Add the page content object
     await setDoc(docRef, newPageContnte);
-    console.log(
-      `Initial donate page content added/set with ID: ${"donate-page-content"}`,
-    );
   } catch (error) {
     console.error("Error adding donate page content:", error);
     //Only admins can add page content
@@ -397,7 +381,6 @@ export async function updateDonatePageContent(
     const docRef = doc(collection(db, "donatePage"), "donate-page-content");
     //Update the doc
     await updateDoc(docRef, updatedPageContent as any);
-    console.log(`Donate page content updated at ID: donate-page-content`);
   } catch (error) {
     console.error("Error updating donate page content:", error);
     if (error instanceof FirebaseError && error.code === "permission-denied") {
@@ -428,7 +411,6 @@ async function getOrCreateDummyComponentId(): Promise<string> {
   }
 
   //Create a new dummy component since the inventory is empty
-  console.log("Inventory is empty. Creating a dummy component for logging.");
   const dummyComponent: Omit<ComponentItem, "componentId"> = {
     componentType:
       "Placeholder component. Please delete after adding a real component",
@@ -506,7 +488,6 @@ export async function addComponent(
 
     //Use setDoc to write the data with the specific componentType ID
     await setDoc(docRef, componentData as any);
-    console.log(`Component with id ${componentId} added to inventory`);
     return componentId;
   } catch (error) {
     console.error("Error adding component:", error);
@@ -534,27 +515,17 @@ export async function deleteComponent(componentId: string) {
     const querySnapshot = await getDocs(q);
 
     if (!querySnapshot.empty) {
-      console.log(
-        `Found ${querySnapshot.size} log entries to delete for component: ${componentId}`,
-      );
       //Delete all log entries in parallel
       const deletePromises = querySnapshot.docs.map((docSnap) =>
         deleteDoc(doc(logRef, docSnap.id)),
       );
       await Promise.all(deletePromises);
-      console.log(
-        `Successfully deleted all associated log entries for component: ${componentId}`,
-      );
-    } else {
-      console.log(`No log entries found for component: ${componentId}.`);
     }
 
     //Delete the component
     const docRef = doc(collection(db, "inventory"), componentId);
     await deleteDoc(docRef);
-    console.log(`Deleted component with id: ${componentId}`);
   } catch (error) {
-    console.log("Error deleting component and related log entries:", error);
     if (error instanceof FirebaseError && error.code === "permission-denied") {
       throw new Error(
         "Authorization Error: Only admins can delete components.",
@@ -578,10 +549,6 @@ export async function seedIfEmptyInventoryLog() {
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
-      console.log(
-        "Inventory Log is empty. Seeding with initial entries (Donated & Distributed).",
-      );
-
       //Ensure a component exists to link the log entry to
       const componentId = await getOrCreateDummyComponentId();
       if (!componentId) {
@@ -608,12 +575,6 @@ export async function seedIfEmptyInventoryLog() {
           "Placeholder entry log. Please delete after adding a real log entry",
       };
       await addLogEntry(distributionSeedEntry);
-
-      console.log("Successfully added placeholder log entires.");
-    } else {
-      console.log(
-        "Inventory Log already contains entries. Skipping seed process.",
-      );
     }
   } catch (error) {
     console.error("Error during inventory log seeding:", error);
@@ -753,10 +714,6 @@ export async function addLogEntry(
         entryId: entryId,
       });
     });
-
-    console.log(
-      `Inventory log entry and component quantity updated successfully: ${entryId}`,
-    );
     return entryId;
   } catch (error) {
     console.error("Error adding inventory log entry:", error);
@@ -827,10 +784,6 @@ export async function deleteLogEntry(entryId: string) {
       //Delete the log entry document
       txn.delete(logEntryRef);
     });
-
-    console.log(
-      `Inventory log entry deleted successfully: ${entryId}. Inventory reversal guaranteed via transaction.`,
-    );
   } catch (error) {
     console.error(
       `Error deleting inventory log entry ${entryId} (Transaction aborted):`,
