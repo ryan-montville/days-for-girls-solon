@@ -9,4 +9,4 @@ This app was created for the Days for Girls Solon team to convert their current 
 * [View my presentation](research-and-development/Final-Presentation.pdf) for the end of semester showcase.
 * [View the user testing](research-and-development/User-Testing.pdf) I conducted while developong the app.
 
-01/03/2026 Update: Switching app to production. Live demo needs to be rewritten, check back later. You can view the live version of the app [here](https://days-for-girls.montesown.com/)
+The live app uses Firebase for user authentication and data storage. The app limits who can make changes to the site. I have created a [Demo](https://ryan-montville.github.io/days-for-girls-solon/) of the app so you can see all the features of the app. You can view the live version of the app [here](https://days-for-girls.montesown.com/)
