@@ -1,13 +1,13 @@
-import { initializeApp } from "./app.js";
-import { createButton, createMessage, fixDate } from "./utils.js";
-import { auth } from "./firebase.js";
+import { initializeApp } from "./app";
+import { createButton, createMessage, fixDate } from "./modules/utils";
+import { auth } from "./firebase";
 import {
   addDonatePageContent,
   updateDonatePageContent,
   getDonatePageContent,
-} from "./firebaseService.js";
-import { DonatePageContent } from "./models.js";
-import { getUserRole } from "./authService.js";
+} from "./firebaseService";
+import { DonatePageContent } from "./models";
+import { getUserRole } from "./authService";
 import { Timestamp } from "firebase/firestore";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
@@ -23,6 +23,37 @@ const pageContentSection = document.getElementById(
 ) as HTMLElement;
 let donatePageContent: DonatePageContent | null = null;
 let hasDonateContent: boolean = false;
+
+initializeApp("Donate", "Donate").then(() => {
+  loadDonateContent();
+  auth.onAuthStateChanged(async (user) => {
+    //Only admins can edit the contents of the donate page
+    if (user) {
+      let userRole = await getUserRole(user.uid);
+      if (userRole === "admin") {
+        //If admin, add the edit button to the DOM
+        const editButton = createButton(
+          "Edit",
+          "button",
+          "editButton",
+          "secondary",
+          "edit",
+        );
+        //Event listener for the edit button
+        editButton.addEventListener("click", async () => {
+          outputCard.classList.add("hide");
+          if (donatePageContent) {
+            openQuillEditor(donatePageContent["delta"]);
+          }
+        });
+        outputButtonRow.appendChild(editButton);
+      }
+    } else {
+      const editButton = document.getElementById("editButton");
+      if (editButton) editButton.remove();
+    }
+  });
+});
 
 async function loadDonateContent() {
   //Get the page content from the firestore
@@ -158,57 +189,11 @@ async function openQuillEditor(delta: string) {
       toolbar: toolbarOptions,
     },
   });
-  quill.setContents(JSON.parse(delta));
+  if (delta !== "") {
+    quill.setContents(JSON.parse(delta));
+  }
   //Hide the output card
   outputCard.classList.add("hide");
   //Show the editor card
   editorCard.classList.remove("hide");
 }
-
-initializeApp("Donate", "Donate").then(() => {
-  loadDonateContent();
-  auth.onAuthStateChanged(async (user) => {
-    //Only admins can edit the contents of the donate page
-    if (user) {
-      let userRole = await getUserRole(user.uid);
-      if (userRole === "admin") {
-        //If admin, add the edit button to the DOM
-        const editButton = createButton(
-          "Edit",
-          "button",
-          "editButton",
-          "secondary",
-          "edit",
-        );
-        //Event listener for the edit button
-        editButton.addEventListener("click", async () => {
-          outputCard.classList.add("hide");
-          if (donatePageContent) {
-            openQuillEditor(donatePageContent["delta"]);
-          }
-        });
-        outputButtonRow.appendChild(editButton);
-        //Check to make sure don't need, then remove all this
-        // //Event listener for the cancel button
-        // const cancelButton = document.getElementById('cancel-button') as HTMLElement;
-        // cancelButton.addEventListener('click', () => {
-        //     //Remove the editor from the DOM
-        //     const editor = document.getElementById('editor');
-        //     if (editor) editor.remove();
-        //     //Hide the editor card
-        //     editorCard.classList.add('hide');
-        //     //Show the output card
-        //     outputCard.classList.remove('hide');
-        // });
-        // //Event listener for the update buttton
-        // const updateButton = document.getElementById('update-button') as HTMLElement;
-        // updateButton.addEventListener('click', () => {
-
-        // })
-      }
-    } else {
-      const editButton = document.getElementById("editButton");
-      if (editButton) editButton.remove();
-    }
-  });
-});

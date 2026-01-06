@@ -1,4 +1,4 @@
-import { initializeApp } from "./app.js";
+import { initializeApp } from "./app";
 import {
   createButton,
   createTableRow,
@@ -9,41 +9,110 @@ import {
   openModal,
   closeModal,
   fixDate,
-} from "./utils.js";
-import { InventoryEntry, ComponentItem, ComponentSummary } from "./models.js";
+  makeElement,
+  createLink,
+  createInput,
+  createCheckbox
+} from "./modules/utils";
+import { InventoryEntry, Component, ComponentSummary, Location, LocationItem } from "./models";
 import {
-  addComponent,
-  getAllComponents,
+  addNewComponent,
+  getListOfComponents,
   deleteComponent,
-  seedIfEmptyInventoryLog,
   getAllLogEntires,
-} from "./firebaseService.js";
-import { auth } from "./firebase.js";
-import { User } from "./authService.js";
-import { getUserRole } from "./authService.js";
+  getListOfLocations,
+  addNewLocation,
+  deleteLocation,
+  getAllLocationItems,
+} from "./firebaseService";
+import { auth } from "./firebase";
+import { User } from "./authService";
+import { getUserRole } from "./authService";
+import { navigateTo } from "./modules/navigate";
 
 //DOM elements
-const generateForm = document.getElementById("generateForm") as HTMLFormElement;
 const mainContent = document.getElementById("maincontent") as HTMLElement;
-const currentInventoryCard = document.getElementById(
-  "current-inventory-card",
-) as HTMLElement;
-const manageInventoryCard = document.getElementById(
-  "manage-inventory-card",
-) as HTMLElement;
-const manageInventoryBackdrop = document.getElementById(
-  "manage-inventory-backdrop",
-) as HTMLElement;
-const manageInventoryModal = document.getElementById(
-  "manage-inventory-modal",
-) as HTMLElement;
+const manageInventoryBackdrop = document.getElementById("manage-inventory-backdrop") as HTMLElement;
+let manageInventoryModal = document.getElementById("manage-inventory-modal") as HTMLElement;
 
-function addNewRow(newComponent: ComponentItem, userRole: string | null) {
+initializeApp("Inventory", "Inventory").then(async () => {
+  auth.onAuthStateChanged(async (user) => {
+    await updateUIbasedOnAuth(user);
+  });
+});
+
+async function updateUIbasedOnAuth(user: User | null) {
+  let userRole: string | null = null;
+  const oldInventoryCard = document.getElementById('current-inventory-card');
+  if (oldInventoryCard) oldInventoryCard.remove();
+  const currentInventoryCard = makeElement("article", "current-inventory-card", "card", null);
+  const loadingDiv = makeElement("div", "loading", "button-row left", null);
+  const loader = makeElement("div", "loader", "loader", null);
+  loadingDiv.appendChild(loader);
+  const loadingText = makeElement("h2", "loading", null, "Loading Inventory");
+  loadingDiv.appendChild(loadingText);
+  currentInventoryCard.appendChild(loadingDiv);
+  mainContent.appendChild(currentInventoryCard);
+  if (user) {
+    userRole = await getUserRole(user.uid);
+    if (userRole === "admin") {
+      //Create an empty card for managing storage locations
+      const manageLocationsCard = makeElement("article", "manage-storage-locations-card", "card hide", null);
+      mainContent.appendChild(manageLocationsCard);
+      //Create the Manage Inventory card
+      const manageInventoryCard = makeElement("article", "manage-inventory-card", "card", null);
+      const cardHeading = makeElement("h2", null, null, "Manage Inventory");
+      manageInventoryCard.appendChild(cardHeading);
+      const buttonRow = makeElement("section", null, "button-row", null);
+      const inventoryLogButton = createButton("Add / Move / Distribute Items", "button", "inventory-log-button", "secondary");
+      inventoryLogButton.addEventListener('click', () => navigateTo("/inventoryLog"));
+      buttonRow.appendChild(inventoryLogButton);
+      const addNewComponentButton = createButton("Manage component types", "button", "add-new-type", "secondary", "add");
+      addNewComponentButton.addEventListener('click', () => {
+        loadAddNewComponentModal();
+      });
+      buttonRow.appendChild(addNewComponentButton);
+      const manageStorageLocations = createButton("Manage Storage Locations", "buttton", "manage-locations-button", "secondary", "location_on");
+      manageStorageLocations.addEventListener('click', () => {
+        loadManageLocationsCard();
+      });
+      buttonRow.appendChild(manageStorageLocations);
+      manageInventoryCard.appendChild(buttonRow);
+      mainContent.appendChild(manageInventoryCard);
+      //Create the Generate Report card
+      const reportMessageWrapper = makeElement("section", "report-message", "message-wrapper", null);
+      mainContent.appendChild(reportMessageWrapper);
+      const generateReportCard = makeElement("form", "generate-form", "card", null) as HTMLFormElement;
+      const formHeading = makeElement("h2", null, null, "Generate Report");
+      generateReportCard.appendChild(formHeading);
+      const formRow = makeElement("section", null, "button-row", null);
+      const startDateInput = createInput("date", "start-date-input", "Start Date:", null);
+      formRow.appendChild(startDateInput);
+      const endDateInput = createInput("date", "end-date-input", "End Date:", null);
+      formRow.appendChild(endDateInput);
+      generateReportCard.appendChild(formRow);
+      const formButtonRow = makeElement("section", null, "form-row", null);
+      const submitButton = createButton("submit", "submit", "generate-button", "primary full", "list_alt_add");
+      formButtonRow.appendChild(submitButton);
+      generateReportCard.appendChild(formButtonRow)
+      generateReportCard.addEventListener('submit', (e) => {
+        e.preventDefault();
+        generateReport(generateReportCard);
+      });
+      mainContent.appendChild(generateReportCard);
+    }
+
+  }
+  await loadCurrentInventory(currentInventoryCard, userRole);
+  loadingDiv.remove();
+}
+
+function addNewRow(newComponent: LocationItem | Component, showDeleteButton: boolean) {
   //Create a new row for the table with the component details
   const keysToDisplay = ["componentType", "quantity"];
   const idKeyName = "componentId";
   //Only admins are allowed to delete components
-  if (userRole === "admin") {
+  if (showDeleteButton) {
     const newRow = createTableRow(
       newComponent,
       keysToDisplay,
@@ -104,47 +173,165 @@ function addNewRow(newComponent: ComponentItem, userRole: string | null) {
   }
 }
 
-async function loadCurrentInventory(userRole: string | null) {
-  let currrentInventoryArray: ComponentItem[] = [];
+async function loadCurrentInventory(currentInventoryCard: HTMLElement, userRole: string | null) {
+  let currrentInventoryArray: LocationItem[] = [];
+  let locations: Location[] = [];
+  let showDeleteButton: boolean = false;
+  if (userRole === "admin") showDeleteButton = true;
   try {
     //Get the current inventory from the firestore
-    currrentInventoryArray = await getAllComponents();
+    currrentInventoryArray = await getAllLocationItems();
+    locations = await getListOfLocations();
   } catch (error: any) {
     createMessage(error, "main-message", "error");
     return;
   }
+  const cardHeading = makeElement("h2", "card-heading", null, "Current Inventory");
+  currentInventoryCard.appendChild(cardHeading);
+
   if (currrentInventoryArray.length === 0) {
-    //Display no inventory message
-    const noInventoryP = document.createElement("p");
-    const noInventory = document.createTextNode(
-      "There are not items currently in the inventory.",
-    );
-    noInventoryP.appendChild(noInventory);
-    currentInventoryCard.appendChild(noInventoryP);
+    const componentItems: Component[] = await getListOfComponents();
+    if (componentItems.length === 0) {
+      //Display no inventory message
+      const noInventoryP = document.createElement("p");
+      const noInventory = document.createTextNode(
+        "There are not items currently in the inventory.",
+      );
+      noInventoryP.appendChild(noInventory);
+      currentInventoryCard.appendChild(noInventoryP);
+    } else {
+      let tableColumnHeaders: string[] = [];
+      //Only admins can delete components
+      if (userRole === "admin") {
+        tableColumnHeaders = ["Component", "Quantity", "Delete"];
+      } else {
+        tableColumnHeaders = ["Component", "Quantity"];
+      }
+      //If the current inventory table already exists in the DOM, remove it
+      const previousTableContainer = document.getElementById(
+        "inventory-table-container",
+      );
+      if (previousTableContainer) previousTableContainer.remove();
+      const tableContainer = document.createElement("div");
+      tableContainer.setAttribute("id", "inventory-table-container");
+      tableContainer.setAttribute("class", "table-container");
+      const currentInventoryTable = createTable(
+        "current-inventory-table",
+        tableColumnHeaders,
+      );
+      const tableBody = componentItems.reduce(
+        (acc: HTMLElement, currentComponent: Component) => {
+          const newRow = addNewRow(currentComponent, showDeleteButton);
+          acc.appendChild(newRow);
+          return acc;
+        },
+        document.createElement("tbody"),
+      );
+      tableBody.setAttribute("id", "currentInventoryTableBody");
+      currentInventoryTable.appendChild(tableBody);
+      tableContainer.appendChild(currentInventoryTable);
+      currentInventoryCard.appendChild(tableContainer);
+    }
   } else {
+    //Add filter button row
+    const filterRow = makeElement("section", "filter-row", "button-row", null);
+    const allInventoryButton = createButton("All Inventory", "button", "all-inventory-button", "secondary");
+    allInventoryButton.addEventListener('click', () => {
+      const oldHeading = document.getElementById("card-heading") as HTMLElement;
+      const newHeading = makeElement("h2", "card-heading", null, "Current Inventory");
+      currentInventoryCard.replaceChild(newHeading, oldHeading);
+      const inventoryArray: LocationItem[] = filterInventoryForLocation("all", currrentInventoryArray);
+      createInvetoryTable(inventoryArray, userRole);
+    });
+    filterRow.appendChild(allInventoryButton);
+    locations.forEach(location => {
+      if (!location['external']) {
+        const filterForLocationButton = createButton(`${location['locationName']}`, "button", `${location['locationName']}-filter`, "secondary");
+        filterForLocationButton.addEventListener('click', () => {
+          const oldHeading = document.getElementById("card-heading") as HTMLElement;
+          const newHeading = makeElement("h2", "card-heading", null, `Current Inventory at ${location['locationName']}`);
+          currentInventoryCard.replaceChild(newHeading, oldHeading);
+          const inventoryArray: LocationItem[] = filterInventoryForLocation(location['locationId'], currrentInventoryArray);
+          createInvetoryTable(inventoryArray, userRole);
+        });
+        filterRow.appendChild(filterForLocationButton);
+      }
+    });
+    currentInventoryCard.appendChild(filterRow);
+    //Filter items
+    const inventoryArray: LocationItem[] = filterInventoryForLocation("all", currrentInventoryArray);
+    createInvetoryTable(inventoryArray, null);
+    //Hide the loading card and display the current inventory card
+    const loadingCard = document.getElementById("loading");
+    if (loadingCard) loadingCard.remove();
+  }
+
+  function filterInventoryForLocation(locationId: string, currrentInventoryArray: LocationItem[]) {
+    if (locationId === "all") {
+      return Object.values(
+        currrentInventoryArray.reduce((acc, item) => {
+          const { componentId, quantity } = item;
+          if (!acc[componentId]) {
+            acc[componentId] = {
+              locationId: "all",
+              locationName: "all",
+              componentId: item['componentId'],
+              componentType: item['componentType'],
+              quantity: item['quantity']
+            };
+          } else {
+            // Add to the existing quantity
+            acc[componentId].quantity += quantity;
+          }
+
+          return acc;
+        }, {} as Record<string, LocationItem>)
+      );
+    } else {
+      const filteredArray = currrentInventoryArray.filter(item => item['locationId'] === locationId);
+      if (filteredArray.length > 0) {
+        return filteredArray
+      }
+      return [];
+    }
+  }
+
+  function createInvetoryTable(inventoryArray: LocationItem[], userRole: string | null) {
+    console.log(`The inventory array has a length of ${inventoryArray.length}`);
+    const prevNoInventory = document.getElementById("no-inventory");
+    if (prevNoInventory) prevNoInventory.remove();
     //Create the current inventory table
     let tableColumnHeaders: string[] = [];
-    //Only admins can delete components
-    if (userRole === "admin") {
-      tableColumnHeaders = ["Component", "Quantity", "Delete"];
-    } else {
-      tableColumnHeaders = ["Component", "Quantity"];
-    }
+    // let showDeleteButton: boolean = false;
+    // if (userRole === "admin" && inventoryArray.length > 0 && inventoryArray[0]['locationId'] === "all") {
+    //   showDeleteButton = true;
+    // }
+    // //Only admins can delete components
+    // if (showDeleteButton) {
+    //   tableColumnHeaders = ["Component", "Quantity", "Delete"];
+    // } else {
+    //   tableColumnHeaders = ["Component", "Quantity"];
+    // }
+    tableColumnHeaders = ["Component", "Quantity"];
     //If the current inventory table already exists in the DOM, remove it
     const previousTableContainer = document.getElementById(
       "inventory-table-container",
     );
     if (previousTableContainer) previousTableContainer.remove();
-    const tableContainer = document.createElement("div");
+    if (inventoryArray.length === 0) {
+      const noInventory = makeElement("p", "no-inventory", null, "No inventory for this location");
+      currentInventoryCard.appendChild(noInventory);
+    } else {
+      const tableContainer = document.createElement("div");
     tableContainer.setAttribute("id", "inventory-table-container");
     tableContainer.setAttribute("class", "table-container");
     const currentInventoryTable = createTable(
       "current-inventory-table",
       tableColumnHeaders,
     );
-    const tableBody = currrentInventoryArray.reduce(
-      (acc: HTMLElement, currentComponent: ComponentItem) => {
-        const newRow = addNewRow(currentComponent, userRole);
+    const tableBody = inventoryArray.reduce(
+      (acc: HTMLElement, currentComponent: LocationItem) => {
+        const newRow = addNewRow(currentComponent, false);
         acc.appendChild(newRow);
         return acc;
       },
@@ -154,11 +341,9 @@ async function loadCurrentInventory(userRole: string | null) {
     currentInventoryTable.appendChild(tableBody);
     tableContainer.appendChild(currentInventoryTable);
     currentInventoryCard.appendChild(tableContainer);
+    }
+    
   }
-  //Hide the loading card and display the current inventory card
-  const loadingCard = document.getElementById("loading");
-  if (loadingCard) loadingCard.remove();
-  currentInventoryCard.classList.remove("hide");
 }
 
 async function filterDateRange(startDate: Date, endDate: Date) {
@@ -191,27 +376,28 @@ async function filterDateRange(startDate: Date, endDate: Date) {
 
 //Takes an array of inventory log entries and summarizes the array
 async function calculateInventoryTotals(filteredArray: InventoryEntry[]) {
-  let currrentInventoryArray: ComponentItem[] = [];
+  let currrentInventoryArray: Component[] = [];
   try {
-    currrentInventoryArray = await getAllComponents();
+    currrentInventoryArray = await getListOfComponents();
   } catch (error: any) {
     createMessage(error, "main-message", "error");
     return;
   }
   const uniqueComponents: ComponentSummary[] = currrentInventoryArray.reduce(
-    (acc: ComponentSummary[], currentComponent: ComponentItem) => {
+    (acc: ComponentSummary[], currentComponent: Component) => {
       const newComponent: ComponentSummary = {
+        componentId: currentComponent['componentId'],
         componentType: currentComponent["componentType"],
         quantityDonated: 0,
         quantityDistributed: 0,
       };
       const currentComponentEntries = filteredArray.filter(
-        (item) => item["componentType"] === newComponent["componentType"],
+        (item) => item['componentId'] === newComponent["componentId"],
       );
       currentComponentEntries.forEach((entry) => {
-        if (entry["whoDonated"]) {
+        if (entry['locationName'] && !entry['external'] && !entry['destination']) {
           newComponent["quantityDonated"] += entry["quantity"];
-        } else {
+        } else if (entry['external']) {
           newComponent["quantityDistributed"] += entry["quantity"];
         }
       });
@@ -277,16 +463,15 @@ function createEntriesTable(filteredResults: InventoryEntry[]) {
       dateCell.appendChild(date);
       entryRow.appendChild(dateCell);
       const entryCell = document.createElement("td");
-      if (currentEntry["whoDonated"]) {
-        const entryText = document.createTextNode(
-          `${currentEntry["quantity"]} ${currentEntry["componentType"]} donated by ${currentEntry["whoDonated"]}`,
-        );
-        entryCell.appendChild(entryText);
+      if (currentEntry['locationName'] && currentEntry['destination'] && !currentEntry['external']) {
+        //Item moves
+        entryCell.textContent = `${currentEntry['quantity']} ${currentEntry['componentType']} moved from ${currentEntry['locationName']} to ${currentEntry['destination']} by ${currentEntry['whoDonated']}`;
+      } else if (currentEntry['locationName'] && !currentEntry['external']) {
+        //Item donated
+        entryCell.textContent = `${currentEntry['quantity']} ${currentEntry['componentType']} donated to ${currentEntry['locationName']} by ${currentEntry['whoDonated']}`
       } else {
-        const entryText = document.createTextNode(
-          `${currentEntry["quantity"]} ${currentEntry["componentType"]} distributed to ${currentEntry["destination"]}`,
-        );
-        entryCell.appendChild(entryText);
+        //Item distributed
+        entryCell.textContent = `${currentEntry['quantity']} ${currentEntry['componentType']} distributed from ${currentEntry['locationName']} to ${currentEntry['destination']} by ${currentEntry['whoDonated']}`
       }
       entryRow.appendChild(entryCell);
       acc.appendChild(entryRow);
@@ -299,12 +484,12 @@ function createEntriesTable(filteredResults: InventoryEntry[]) {
   return tableContainer;
 }
 
-async function generateReport() {
+async function generateReport(generateForm: HTMLFormElement) {
   //Create a generating report message
   createMessage("Generating inventory report...", "report-message", "info");
   let formData: FormData = new FormData(generateForm);
-  let startDateValue = formData.get("startDate");
-  let endDateValue = formData.get("endDate");
+  let startDateValue = formData.get("start-date-input");
+  let endDateValue = formData.get("end-date-input");
   //Validate date range
   if (startDateValue && endDateValue) {
     if (
@@ -336,7 +521,7 @@ async function generateReport() {
     return;
   }
   //Hide the form
-  generateForm.style.display = "none";
+  generateForm.classList.add('hide');
   //Create the report card element
   if (startDateValue && endDateValue) {
     let startDate = new Date(startDateValue.toString());
@@ -389,7 +574,7 @@ async function generateReport() {
       );
       newReportButton.addEventListener("click", () => {
         reportCard.remove();
-        generateForm.style.display = "block";
+        generateForm.classList.remove('hide');
       });
       formRow.appendChild(newReportButton);
       reportCard.appendChild(formRow);
@@ -402,11 +587,11 @@ async function generateReport() {
   }
 }
 
-async function submitData(formData: FormData) {
-  const newComponent: ComponentItem = {
+async function submitComponentData(formData: FormData) {
+  const currentInventoryCard = document.getElementById('current-inventory-card');
+  const newComponent: Component = {
     componentId: "",
-    componentType: "",
-    quantity: 0,
+    componentType: ""
   };
   const newComponentName = formData.get("nameInput");
   if (newComponentName === null || newComponentName.toString().trim() === "") {
@@ -419,7 +604,7 @@ async function submitData(formData: FormData) {
   } else {
     newComponent["componentType"] = newComponentName.toString().trim();
     try {
-      const componentId = await addComponent(newComponent);
+      const componentId = await addNewComponent(newComponent);
       closeModal("manage-inventory-backdrop");
       if (componentId) {
         newComponent["componentId"] = componentId;
@@ -437,11 +622,20 @@ async function submitData(formData: FormData) {
         if (currentInventoryTableBody) {
           //If the table body exists, add the new row to the top of the table
           //We know the user is an admin, so just pass it as a string instead of from userRole = await getUserRole(user.uid);
-          const newRow = addNewRow(newComponent, "admin");
+          const newLoctionItem: LocationItem = {
+            locationId: "all",
+            locationName: "all",
+            componentId: newComponent['componentId'],
+            componentType: newComponent['componentType'],
+            quantity: 0
+          }
+          const newRow = addNewRow(newLoctionItem, true);
           currentInventoryTableBody.appendChild(newRow);
         } else {
           //If the table body does not exist, create/load the table
-          loadCurrentInventory("admin");
+          if (currentInventoryCard) {
+            loadCurrentInventory(currentInventoryCard, "admin");
+          }
         }
       } else {
         //The component was not added to the firestore
@@ -457,101 +651,200 @@ async function submitData(formData: FormData) {
   }
 }
 
-async function updateUIbasedOnAuth(user: User | null) {
-  let userRole: string | null = null;
-  if (user) {
-    userRole = await getUserRole(user.uid);
-    //If the user is an admin, show the links to the inventory entry logs, the manage inventory card, and the generate report card
-    if (userRole === "admin") {
-      if (generateForm.classList.contains("hide"))
-        generateForm.classList.remove("hide");
-      const inventoryLogLinks = document.getElementById(
-        "inventory-log-links",
-      ) as HTMLElement;
-      if (inventoryLogLinks.classList.contains("hide"))
-        inventoryLogLinks.classList.remove("hide");
-      if (manageInventoryCard.classList.contains("hide"))
-        manageInventoryCard.classList.remove("hide");
-    }
+async function submitLocationData(formData: FormData) {
+  const newLocationInput = formData.get("new-location-input");
+  if (newLocationInput === null || newLocationInput.toString().trim() === "") {
+    createMessage(
+      "Please enter the name of the new storage Location",
+      "manage-inventory-message",
+      "error",
+    );
   } else {
-    //User is not signed in, hide the manage inventory card and generate report form
-    if (!manageInventoryCard.classList.contains("hide"))
-      manageInventoryCard.classList.add("hide");
-    if (!generateForm.classList.contains("hide"))
-      generateForm.classList.add("hide");
-  }
-  loadCurrentInventory(userRole);
-  //If user is an admin, allow the creation of new compoents
-  if (userRole === "admin") {
-    //Event listener to generate inventory report
-    generateForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      generateReport();
-    });
-
-    //Event listener for button to open Manage Inventory Modal
-    const openMangeInventoryButton = document.getElementById(
-      "add-new-type",
-    ) as HTMLElement;
-    openMangeInventoryButton.addEventListener("click", () => {
-      manageInventoryModal.innerHTML = "";
-      //Create the form to add a new component type
-      const addNewComponentTypeForm = document.createElement("form");
-      const formHeaderH2 = document.createElement("h2");
-      const formHeader = document.createTextNode("Add a New Component Type");
-      formHeaderH2.appendChild(formHeader);
-      addNewComponentTypeForm.appendChild(formHeaderH2);
-      const nameInputRow = document.createElement("section");
-      nameInputRow.setAttribute("class", "form-row");
-      const nameLabel = document.createElement("label");
-      nameLabel.setAttribute("for", "nameInput");
-      const nameText = document.createTextNode("Name of new component type:");
-      nameLabel.appendChild(nameText);
-      nameInputRow.appendChild(nameLabel);
-      const nameInput = document.createElement("input");
-      nameInput.setAttribute("type", "text");
-      nameInput.setAttribute("id", "nameInput");
-      nameInput.setAttribute("name", "nameInput");
-      nameInputRow.appendChild(nameInput);
-      addNewComponentTypeForm.appendChild(nameInputRow);
-      const buttonRow = document.createElement("section");
-      buttonRow.setAttribute("class", "button-row");
-      const cancelButton = createButton(
-        "Cancel",
-        "button",
-        "cancelButton",
-        "secondary",
-      );
-      cancelButton.addEventListener("click", () => {
-        //Close the modal
-        closeModal("manage-inventory-backdrop");
-      });
-      buttonRow.appendChild(cancelButton);
-      const submitButton = createButton(
-        "Submit",
-        "submt",
-        "submitButton",
-        "primary",
-      );
-      buttonRow.appendChild(submitButton);
-      addNewComponentTypeForm.appendChild(buttonRow);
-      addNewComponentTypeForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const data = new FormData(addNewComponentTypeForm);
-        submitData(data);
-      });
-      //Add the form to the modal
-      manageInventoryModal.appendChild(addNewComponentTypeForm);
-      //Open the modal
-      openModal(manageInventoryBackdrop, manageInventoryModal, "nameInput");
-    });
+    const externalCheckbox = formData.get('external-checkbox');
+    const newLocation: Location = {
+      locationId: "",
+      locationName: newLocationInput.toString(),
+      external: externalCheckbox ? true : false
+    }
+    console.log(newLocation['external']);
+    await addNewLocation(newLocation);
+    closeModal("manage-inventory-backdrop");
+    loadManageLocationsCard();
   }
 }
 
-initializeApp("Inventory", "Inventory").then(async () => {
-  //Check to see in inventory log is empty. donated and distributed inventory pages will throw errors if the log is empty
-  await seedIfEmptyInventoryLog();
-  auth.onAuthStateChanged(async (user) => {
-    await updateUIbasedOnAuth(user);
+function loadAddNewComponentModal() {
+  manageInventoryModal.innerHTML = '';
+  const newForm = manageInventoryModal.cloneNode(true) as HTMLFormElement;
+  manageInventoryModal.parentNode?.replaceChild(newForm, manageInventoryModal);
+  manageInventoryModal = newForm;
+  //Create the form to add a new component type
+  const addNewComponentTypeForm = makeElement("form", "new-component-form", null, null) as HTMLFormElement;
+  const formHeaderH2 = makeElement("h2", null, null, "Add a New Component Type");
+  addNewComponentTypeForm.appendChild(formHeaderH2);
+  const nameInputRow = createInput("text", "nameInput", "Name of new component type:", "form-row");
+  addNewComponentTypeForm.appendChild(nameInputRow);
+  const buttonRow = makeElement("section", null, "button-row", null);
+  const cancelButton = createButton(
+    "Cancel",
+    "button",
+    "cancelButton",
+    "secondary",
+  );
+  cancelButton.addEventListener("click", () => {
+    //Close the modal
+    closeModal("manage-inventory-backdrop");
   });
-});
+  buttonRow.appendChild(cancelButton);
+  const submitButton = createButton(
+    "Submit",
+    "submt",
+    "submitButton",
+    "primary",
+  );
+  buttonRow.appendChild(submitButton);
+  addNewComponentTypeForm.appendChild(buttonRow);
+  addNewComponentTypeForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const data = new FormData(addNewComponentTypeForm);
+    submitComponentData(data);
+  });
+  //Add the form to the modal
+  manageInventoryModal.appendChild(addNewComponentTypeForm);
+  //Open the modal
+  openModal(manageInventoryBackdrop, manageInventoryModal, "nameInput");
+}
+
+function loadAddNewLocationModal() {
+  manageInventoryModal.innerHTML = '';
+  const newForm = manageInventoryModal.cloneNode(true) as HTMLFormElement;
+  manageInventoryModal.parentNode?.replaceChild(newForm, manageInventoryModal);
+  manageInventoryModal = newForm;
+  const newLocationForm = makeElement("form", "new-location-form", null, null) as HTMLFormElement;
+  const formHeaderH2 = makeElement("h2", null, null, "Add a New storage location");
+  newLocationForm.appendChild(formHeaderH2);
+  const newLocationInput = createInput("text", "new-location-input", "Storage Location:", "form-row");
+  newLocationForm.appendChild(newLocationInput);
+  const externalFormRow = makeElement("section", null, "form-row", null);
+  const externalLabel = makeElement("span", null, null, "External:");
+  externalFormRow.appendChild(externalLabel);
+  const externalCheckbox = createCheckbox("External", "Internal", "external-checkbox", false, false);
+  externalFormRow.appendChild(externalCheckbox);
+  newLocationForm.appendChild(externalFormRow);
+  const buttonRow = makeElement("section", null, "button-row", null);
+  const cancelButton = createButton(
+    "Cancel",
+    "button",
+    "cancelButton",
+    "secondary",
+  );
+  cancelButton.addEventListener("click", () => {
+    //Close the modal
+    closeModal("manage-inventory-backdrop");
+  });
+  buttonRow.appendChild(cancelButton);
+  const submitButton = createButton(
+    "Submit",
+    "submt",
+    "submitButton",
+    "primary",
+  );
+  buttonRow.appendChild(submitButton);
+  newLocationForm.appendChild(buttonRow);
+  newLocationForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const data = new FormData(newLocationForm);
+    submitLocationData(data);
+  });
+  //Add the form to the modal
+  manageInventoryModal.appendChild(newLocationForm);
+  //Open the modal
+  openModal(manageInventoryBackdrop, manageInventoryModal, "newLocationInput");
+}
+
+async function loadManageLocationsCard() {
+  const manageLocationsCard = document.getElementById('manage-storage-locations-card') as HTMLElement;
+  manageLocationsCard.innerHTML = '';
+  const manageInventoryCard = document.getElementById('manage-inventory-card') as HTMLElement;
+  const cardHeading = makeElement("h2", null, null, "Manage Storage Locations");
+  manageLocationsCard.appendChild(cardHeading);
+  //Get storage locations
+  const storageLocations: Location[] = await getListOfLocations();
+
+  if (storageLocations.length === 0) {
+    const noLocations = makeElement("p", null, null, "No storage locations");
+    manageLocationsCard.appendChild(noLocations)
+  } else {
+    const storageLocationsTable = makeElement("table", "storage-locations-table", null, null);
+    const colGroup = makeElement("colgroup", null, null, null);
+    const col1 = document.createElement("col");
+    col1.setAttribute("style", "width: auto");
+    colGroup.appendChild(col1);
+    const col2 = document.createElement("col");
+    col2.setAttribute("style", "width: 100px");
+    colGroup.appendChild(col2);
+    storageLocationsTable.appendChild(colGroup);
+    const tableHead = makeElement("thead", null, null, null);
+    const locationHeader = makeElement("th", null, null, "Location");
+    tableHead.appendChild(locationHeader);
+    const removeHeader = makeElement("th", null, null, "Remove Location");
+    tableHead.appendChild(removeHeader);
+    storageLocationsTable.appendChild(tableHead);
+    const tableBody = makeElement("tbody", null, null, null);
+    storageLocations.forEach(location => {
+      const locationRow = makeElement("tr", location['locationId'].toString(), null, null);
+      const locationTd = makeElement("td", null, null, `${location['locationName']} (${location['external'] ? 'External' : 'Internal'})`);
+      locationRow.appendChild(locationTd);
+      const deleteLocationTd = makeElement("td", null, null, null);
+      const deleteButton = createButton("", "button", "delete-button", "delete-button-icon", "delete");
+      deleteButton.addEventListener('click', () => {
+        const buttonRow = createDeleteModal(location, `Are you sure you want to delete the location ${location['locationName']}?`);
+        if (buttonRow) {
+          const noButton = buttonRow.children[0];
+          const yesButton = buttonRow.children[1];
+          if (yesButton) {
+            yesButton.addEventListener('click', async () => {
+              closeModal("delete-item-backdrop");
+              try {
+                await deleteLocation(location['locationId']);
+                createMessage(`Deleted ${location['locationName']}`, "main-message", "delete");
+                locationRow.remove();
+              } catch (error: any) {
+                createMessage(error, "main-message", "error");
+              }
+
+            });
+          }
+          if (noButton) {
+            noButton.addEventListener('click', () => {
+              closeModal("delete-item-backdrop");
+            });
+          }
+        }
+      });
+      deleteLocationTd.appendChild(deleteButton);
+      locationRow.appendChild(deleteLocationTd);
+      tableBody.appendChild(locationRow);
+    });
+
+
+    manageLocationsCard.appendChild(storageLocationsTable);
+    storageLocationsTable.appendChild(tableBody);
+  }
+
+  const actionRow = makeElement("section", null, "button-row", null);
+  const addNewStorageLocationButton = createButton("Add New Storage Location", "button", "add-new-location", "secondary", "add_location_alt");
+  addNewStorageLocationButton.addEventListener('click', () => {
+    loadAddNewLocationModal();
+  });
+  actionRow.appendChild(addNewStorageLocationButton);
+  const closeLocationsCardButton = createButton("Done", "button", "close-locations-button", "secondary");
+  closeLocationsCardButton.addEventListener('click', () => {
+    manageLocationsCard.classList.add('hide');
+    manageInventoryCard.classList.remove('hide');
+  });
+  actionRow.appendChild(closeLocationsCardButton);
+  manageLocationsCard.appendChild(actionRow);
+  manageInventoryCard.classList.add('hide');
+  manageLocationsCard.classList.remove('hide');
+}

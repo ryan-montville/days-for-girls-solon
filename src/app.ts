@@ -2,21 +2,19 @@ import {
   createMessage,
   closeModal,
   retrieveMessage,
-  trapFocus,
-} from "./utils.js";
+} from "./modules/utils";
 import {
   signInWithGooglePopup,
-  getCurrentUser,
   signOutUser,
-} from "./authService.js";
-import { auth } from "./firebase.js";
+} from "./authService";
+import { auth } from "./firebase";
 
 const pageWrapper = document.getElementById("page-wrapper") as HTMLElement;
 let mobileNavToggle = document.getElementById(
   "mobile-nav-toggle",
 ) as HTMLElement;
 const githubTemplateBaseURL =
-  "https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/";
+  "https://raw.githubusercontent.com/MontesOwn/days-for-girls-solon/refs/heads/main/";
 
 //Global DOM elements
 let nav: HTMLElement;
@@ -35,7 +33,7 @@ function setUpAuthListener() {
       //Hide the sign in button and show the sign out button
       signInButton.style.display = "none";
       signOutButton.style.display = "block";
-      //Shower the inventory link
+      //Show the inventory link
       if (inventoryLink.classList.contains("hide"))
         inventoryLink.classList.remove("hide");
     } else {
@@ -48,56 +46,6 @@ function setUpAuthListener() {
       signOutButton.style.display = "none";
     }
   });
-}
-
-function toggleDarkMode(prefersDarkMode: boolean) {
-  const rootElement = document.documentElement;
-  if (prefersDarkMode) {
-    rootElement.classList.add("dark");
-    rootElement.classList.remove("light");
-  } else {
-    rootElement.classList.add("light");
-    rootElement.classList.remove("dark");
-  }
-}
-
-function updateDarkModeButtonIcon(prefersDarkMode: boolean) {
-  //Get the dark mode toggle button
-  const darkModeToggleButton = document.getElementById(
-    "dark-mode-toggle",
-  ) as HTMLElement;
-  //Get the site logo, both for desktop and mobile
-  const desktopLogo = document.getElementById(
-    "desktop-header-logo",
-  ) as HTMLElement;
-  const mobileLogo = document.getElementById(
-    "mobile-header-logo",
-  ) as HTMLElement;
-  //Set the icon on the button and the logo image source
-  darkModeToggleButton.innerHTML = "";
-  if (prefersDarkMode) {
-    desktopLogo.setAttribute(
-      "src",
-      "https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/images/logo-dark.svg",
-    );
-    mobileLogo.setAttribute(
-      "src",
-      "https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/37a0850e4b3adb34bcfce8c022a76bd7747717fc/images/mobile-logo-dark.svg",
-    );
-    const iconName = document.createTextNode("dark_mode");
-    darkModeToggleButton.appendChild(iconName);
-  } else {
-    desktopLogo.setAttribute(
-      "src",
-      "https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/refs/heads/main/images/logo-light.svg",
-    );
-    mobileLogo.setAttribute(
-      "src",
-      "https://raw.githubusercontent.com/ryan-montville/days-for-girls-solon/37a0850e4b3adb34bcfce8c022a76bd7747717fc/images/mobile-logo-light.svg",
-    );
-    const iconName = document.createTextNode("light_mode");
-    darkModeToggleButton.appendChild(iconName);
-  }
 }
 
 export async function initializeApp(partentPage: string, currentPage: string) {
@@ -198,8 +146,8 @@ export async function initializeApp(partentPage: string, currentPage: string) {
     let distributeInventoryBackdrop = document.getElementById(
       "distribute-inventory-backdrop",
     );
-    let manageInventoryBackdrop = document.getElementById(
-      "manage-inventory-backdrop",
+    let InventoryBackdrop = document.getElementById(
+      "inventory-backdrop",
     );
     if (e.key === "Escape") {
       e.preventDefault();
@@ -224,10 +172,10 @@ export async function initializeApp(partentPage: string, currentPage: string) {
       ) {
         closeModal("distribute-inventory-backdrop");
       } else if (
-        manageInventoryBackdrop &&
-        manageInventoryBackdrop.style.display === "flex"
+        InventoryBackdrop &&
+        InventoryBackdrop.style.display === "flex"
       ) {
-        closeModal("manage-inventory-backdrop");
+        closeModal("inventory-backdrop");
       } else {
         console.warn("Esc key pressed, but no modals are open");
       }
@@ -244,7 +192,7 @@ async function loadHeader(
   ) as HTMLElement;
   try {
     //Get the header html from the header file. Using a relative path broke on GitHub pages
-    const response = await fetch(githubTemplateBaseURL + "header.html");
+    const response = await fetch(githubTemplateBaseURL + "templates/header.html");
     if (!response.ok) {
       console.error(`${response.status}: ${response.statusText}`);
       throw new Error("Error fetching header");
@@ -264,40 +212,6 @@ async function loadHeader(
         link.setAttribute("aria-current", "page");
       }
     });
-    /* Dark Mode Toggle */
-    let prefersDarkMode: boolean = false;
-    //Check if dark mode preference is stored in session storage
-    const sessionStorageDarkMode = sessionStorage.getItem("darkMode");
-    if (sessionStorageDarkMode) {
-      //If it is stored, set prefersDarkMode
-      prefersDarkMode = JSON.parse(sessionStorageDarkMode);
-    } else {
-      //If it is not stored, check the device preference
-      const deviceDarkModePreference = window.matchMedia(
-        "(prefers-color-scheme: dark)",
-      ).matches;
-      if (deviceDarkModePreference) {
-        //If the app is able to read the device preference, set prefersDarkMode
-        prefersDarkMode = deviceDarkModePreference;
-      }
-    }
-    //Get the dark mode toggle button
-    const darkModeToggleButton = document.getElementById(
-      "dark-mode-toggle",
-    ) as HTMLElement;
-    //Set the button's icon
-    updateDarkModeButtonIcon(prefersDarkMode);
-    //Add an event listener
-    darkModeToggleButton.addEventListener("click", () => {
-      //Toggle prefersDarkMode
-      prefersDarkMode = !prefersDarkMode;
-      //Toggle the root class
-      toggleDarkMode(prefersDarkMode);
-      //Update the button's icon
-      updateDarkModeButtonIcon(prefersDarkMode);
-      //Set the new preference in session storage
-      sessionStorage.setItem("darkMode", JSON.stringify(prefersDarkMode));
-    });
   } catch (error) {
     console.error(`Failed to load the header: ${error}`);
   }
@@ -309,7 +223,7 @@ async function loadFooter(): Promise<void> {
   ) as HTMLElement;
   try {
     //Get the footer html from the footer file. Using a relative path broke on GitHub pages
-    const response = await fetch(githubTemplateBaseURL + "footer.html");
+    const response = await fetch(githubTemplateBaseURL + "templates/footer.html");
     if (!response.ok) {
       console.error(`${response.status}: ${response.statusText}`);
       throw new Error("Error fetching footer");
@@ -333,7 +247,7 @@ async function loadModals() {
   ) as HTMLElement;
   try {
     //Get the modal html from the modal file. Using a relative path broke on GitHub pages
-    const response = await fetch(githubTemplateBaseURL + "modal.html");
+    const response = await fetch(githubTemplateBaseURL + "templates/modal.html");
     if (!response.ok) {
       console.error(`${response.status}: ${response.statusText}`);
       throw new Error("Error fetching modals");

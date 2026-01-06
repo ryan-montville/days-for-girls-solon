@@ -3,19 +3,18 @@ import { resolve } from "path";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
-  base: "/days-for-girls-solon/",
+  base: "/",
   build: {
     outDir: "dist",
     rollupOptions: {
       input: {
         main: resolve(__dirname, "index.html"),
         createNewEvent: resolve(__dirname, "create-new-event.html"),
-        distributedInventory: resolve(__dirname, "distributed-inventory.html"),
         donate: resolve(__dirname, "donate.html"),
-        donatedInventory: resolve(__dirname, "donated-inventory.html"),
         eventSignUp: resolve(__dirname, "event-sign-up.html"),
         events: resolve(__dirname, "events.html"),
         inventory: resolve(__dirname, "inventory.html"),
+        inventoryLog: resolve(__dirname, "inventoryLog.html"),
         mailingList: resolve(__dirname, "mailing-list.html"),
         manageEvent: resolve(__dirname, "manage-event.html"),
       },
