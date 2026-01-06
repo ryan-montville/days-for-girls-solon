@@ -1,0 +1,1 @@
+import{i as t}from"./app-CWWncusU.js";import{d}from"./indexedService-CyxUA599.js";t("Home","Home").then(()=>{const e=document.getElementById("reset-db");document.getElementById("seed-db"),e.addEventListener("click",()=>d())});

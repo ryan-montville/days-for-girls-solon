@@ -1,0 +1,1 @@
+const f=(o,a={})=>{const{replace:s=!1,params:n}=a,r="/days-for-girls-solon/",t=o.startsWith("/")?o.slice(1):o,c=`${r}${t}`,e=new URL(c,window.location.origin);n&&Object.entries(n).forEach(([i,l])=>{e.searchParams.append(i,String(l))}),s?window.location.replace(e.href):window.location.href=e.href};export{f as n};
